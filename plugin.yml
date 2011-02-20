@@ -1,0 +1,14 @@
+name: OddItem
+main: info.somethingodd.bukkit.odd.item.OddItem
+version: 0.2
+website: http://bukkit.somethingodd.info
+author: petteyg359
+description: >
+             Item database stuff.
+commands:
+  odditem:
+    usage: |
+           /<command> info|list|reload
+           Example: /<command> info - Shows number of items loaded.
+           Example: /<command> list - Lists items.
+           Example: /<command> reload - Reloads item data.
