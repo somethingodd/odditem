@@ -2,6 +2,8 @@ package info.somethingodd.bukkit.odd.item;
 
 import info.somethingodd.bukkit.odd.item.bktree.BKTree;
 import info.somethingodd.bukkit.odd.item.bktree.LevenshteinDistance;
+import com.nijiko.permissions.PermissionHandler;
+import com.nijikokun.bukkit.Permissions.Permissions;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -13,28 +15,20 @@ import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class OddItem extends JavaPlugin {
-	public static HashMap<String, String> items;
-	public static String[] bkTreeKeys;
-	public static BKTree<String> tree = null;
-	public static Logger log;
-	public static Server server;
-	public static Plugin plugin;
-	public static PluginDescriptionFile info;
-	public static final String dataDir = "plugins" + File.separator + "Odd";
-	public static final String config = dataDir + File.separator + "item.txt";
-
-	public OddItem(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader) {
-		super(pluginLoader, instance, desc, folder, plugin, cLoader);
-		server = instance;
-		info = desc;
-		OddItem.plugin = this;
-	}
+	private static HashMap<String, String> items;
+	private static String[] bkTreeKeys;
+	private static BKTree<String> tree = null;
+	private static Logger log;
+	private static PluginDescriptionFile info;
+    private static PermissionHandler Permissions = null;
+	private static final String dataDir = "plugins" + File.separator + "Odd";
+	private static final String config = dataDir + File.separator + "item.txt";
 
 	private static String findItem(String search) {
 		if (tree == null)
@@ -78,8 +72,7 @@ public class OddItem extends JavaPlugin {
 				}
 			} catch (IllegalArgumentException iae) {
 				String mat = findItem(iae.getMessage());
-				IllegalArgumentException ex = new IllegalArgumentException(mat);
-				throw ex;
+				throw new IllegalArgumentException(mat);
 			}
 		}
 		is = new ItemStack(material, 1, damage);
@@ -101,20 +94,21 @@ public class OddItem extends JavaPlugin {
 
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		if (commandLabel.toLowerCase().equals("odditem")) {
-			if (!sender.isOp()) {
+			if (Permissions == null && !sender.isOp())
 				return true;
-			}
+			if (Permissions != null && sender instanceof Player && !Permissions.has((Player) sender, "odd.item." + args[0]))
+                return true;
 			if (args.length >= 1) {
 				if (args[0].equals("info")) {
-					sender.sendMessage("[" + info.getName() + "] " + items.size() + " entries currently loaded.");
+                    sender.sendMessage("[" + info.getName() + "] " + items.size() + " entries currently loaded.");
 					return true;
 				} else if (args[0].equals("reload")) {
-					getItems();
+                    getItems();
 					getTree();
 					sender.sendMessage("[" + info.getName() + "] " + items.size() + " entries loaded.");
 					return true;
 				} else if (args[0].equals("list")) {
-					sender.sendMessage(items.toString());
+                    sender.sendMessage(items.toString());
 					if (args.length == 2) {
 						sender.sendMessage(items.get(args[1]));
 					}
@@ -132,12 +126,13 @@ public class OddItem extends JavaPlugin {
 
 	public void onEnable() {
 		info = this.getDescription();
-		log = Logger.getLogger("Minecraft");
+		log = getServer().getLogger();
 		log.info( "[" + info.getName() + "] " + info.getVersion() + " enabled" );
+        setupPermissions();
 		getItems();
 	}
 
-	public static HashMap<String, String> parseConfig(String s) {
+	private static HashMap<String, String> parseConfig(String s) {
 		HashMap<String, String> it = new HashMap<String, String>();
 		String[] l = s.split(System.getProperty("line.separator"));
 		if (l.length > 0 && l[0].contains(":"))
@@ -162,7 +157,7 @@ public class OddItem extends JavaPlugin {
 		return it;
 	}
 
-	public static String readConfig() {
+	private static String readConfig() {
 		boolean dirExists = new File(dataDir).exists();
 		if (!dirExists) {
 			try {
@@ -203,4 +198,13 @@ public class OddItem extends JavaPlugin {
 		return contents.toString();
 	}
 
+    public void setupPermissions() {
+        Plugin test = this.getServer().getPluginManager().getPlugin("Permissions");
+        if (Permissions == null && test != null) {
+                this.getServer().getPluginManager().enablePlugin(test);
+                Permissions = ((Permissions) test).getHandler();
+        } else {
+            log.info("[" + info.getName() + "] Permissions not found. Op-only mode.");
+        }
+    }
 }

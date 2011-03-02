@@ -2,3 +2,7 @@
 .project
 .settings
 bin
+OddGive.iml
+OddGive.ipr
+OddGive.iws
+target
