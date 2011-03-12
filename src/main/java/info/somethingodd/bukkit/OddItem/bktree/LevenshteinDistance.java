@@ -1,12 +1,11 @@
-package info.somethingodd.bukkit.odd.item.bktree;
+package info.somethingodd.bukkit.OddItem.bktree;
 
 
 /**
  * http://en.wikipedia.org/wiki/Levenshtein_distance 
  */
-public class LevenshteinDistance implements Distance {
+public class LevenshteinDistance {
 
-	@Override
 	public int getDistance(Object object1, Object object2) {
 		
 		String string1 = (String) object1;

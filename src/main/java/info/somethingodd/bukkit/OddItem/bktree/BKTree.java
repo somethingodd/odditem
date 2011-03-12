@@ -1,4 +1,4 @@
-package info.somethingodd.bukkit.odd.item.bktree;
+package info.somethingodd.bukkit.OddItem.bktree;
 
 
 import java.util.HashMap;
@@ -25,10 +25,10 @@ public class BKTree <E> {
 
 	private Node root;
 	private HashMap<E, Integer> matches;
-	private Distance distance;
+	private LevenshteinDistance distance;
 	private E bestTerm;
 
-	public BKTree(Distance distance) {
+	public BKTree(LevenshteinDistance distance) {
 		root = null;
 		this.distance = distance;
 	}

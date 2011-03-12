@@ -1,32 +1,31 @@
-package info.somethingodd.bukkit.odd.item;
+package info.somethingodd.bukkit.OddItem;
 
-import info.somethingodd.bukkit.odd.item.bktree.BKTree;
-import info.somethingodd.bukkit.odd.item.bktree.LevenshteinDistance;
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
+import info.somethingodd.bukkit.OddItem.bktree.BKTree;
+import info.somethingodd.bukkit.OddItem.bktree.LevenshteinDistance;
+import org.bukkit.Material;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Logger;
-import org.bukkit.Material;
-import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class OddItem extends JavaPlugin {
 	private static HashMap<String, String> items;
-	private static String[] bkTreeKeys;
 	private static BKTree<String> tree = null;
 	private static Logger log;
 	private static PluginDescriptionFile info;
-    private static PermissionHandler Permissions = null;
+    private PermissionHandler Permissions = null;
 	private static final String dataDir = "plugins" + File.separator + "Odd";
 	private static final String config = dataDir + File.separator + "item.txt";
 
@@ -38,14 +37,11 @@ public class OddItem extends JavaPlugin {
 
 	public static ItemStack getItemStack(String m) throws IllegalArgumentException {
 		Material material = null;
-		ItemStack is = null;
 		short damage = 0;
-		if (material == null) {
-			try {
-				material = Material.getMaterial(Integer.decode(m));
-			} catch (NumberFormatException nfe) {
-				material = Material.getMaterial(m.toUpperCase());
-			}
+		try {
+			material = Material.getMaterial(Integer.decode(m));
+		} catch (NumberFormatException nfe) {
+			material = Material.getMaterial(m.toUpperCase());
 		}
 		if (material == null) {
 			try {
@@ -75,8 +71,7 @@ public class OddItem extends JavaPlugin {
 				throw new IllegalArgumentException(mat);
 			}
 		}
-		is = new ItemStack(material, 1, damage);
-		return is;
+		return new ItemStack(material, 1, damage);
 	}
 
 	private static void getItems() {
@@ -94,30 +89,33 @@ public class OddItem extends JavaPlugin {
 
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		if (commandLabel.toLowerCase().equals("odditem")) {
-			if (Permissions == null && !sender.isOp())
-				return true;
-			if (Permissions != null && sender instanceof Player && !Permissions.has((Player) sender, "odd.item." + args[0]))
+            if (!sender.isOp()) {
+                if (Permissions == null)
+                    return true;
+                if (args.length > 0 && !Permissions.has((Player) sender, "odd.item."+args[0]))
+                    return true;
+            }
+            if (args.length == 0)
+                return false;
+            if (args[0].equals("info")) {
+                sender.sendMessage("[" + info.getName() + "] " + items.size() + " entries currently loaded.");
                 return true;
-			if (args.length >= 1) {
-				if (args[0].equals("info")) {
-                    sender.sendMessage("[" + info.getName() + "] " + items.size() + " entries currently loaded.");
-					return true;
-				} else if (args[0].equals("reload")) {
-                    getItems();
-					getTree();
-					sender.sendMessage("[" + info.getName() + "] " + items.size() + " entries loaded.");
-					return true;
-				} else if (args[0].equals("list")) {
-                    sender.sendMessage(items.toString());
-					if (args.length == 2) {
-						sender.sendMessage(items.get(args[1]));
-					}
-					return true;
-				}
-			}
-			return false;
-		}
-		return false;
+            }
+            if (args[0].equals("reload")) {
+                getItems();
+                getTree();
+                sender.sendMessage("[" + info.getName() + "] " + items.size() + " entries loaded.");
+                return true;
+            }
+            if (args[0].equals("list")) {
+                sender.sendMessage(items.toString());
+                if (args.length == 2) {
+                    sender.sendMessage(items.get(args[1]));
+                }
+                return true;
+            }
+        }
+        return false;
 	}
 
 	public void onDisable() {
@@ -136,23 +134,23 @@ public class OddItem extends JavaPlugin {
 		HashMap<String, String> it = new HashMap<String, String>();
 		String[] l = s.split(System.getProperty("line.separator"));
 		if (l.length > 0 && l[0].contains(":"))
-			for (int x = 0; x < l.length; x++) {
-				if (l[x] != "") {
-					String[] i = l[x].split(":");
-					String[] n = null;
-					String m;
-					if (i[0].contains("|")) {
-						n = i[0].split("\\|");
-						m = i[1];
-					} else {
-						n = i[1].split("\\|");
-						m = i[0];
-					}
-					for (int y = 0; y < n.length; y++) {
-						it.put(n[y], m);
-					}
-				}
-			}
+            for (String aL : l) {
+                if (!aL.equals("")) {
+                    String[] i = aL.split(":");
+                    String[] n = null;
+                    String m;
+                    if (i[0].contains("|")) {
+                        n = i[0].split("\\|");
+                        m = i[1];
+                    } else {
+                        n = i[1].split("\\|");
+                        m = i[0];
+                    }
+                    for (String aN : n) {
+                        it.put(aN, m);
+                    }
+                }
+            }
 		log.info( "[" + info.getName() + "] Parsed " + it.size() + " entries.");
 		return it;
 	}
@@ -187,7 +185,8 @@ public class OddItem extends JavaPlugin {
 					contents.append(System.getProperty("line.separator"));
 					line = input.readLine();
 				}
-			} catch (IOException ie) {
+			} catch (IOException ioe) {
+                log.warning("Reading config: " + ioe.getMessage());
 			} finally {
 				input.close();
 			}
