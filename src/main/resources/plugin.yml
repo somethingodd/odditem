@@ -1,6 +1,6 @@
 name: OddItem
-main: info.somethingodd.bukkit.odd.item.OddItem
-version: 0.4.1
+main: info.somethingodd.bukkit.OddItem.OddItem
+version: 0.4.2
 website: http://bukkit.somethingodd.info
 author: petteyg359
 description: >
