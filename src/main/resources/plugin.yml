@@ -1,6 +1,6 @@
 name: OddItem
 main: info.somethingodd.bukkit.OddItem.OddItem
-version: 0.4.2
+version: 0.6.2
 website: http://bukkit.somethingodd.info
 author: petteyg359
 description: >
@@ -8,7 +8,8 @@ description: >
 commands:
   odditem:
     usage: |
-           /<command> info|list|reload
-           Example: /<command> info - Shows number of items loaded.
-           Example: /<command> list - Lists items.
-           Example: /<command> reload - Reloads item data.
+           /<command> [aliases item]|[info]|[list]|[reload]
+           aliases - Lists aliases for item
+           info - Shows number of items loaded.
+           list - Lists items.
+           reload - Reloads item data.

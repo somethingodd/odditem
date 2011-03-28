@@ -17,67 +17,79 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 public class OddItem extends JavaPlugin {
-	private static HashMap<String, String> items;
+	private static final ConcurrentMap<String, String> items = new ConcurrentHashMap<String, String>();
+    private static final ConcurrentMap<String, HashSet<String>> aliases = new ConcurrentHashMap<String, HashSet<String>>();
 	private static BKTree<String> tree = null;
 	private static Logger log;
 	private static PluginDescriptionFile info;
     private PermissionHandler Permissions = null;
 	private static final String dataDir = "plugins" + File.separator + "Odd";
 	private static final String config = dataDir + File.separator + "item.txt";
+    private static String logPrefix;
 
-	private static String findItem(String search) {
+    private static String findItem(String search) {
 		if (tree == null)
 			getTree();
 		return tree.findBestWordMatch(search);
 	}
 
-	public static ItemStack getItemStack(String m) throws IllegalArgumentException {
-		Material material = null;
-		short damage = 0;
-		try {
-			material = Material.getMaterial(Integer.decode(m));
-		} catch (NumberFormatException nfe) {
-			material = Material.getMaterial(m.toUpperCase());
-		}
-		if (material == null) {
-			try {
-				String i = items.get(m);
-				String item = i;
-				if (i != null) {
-					if (i.contains(";")) {
-							try {
-								damage = Short.decode(i.split(";")[1]);
-							} catch (NumberFormatException nfe) {
-								log.warning("[" + info.getName() + "] Bad item damage value for " + i);
-							}
-							item = i.split(";")[0];
-					}
-					try {
-						material = Material.getMaterial(Integer.decode(item));
-					} catch (NumberFormatException nfe) {
-						material = Material.getMaterial(item.toUpperCase());
-					}
-				}
-				if (material == null) {
-					log.info("[" + info.getName() + "] Item " + m + " not found.");
-					throw new IllegalArgumentException(m);
-				}
-			} catch (IllegalArgumentException iae) {
-				String mat = findItem(iae.getMessage());
-				throw new IllegalArgumentException(mat);
-			}
-		}
-		return new ItemStack(material, 1, damage);
+    /*
+     * Gets all configured aliases for a specified alias
+     *
+     * @param String item alias to lookup
+     */
+    public HashSet<String> getAliases(String i) {
+        if (aliases.get(i) == null)
+            return new HashSet<String>();
+        return aliases.get(i);
+    }
+
+    /*
+     * Gets an item stack of specified alias
+     *
+     * @param String m item alias to search for
+     */
+    public ItemStack getItemStack(String m) throws IllegalArgumentException {
+        Material material;
+        short damage = 0;
+        String i = items.get(m);
+        if (i == null && aliases.get(m) != null) {
+            i = items.get(aliases.get(m).toArray()[0].toString());
+        }
+        String item;
+        if (i != null) {
+            if (i.contains(";")) {
+                try {
+                    damage = Short.decode(i.split(";")[1]);
+                } catch (NumberFormatException nfe) {
+                    log.warning(logPrefix + "Bad item damage value for " + i);
+                    return null;
+                }
+                item = i.split(";")[0];
+            } else {
+                item = i;
+            }
+        } else {
+            throw new IllegalArgumentException(findItem(m));
+        }
+        try {
+            material = Material.getMaterial(Integer.decode(item));
+        } catch (NumberFormatException nfe) {
+            material = Material.getMaterial(Integer.decode(item));
+        }
+        return new ItemStack(material, 1, damage);
 	}
 
-	private static void getItems() {
+    private static void getItems() {
 		String config;
 		config = readConfig();
-		items = parseConfig(config);
+		parseConfig(config);
 	}
 
 	private static void getTree() {
@@ -87,6 +99,7 @@ public class OddItem extends JavaPlugin {
 		}
 	}
 
+    @Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		if (commandLabel.toLowerCase().equals("odditem")) {
             if (!sender.isOp()) {
@@ -97,14 +110,23 @@ public class OddItem extends JavaPlugin {
             }
             if (args.length == 0)
                 return false;
+            if (args[0].equals("aliases")) {
+                if (args.length != 2)
+                    return false;
+                if (aliases.get(args[1]) != null)
+                    sender.sendMessage(aliases.get(args[1]).toString());
+                else
+                    sender.sendMessage("Doesn't exist.");
+                return true;
+            }
             if (args[0].equals("info")) {
-                sender.sendMessage("[" + info.getName() + "] " + items.size() + " entries currently loaded.");
+                sender.sendMessage(logPrefix + items.size() + " entries currently loaded.");
                 return true;
             }
             if (args[0].equals("reload")) {
                 getItems();
                 getTree();
-                sender.sendMessage("[" + info.getName() + "] " + items.size() + " entries loaded.");
+                sender.sendMessage(logPrefix + items.size() + " entries loaded.");
                 return true;
             }
             if (args[0].equals("list")) {
@@ -118,26 +140,39 @@ public class OddItem extends JavaPlugin {
         return false;
 	}
 
+    @Override
 	public void onDisable() {
-		log.info( "[" + info.getName() + "] disabled" );
+		log.info(logPrefix + "disabled");
 	}
 
+    @Override
 	public void onEnable() {
-		info = this.getDescription();
-		log = getServer().getLogger();
-		log.info( "[" + info.getName() + "] " + info.getVersion() + " enabled" );
-        setupPermissions();
-		getItems();
+		log.info(logPrefix + info.getVersion() + " enabled");
+        Plugin p = getServer().getPluginManager().getPlugin("Permissions");
+        if (p != null) {
+            getServer().getPluginManager().enablePlugin(p);
+            Permissions = ((Permissions) p).getHandler();
+        } else {
+            log.warning(logPrefix + "Permissions not found. Using op-only mode.");
+        }
+        getItems();
 	}
 
-	private static HashMap<String, String> parseConfig(String s) {
-		HashMap<String, String> it = new HashMap<String, String>();
+    @Override
+    public void onLoad() {
+        info = getDescription();
+        log = getServer().getLogger();
+        logPrefix = "[" + info.getName() + "] ";
+    }
+
+	private static void parseConfig(String s) {
+        items.clear();
 		String[] l = s.split(System.getProperty("line.separator"));
 		if (l.length > 0 && l[0].contains(":"))
             for (String aL : l) {
                 if (!aL.equals("")) {
                     String[] i = aL.split(":");
-                    String[] n = null;
+                    String[] n;
                     String m;
                     if (i[0].contains("|")) {
                         n = i[0].split("\\|");
@@ -147,12 +182,22 @@ public class OddItem extends JavaPlugin {
                         m = i[0];
                     }
                     for (String aN : n) {
-                        it.put(aN, m);
+                        items.put(aN, m);
+                        for (String aN2 : n) {
+                            if (aliases.get(aN) == null) {
+                                aliases.put(aN, new HashSet<String>());
+                                aliases.get(aN).add(m);
+                            }
+                            if (!aN.equals(aN2))
+                                aliases.get(aN).add(aN2);
+                        }
+                        if (aliases.get(m) == null)
+                            aliases.put(m, new HashSet<String>());
+                        aliases.get(m).add(aN);
                     }
                 }
             }
-		log.info( "[" + info.getName() + "] Parsed " + it.size() + " entries.");
-		return it;
+		log.info(logPrefix + "Parsed " + items.size() + " entries.");
 	}
 
 	private static String readConfig() {
@@ -186,7 +231,7 @@ public class OddItem extends JavaPlugin {
 					line = input.readLine();
 				}
 			} catch (IOException ioe) {
-                log.warning("Reading config: " + ioe.getMessage());
+                log.warning(logPrefix + "Error reading config: " + ioe.getMessage());
 			} finally {
 				input.close();
 			}
@@ -196,14 +241,4 @@ public class OddItem extends JavaPlugin {
 		}
 		return contents.toString();
 	}
-
-    public void setupPermissions() {
-        Plugin test = this.getServer().getPluginManager().getPlugin("Permissions");
-        if (Permissions == null && test != null) {
-                this.getServer().getPluginManager().enablePlugin(test);
-                Permissions = ((Permissions) test).getHandler();
-        } else {
-            log.info("[" + info.getName() + "] Permissions not found. Op-only mode.");
-        }
-    }
 }
