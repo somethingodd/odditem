@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
@@ -44,7 +45,7 @@ public class OddItem extends JavaPlugin {
      *
      * @param String item alias to lookup
      */
-    public HashSet<String> getAliases(String i) {
+    public Set<String> getAliases(String i) {
         if (aliases.get(i) == null)
             return new HashSet<String>();
         return aliases.get(i);
@@ -81,8 +82,10 @@ public class OddItem extends JavaPlugin {
         try {
             material = Material.getMaterial(Integer.decode(item));
         } catch (NumberFormatException nfe) {
-            material = Material.getMaterial(Integer.decode(item));
+            material = Material.getMaterial(item.toUpperCase());
         }
+        if (material == null)
+            throw new IllegalArgumentException(item + " ain't an item!");
         return new ItemStack(material, 1, damage);
 	}
 
