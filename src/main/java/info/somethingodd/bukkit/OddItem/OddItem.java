@@ -3,154 +3,121 @@ package info.somethingodd.bukkit.OddItem;
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 import info.somethingodd.bukkit.OddItem.bktree.BKTree;
-import info.somethingodd.bukkit.OddItem.bktree.LevenshteinDistance;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.config.Configuration;
+import org.bukkit.util.config.ConfigurationNode;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Logger;
 
 public class OddItem extends JavaPlugin {
-	private static final ConcurrentMap<String, String> items = new ConcurrentHashMap<String, String>();
-    private static final ConcurrentMap<String, HashSet<String>> aliases = new ConcurrentHashMap<String, HashSet<String>>();
-	private static BKTree<String> tree = null;
+    protected static final ConcurrentMap<String, ItemStack> itemMap = new ConcurrentHashMap<String, ItemStack>();
+	protected static final ConcurrentMap<String, ConcurrentSkipListSet<String>> items = new ConcurrentSkipListMap<String, ConcurrentSkipListSet<String>>();
+	private static BKTree<String> bktree = null;
 	private static Logger log;
 	private static PluginDescriptionFile info;
     private PermissionHandler Permissions = null;
-	private static final String dataDir = "plugins" + File.separator + "Odd";
-	private static final String config = dataDir + File.separator + "item.txt";
-    private static String logPrefix;
+	private static final String configurationFile = "plugins" + File.separator + "OddItem.yml";
+    protected static String logPrefix;
+    private static Configuration configuration = null;
 
-    private static String findItem(String search) {
-		if (tree == null)
-			getTree();
-		return tree.findBestWordMatch(search);
-	}
-
-    /*
-     * Gets all configured aliases for a specified alias
-     *
-     * @param String item alias to lookup
-     */
-    public Set<String> getAliases(String i) {
-        if (aliases.get(i) == null)
-            return new HashSet<String>();
-        return aliases.get(i);
-    }
-
-    /*
-     * Gets an item stack of specified alias
-     *
-     * @param String m item alias to search for
-     */
-    public ItemStack getItemStack(String m) throws IllegalArgumentException {
-        Material material;
-        short damage = 0;
-        String i = items.get(m);
-        if (i == null && aliases.get(m) != null) {
-            i = items.get(aliases.get(m).toArray()[0].toString());
-        }
-        String item;
-        if (i != null) {
-            if (i.contains(";")) {
-                try {
-                    damage = Short.decode(i.split(";")[1]);
-                } catch (NumberFormatException nfe) {
-                    log.warning(logPrefix + "Bad item damage value for " + i);
-                    return null;
-                }
-                item = i.split(";")[0];
+    protected void configure() {
+        File configurationFile = new File(this.configurationFile);
+        if (!configurationFile.exists())
+            writeConfig();
+        configuration = new Configuration(configurationFile);
+        configuration.load();
+        String comparator = configuration.getString("comparator");
+        if (comparator != null) {
+            if (false) {
+            } else if (comparator.equalsIgnoreCase("c") || comparator.equalsIgnoreCase("caverphone")) {
+                bktree = new BKTree<String>("c");
+                log.info(logPrefix + "Using Caverphone for suggestions.");
+            } else if (comparator.equalsIgnoreCase("k") || comparator.equalsIgnoreCase("cologne")) {
+                bktree = new BKTree<String>("k");
+                log.info(logPrefix + "Using ColognePhonetic for suggestions.");
+            } else if (comparator.equalsIgnoreCase("m") || comparator.equalsIgnoreCase("metaphone")) {
+                bktree = new BKTree<String>("m");
+                log.info(logPrefix + "Using Metaphone for suggestions.");
+            } else if (comparator.equalsIgnoreCase("s") || comparator.equalsIgnoreCase("soundex")) {
+                bktree = new BKTree<String>("s");
+                log.info(logPrefix + "Using SoundEx for suggestions.");
+            } else if (comparator.equalsIgnoreCase("r") || comparator.equalsIgnoreCase("refinedsoundex")) {
+                bktree = new BKTree<String>("r");
+                log.info(logPrefix + "Using RefinedSoundEx for suggestions.");
             } else {
-                item = i;
+                bktree = new BKTree<String>("l");
+                log.info(logPrefix + "Using Levenshtein for suggestions.");
             }
         } else {
-            throw new IllegalArgumentException(findItem(m));
+            bktree = new BKTree<String>("l");
+            log.info(logPrefix + "Using Levenshtein for suggestions.");
         }
-        try {
-            material = Material.getMaterial(Integer.decode(item));
-        } catch (NumberFormatException nfe) {
-            material = Material.getMaterial(item.toUpperCase());
-        }
-        if (material == null)
-            throw new IllegalArgumentException(item + " ain't an item!");
-        return new ItemStack(material, 1, damage);
-	}
-
-    private static void getItems() {
-		String config;
-		config = readConfig();
-		parseConfig(config);
-	}
-
-	private static void getTree() {
-		tree = new BKTree<String>(new LevenshteinDistance());
-		for (String item : items.keySet()) {
-			tree.add(item);
-		}
-	}
-
-    @Override
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		if (commandLabel.toLowerCase().equals("odditem")) {
-            if (!sender.isOp()) {
-                if (Permissions == null)
-                    return true;
-                if (args.length > 0 && !Permissions.has((Player) sender, "odd.item."+args[0]))
-                    return true;
-            }
-            if (args.length == 0)
-                return false;
-            if (args[0].equals("aliases")) {
-                if (args.length != 2)
-                    return false;
-                if (aliases.get(args[1]) != null)
-                    sender.sendMessage(aliases.get(args[1]).toString());
-                else
-                    sender.sendMessage("Doesn't exist.");
-                return true;
-            }
-            if (args[0].equals("info")) {
-                sender.sendMessage(logPrefix + items.size() + " entries currently loaded.");
-                return true;
-            }
-            if (args[0].equals("reload")) {
-                getItems();
-                getTree();
-                sender.sendMessage(logPrefix + items.size() + " entries loaded.");
-                return true;
-            }
-            if (args[0].equals("list")) {
-                sender.sendMessage(items.toString());
-                if (args.length == 2) {
-                    sender.sendMessage(items.get(args[1]));
+        ConfigurationNode items = configuration.getNode("items");
+        for(String i : items.getKeys()) {
+            if (this.items.get(i) == null)
+                this.items.put(i, new ConcurrentSkipListSet<String>());
+            ArrayList<String> j = new ArrayList<String>();
+            j.addAll(configuration.getStringList("items." + i, new ArrayList<String>()));
+            this.items.get(i).addAll(j);
+            for (String item : j) {
+                int id = 0;
+                int damage = 0;
+                if (i.contains(";")) {
+                    id = Integer.decode(i.substring(0, i.indexOf(";")));
+                    damage = Integer.decode(i.substring(i.indexOf(";") + 1));
+                } else {
+                    id = Integer.decode(i);
                 }
-                return true;
+                itemMap.put(item, new ItemStack(Material.getMaterial(id), damage));
+                bktree.add(item);
             }
         }
-        return false;
-	}
+
+    }
+
+    public Set<String> getAliases(String query) {
+        Set<String> s = new HashSet<String>();
+        ItemStack i = itemMap.get(query);
+        if (i == null)
+            return null;
+        String b = Integer.toString(i.getTypeId());
+        int d = i.getDurability();
+        if (d != 0)
+            b += ";" + Integer.toString(i.getDurability());
+        if (items.get(b) != null)
+            s.addAll(items.get(b));
+        if (d == 0 && items.get(b + ";0") != null)
+            s.addAll(items.get(b + ";0"));
+        return s;
+    }
+
+    public ItemStack getItemStack(String query) throws IllegalArgumentException {
+        ItemStack i = itemMap.get(query);
+        if (query != null)
+            return i;
+        throw new IllegalArgumentException(bktree.findBestWordMatch(query));
+    }
 
     @Override
-	public void onDisable() {
-		log.info(logPrefix + "disabled");
-	}
+    public void onDisable() {
+        log.info(logPrefix + "disabled");
+    }
 
     @Override
-	public void onEnable() {
-		log.info(logPrefix + info.getVersion() + " enabled");
+    public void onEnable() {
+        log.info(logPrefix + info.getVersion() + " enabled");
         Plugin p = getServer().getPluginManager().getPlugin("Permissions");
         if (p != null) {
             getServer().getPluginManager().enablePlugin(p);
@@ -158,8 +125,10 @@ public class OddItem extends JavaPlugin {
         } else {
             log.warning(logPrefix + "Permissions not found. Using op-only mode.");
         }
-        getItems();
-	}
+        getCommand("odditem").setExecutor(new OddItemCommand(this));
+        configure();
+        log.info(logPrefix + itemMap.size() + " aliases loaded.");
+    }
 
     @Override
     public void onLoad() {
@@ -168,80 +137,23 @@ public class OddItem extends JavaPlugin {
         logPrefix = "[" + info.getName() + "] ";
     }
 
-	private static void parseConfig(String s) {
-        items.clear();
-		String[] l = s.split(System.getProperty("line.separator"));
-		if (l.length > 0 && l[0].contains(":"))
-            for (String aL : l) {
-                if (!aL.equals("")) {
-                    String[] i = aL.split(":");
-                    String[] n;
-                    String m;
-                    if (i[0].contains("|")) {
-                        n = i[0].split("\\|");
-                        m = i[1];
-                    } else {
-                        n = i[1].split("\\|");
-                        m = i[0];
-                    }
-                    for (String aN : n) {
-                        items.put(aN, m);
-                        for (String aN2 : n) {
-                            if (aliases.get(aN) == null) {
-                                aliases.put(aN, new HashSet<String>());
-                                aliases.get(aN).add(m);
-                            }
-                            if (!aN.equals(aN2))
-                                aliases.get(aN).add(aN2);
-                        }
-                        if (aliases.get(m) == null)
-                            aliases.put(m, new HashSet<String>());
-                        aliases.get(m).add(aN);
-                    }
-                }
+    private void writeConfig() {
+        try {
+            BufferedReader i = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/OddItem.yml")));
+            BufferedWriter o = new BufferedWriter(new FileWriter(configurationFile));
+            String line = i.readLine();
+            while (line != null) {
+                o.write(line + System.getProperty("line.separator"));
+                line = i.readLine();
             }
-		log.info(logPrefix + "Parsed " + items.size() + " entries.");
-	}
+            o.close();
+            i.close();
+        } catch (Exception e) {
+            log.severe(logPrefix + "Error writing configuration.");
+            e.printStackTrace();
+        } finally {
+            log.info(logPrefix + "Wrote default config");
+        }
+    }
 
-	private static String readConfig() {
-		boolean dirExists = new File(dataDir).exists();
-		if (!dirExists) {
-			try {
-				new File(dataDir).mkdir(); 
-			} catch (SecurityException se) {
-				log.severe(se.getMessage());
-				return null;
-			}
-		}
-		boolean fileExists = new File(config).exists();
-		if (!fileExists) {
-			try {
-				new File(config).createNewFile();
-			} catch (IOException ioe) {
-				log.severe(ioe.getMessage());
-				return null;
-			}
-		}
-		File file = new File(config);
-		StringBuilder contents = new StringBuilder();
-		try {
-			BufferedReader input =  new BufferedReader(new FileReader(file));
-			try {
-				String line = input.readLine();
-				while (line != null) {
-					contents.append(line);
-					contents.append(System.getProperty("line.separator"));
-					line = input.readLine();
-				}
-			} catch (IOException ioe) {
-                log.warning(logPrefix + "Error reading config: " + ioe.getMessage());
-			} finally {
-				input.close();
-			}
-		}
-		catch (IOException ie){
-			log.severe(ie.getMessage());
-		}
-		return contents.toString();
-	}
 }

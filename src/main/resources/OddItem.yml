@@ -1,0 +1,812 @@
+items:
+  '0':
+  - air
+  - empty
+  - sky
+  '1':
+  - rock
+  - smoothstone
+  - stone
+  - smoothrock
+  '2':
+  - grass
+  '3':
+  - dirt
+  '4':
+  - cobblestone
+  - cobble
+  - cob
+  '5':
+  - wood
+  - plank
+  '6;0':
+  - sapling
+  - oaksapling
+  - normalsapling
+  '6;1':
+  - pinesapling
+  - darksapling
+  '6;2':
+  - birchsapling
+  - whitesapling
+  '7':
+  - adminium
+  - bedrock
+  '8':
+  - water
+  '9':
+  - stillwater
+  '10':
+  - lava
+  '11':
+  - stilllava
+  '12':
+  - sand
+  '13':
+  - gravel
+  - grav
+  '14':
+  - goldore
+  - gore
+  '15':
+  - ironore
+  - iore
+  '16':
+  - coalore
+  - core
+  '17;0':
+  - tree
+  - log
+  - oaklog
+  - oaktree
+  '17;1':
+  - redwood
+  - pinetree
+  - darklog
+  '17;2':
+  - birch
+  - birchwood
+  - whitelog
+  - birchlog
+  '18;0':
+  - leaves
+  - leaf
+  '18;1':
+  - pineleaves
+  - pineleaf
+  - darkleaves
+  - darkleaf
+  '18;2':
+  - birchleaves
+  - birchleaf
+  - whiteleaves
+  - whiteleaf
+  '19':
+  - sponge
+  '20':
+  - glass
+  '21':
+  - lapislazuliore
+  - lapisore
+  - llore
+  '22':
+  - lapislazuliblock
+  - lapisblock
+  - llblock
+  - lblock
+  '23':
+  - dispenser
+  '24':
+  - sandstone
+  '25':
+  - noteblock
+  - musicblock
+  '27':
+  - poweredrail
+  - poweredrails
+  - boosterrail
+  - boosterrails
+  '28':
+  - detectorrail
+  - detectorrails
+  '29':
+  - stickypiston
+  - spiston
+  - stickyp
+  '30':
+  - web
+  '31':
+  - wildgrass
+  - tallgrass
+  '32':
+  - deadshrub
+  - deserttree
+  - desertgrass
+  - deserttallgrass
+  '33':
+  - piston
+  - normalpiston
+  - npiston
+  '35;0':
+  - cloth
+  - wool
+  - whitewool
+  - whitecloth
+  '35;1':
+  - orangewool
+  - orangecloth
+  '35;2':
+  - magentawool
+  - magentacloth
+  '35;3':
+  - lightbluewool
+  - lightbluecloth
+  '35;4':
+  - yellowwool
+  - yellowcloth
+  '35;5':
+  - lightgreenwool
+  - lightgreencloth
+  '35;6':
+  - pinkwool
+  - pinkcloth
+  '35;7':
+  - graywool
+  - graycloth
+  '35;8':
+  - ligthgraywool
+  - lightgraycloth
+  '35;9':
+  - cyanwool
+  - cyancloth
+  '35;10':
+  - purplewool
+  - purplecloth
+  '35;11':
+  - bluewool
+  - bluecloth
+  '35;12':
+  - brownwool
+  - browncloth
+  '35;13':
+  - greenwool
+  - greencloth
+  - darkgreenwool
+  - darkgreencloth
+  '35;14':
+  - redwool
+  - redcloth
+  '35;15':
+  - blackwool
+  - blackcloth
+  '37':
+  - flower
+  - yeflower
+  - yellowflower
+  '38':
+  - rose
+  - reflower
+  - redflower
+  '39':
+  - brownmushroom
+  '40':
+  - redmushroom
+  '41':
+  - gold
+  - goldblock
+  - gblock
+  '42':
+  - iron
+  - ironblock
+  - iblock
+  '43':
+  - doublestair
+  - doublestep
+  '44':
+  - stair
+  - stairs
+  - step
+  - slab
+  '44;1':
+  - sandstep
+  - sandslab
+  '44;2':
+  - woodstep
+  - woodslab
+  '44;3':
+  - cobblestep
+  - cobbleslab
+  '45':
+  - brickwall
+  - brickblock
+  '46':
+  - tnt
+  - bomb
+  '47':
+  - bookshelf
+  - bookcase
+  '48':
+  - mossycobblestone
+  - mossycobble
+  - mossy
+  - moss
+  '49':
+  - obsidian
+  - obs
+  - lavarock
+  '50':
+  - torch
+  - light
+  '51':
+  - fire
+  '52':
+  - mobspawner
+  - spawner
+  '53':
+  - woodstairs
+  - woodenstairs
+  - woodstair
+  - woodenstair
+  - wstair
+  - wstairs
+  '54':
+  - chest
+  - crate
+  '55':
+  - redstoneblock
+  - rsblock
+  '56':
+  - diamondore
+  - dore
+  '57':
+  - diamondblock
+  - dblock
+  '58':
+  - workbench
+  - worktable
+  - work
+  - crafter
+  - crafttable
+  - craft
+  '59':
+  - cropblock
+  - wheatblock
+  '60':
+  - soil
+  - farm
+  - farmground
+  '61':
+  - furnace
+  '62':
+  - litfurnace
+  '63':
+  - signblock
+  '64':
+  - wooddoorblock
+  - fencegate
+  '65':
+  - ladder
+  - ladders
+  '66':
+  - rails
+  - tracks
+  - rail
+  - track
+  '67':
+  - cobblestonestairs
+  - cobblestairs
+  - cobstairs
+  '68':
+  - signblocktop
+  '69':
+  - lever
+  '70':
+  - rockplate
+  - rockpressureplate
+  '71':
+  - irondoorblock
+  '72':
+  - woodplate
+  - woodpressureplate
+  '73':
+  - redstoneore
+  - rsore
+  '74':
+  - redstoneorealt
+  - rsorealt
+  - redstoneorelit
+  - rsorelit
+  '75':
+  - redstonetorchoff
+  - rstorchoff
+  '76':
+  - redstonetorchon
+  - rstorchon
+  - redstonetorch
+  - rstorch
+  - rst
+  '77':
+  - button
+  '78':
+  - snow
+  '79':
+  - ice
+  '80':
+  - snowblock
+  '81':
+  - cactus
+  - cacti
+  '82':
+  - clayblock
+  '83':
+  - reedblock
+  '84':
+  - jukebox
+  - juke
+  '85':
+  - fence
+  '86':
+  - pumpkin
+  '87':
+  - brimstone
+  - redsand
+  - hellsand
+  - nethersand
+  - netherblock
+  - nether
+  - netherrack
+  - netherstone
+  - bloodstone
+  - hell
+  '88':
+  - slowsand
+  - soulsand
+  - mud
+  '89':
+  - lightstone
+  - lightblock
+  - glowstone
+  - glowblock
+  - glow
+  '90':
+  - portal
+  - portalblock
+  '91':
+  - lantern
+  - jack
+  - jackolantern
+  - pumpkintorch
+  - pumpkinlantern
+  '92':
+  - cakeblock
+  '93':
+  - rsrepeateroff
+  - redstonerepeateroff
+  - repeateroff
+  - diodeoff
+  '94':
+  - rsrepeateron
+  - redstonerepeateron
+  - repeateron
+  - diodeon
+  '95':
+  - mysterychest
+  - aprilchest
+  - foolchest
+  '96':
+  - trapdoor
+  - hatch
+  '256':
+  - ironshovel
+  - ischovel
+  - is
+  '257':
+  - ironpickaxe
+  - ipick
+  - ip
+  - ironpick
+  '258':
+  - ironaxe
+  - iaxe
+  - ia
+  '259':
+  - flintandsteel
+  - firestarter
+  - fands
+  - fas
+  - lighter
+  '260':
+  - apple
+  '261':
+  - bow
+  '262':
+  - arrow
+  '263;0':
+  - coal
+  '263;1':
+  - charcoal
+  '264':
+  - diamond
+  - d
+  '265':
+  - ironbar
+  - i
+  - ironingot
+  '266':
+  - goldbar
+  - g
+  - goldingot
+  '267':
+  - ironsword
+  - isw
+  - isword
+  '268':
+  - woodsword
+  - wsw
+  - wsword
+  '269':
+  - woodshovel
+  - ws
+  - wshovel
+  '270':
+  - woodpickaxe
+  - woodpick
+  - wp
+  - pick
+  '271':
+  - woodaxe
+  - wa
+  - waxe
+  '272':
+  - stonesword
+  - ssword
+  - ssw
+  '273':
+  - stoneshovel
+  - sshovel
+  - ss
+  '274':
+  - stonepickaxe
+  - stonepick
+  - sp
+  - spick
+  '275':
+  - stoneaxe
+  - sa
+  - saxe
+  '276':
+  - diamondsword
+  - dsw
+  - dsword
+  '277':
+  - diamondshovel
+  - ds
+  - dshovel
+  '278':
+  - diamondpickaxe
+  - dp
+  - diamondpick
+  - dpick
+  '279':
+  - diamondaxe
+  - da
+  - daxe
+  '280':
+  - stick
+  '281':
+  - bowl
+  '282':
+  - soup
+  - mushroomsoup
+  - mushysoup
+  - mushroomstew
+  - stew
+  - mushystew
+  '283':
+  - goldsword
+  - gsw
+  - gsword
+  '284':
+  - goldshovel
+  - gs
+  - gshovel
+  '285':
+  - goldpickaxe
+  - gp
+  - goldpick
+  - gpick
+  '286':
+  - goldaxe
+  - ga
+  - gaxe
+  '287':
+  - string
+  '288':
+  - feather
+  '289':
+  - gunpowder
+  '290':
+  - woodhoe
+  - wh
+  '291':
+  - stonehoe
+  - sh
+  '292':
+  - ironhoe
+  - ih
+  '293':
+  - diamondhoe
+  - dh
+  '294':
+  - goldhoe
+  - gh
+  '295':
+  - seeds
+  - seed
+  - crop
+  '296':
+  - wheat
+  '297':
+  - bread
+  '298':
+  - leatherhelmet
+  - lhelm
+  '299':
+  - leatherchestplate
+  - leatherchest
+  - lchest
+  - leatherbody
+  - leathershirt
+  '300':
+  - leatherpants
+  - lpants
+  '301':
+  - leatherboots
+  - lboots
+  '302':
+  - chainmailhelmet
+  - chhelm
+  - chainhelmet
+  '303':
+  - chainmailchestplate
+  - chainchest
+  - chchest
+  - chainbody
+  - chainshirt
+  - chainchestplate
+  '304':
+  - chainmailpants
+  - chpants
+  - chainpants
+  '305':
+  - chboots
+  - chainmailboots
+  '305':
+  - chainboots
+  '306':
+  - ironhelmet
+  - ihelm
+  '307':
+  - ironchestplate
+  - ironchest
+  - ichest
+  - ironbody
+  - ironshirt
+  '308':
+  - ironpants
+  - ipants
+  '309':
+  - ironboots
+  - iboots
+  '310':
+  - diamondhelmet
+  - dhelm
+  '311':
+  - diamondchestplate
+  - diamondchest
+  - dchest
+  - diamondbody
+  - diamondshirt
+  '312':
+  - diamondpants
+  - dpants
+  - diamondleggings
+  - dleggings
+  '313':
+  - diamondboots
+  - dboots
+  '314':
+  - goldhelmet
+  - ghelm
+  '315':
+  - goldchestplate
+  - goldchest
+  - gchest
+  - goldbody
+  - goldshirt
+  '316':
+  - goldpants
+  - gpants
+  '317':
+  - goldboots
+  - gboots
+  '318':
+  - flint
+  '319':
+  - meat
+  - pork
+  - porkchop
+  - rawbeef
+  '320':
+  - cookedmeat
+  - cookedpork
+  - cookedporkchop
+  - beef
+  - cookedbeef
+  '321':
+  - painting
+  '322':
+  - goldenapple
+  - goldapple
+  - gapple
+  '323':
+  - sign
+  '324':
+  - wooddoor
+  - woodendoor
+  - wdoor
+  '325':
+  - bucket
+  '326':
+  - waterbucket
+  '327':
+  - lavabucket
+  '328':
+  - minecart
+  '329':
+  - saddle
+  '330':
+  - irondoor
+  - idoor
+  '331':
+  - redstonedust
+  - redstone
+  - rsdust
+  - rs
+  '332':
+  - snowball
+  '333':
+  - boat
+  '334':
+  - leather
+  '335':
+  - milkbucket
+  '336':
+  - brick
+  '337':
+  - clay
+  '338':
+  - reed
+  - sugarcane
+  - sugarcanes
+  - bamboo
+  '339':
+  - paper
+  '340':
+  - book
+  '341':
+  - slimeorb
+  '342':
+  - storageminecart
+  '343':
+  - poweredminecart
+  '344':
+  - egg
+  '345':
+  - compass
+  '346':
+  - fishingrod
+  - fishrod
+  - rod
+  '347':
+  - watch
+  - clock
+  '348':
+  - lightstonedust
+  - lsdust
+  - lightdust
+  - glowdust
+  - gsdust
+  - glowstonedust
+  '349':
+  - fish
+  - rawfish
+  '350':
+  - cookedfish
+  '351;0':
+  - black
+  - blackdye
+  - ink
+  - inksack
+  - inksac
+  '351;1':
+  - red
+  - reddye
+  - rosered
+  '351;2':
+  - green
+  - greendye
+  - cactusgreen
+  '351;3':
+  - brown
+  - browndye
+  - cocobeans
+  '351;4':
+  - blue
+  - bluedye
+  - lapislazuli
+  - lapis
+  '351;5':
+  - purple
+  - purpledye                                                                                             z
+  '351;6':
+  - cyan
+  - cyandye
+  '351;7':
+  - lightgray
+  - lightgraydye
+  '351;8':
+  - gray
+  - graydye
+  '351;9':
+  - pink
+  - pinkdye
+  '351;10':
+  - lime
+  - limedye
+  '351;11':
+  - yellow
+  - yellowdye
+  - dandelionyellow
+  '351;12':
+  - lightblue
+  - lightbluedye
+  '351;13':
+  - magenta
+  - magentadye
+  '351;14':
+  - orange
+  - orangedye
+  '351;15':
+  - white
+  - whitedye
+  - bonemeal
+  '352':
+  - bone
+  '353':
+  - sugar
+  '354':
+  - cake
+  '355':
+  - bed
+  '356':
+  - redstonerepeater
+  - rsrepeater
+  - redrepeater
+  - repeater
+  - diode
+  '357':
+  - cookie
+  '358':
+  - map
+  '359':
+  - shears
+  - scissors
+  '2256':
+  - yellowrecord
+  - thirteen
+  - yellowdisc
+  '2257':
+  - greenrecord
+  - cat
+  - greendisc

@@ -1,16 +1,16 @@
 package info.somethingodd.bukkit.OddItem.bktree;
 
-
 /**
- * http://en.wikipedia.org/wiki/Levenshtein_distance 
+ * http://en.wikipedia.org/wiki/Levenshtein_distance
  */
+
 public class LevenshteinDistance {
 
-	public int getDistance(Object object1, Object object2) {
-		
+	public int distance(Object object1, Object object2) {
+
 		String string1 = (String) object1;
 		String string2 = (String) object2;
-		
+
 		int distance[][]; // distance matrix
         int n; // length of first string
         int m; // length of second string
@@ -59,7 +59,7 @@ public class LevenshteinDistance {
         // Step 7
         return distance[n][m];
 	}
-	
+
 	private int findMinimum(int a, int b, int c) {
         int min = a;
         if (b < min) {
