@@ -22,16 +22,13 @@ public class OddItem extends JavaPlugin {
 	private PluginDescriptionFile info;
     private final String configurationFile = "plugins" + File.separator + "OddItem.yml";
     protected String logPrefix;
-    private Configuration configuration = null;
-    private Boolean defaults;
 
     protected void configure() {
         File configurationFile = new File(this.configurationFile);
         if (!configurationFile.exists())
             writeConfig();
-        configuration = new Configuration(configurationFile);
+        Configuration configuration = new Configuration(configurationFile);
         configuration.load();
-        defaults = configuration.getBoolean("defaults", false);
         String comparator = configuration.getString("comparator");
         if (comparator != null) {
             if (false) {
@@ -115,12 +112,12 @@ public class OddItem extends JavaPlugin {
         return s;
     }
 
-    public Set<ItemStack> getItemGroup(String query) {
+    public ItemStack[] getItemGroup(String query) {
         return getItemGroup(query, 1);
     }
 
-    public Set<ItemStack> getItemGroup(String query, Integer quantity) {
-        Set<ItemStack> i = new HashSet<ItemStack>();
+    public ItemStack[] getItemGroup(String query, Integer quantity) {
+        SortedSet<ItemStack> i = new ConcurrentSkipListSet<ItemStack>(new OddItemGroupComparator());
         for (String x : groups.get(query)) {
             try {
                 i.add(getItemStack(query, quantity));
@@ -129,7 +126,7 @@ public class OddItem extends JavaPlugin {
                 log.severe(logPrefix + "Suggested correction for bad entry \"" + x + "\": " + e.getMessage());
             }
         }
-        return i;
+        return (ItemStack[]) i.toArray();
     }
 
     public ItemStack getItemStack(String query) throws IllegalArgumentException {
