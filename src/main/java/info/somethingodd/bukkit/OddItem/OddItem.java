@@ -1,36 +1,29 @@
 package info.somethingodd.bukkit.OddItem;
 
-import com.nijiko.permissions.PermissionHandler;
-import com.nijikokun.bukkit.Permissions.Permissions;
 import info.somethingodd.bukkit.OddItem.bktree.BKTree;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 import org.bukkit.util.config.ConfigurationNode;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
 
 public class OddItem extends JavaPlugin {
-    protected static final ConcurrentMap<String, ItemStack> itemMap = new ConcurrentHashMap<String, ItemStack>();
-	protected static final ConcurrentMap<String, ConcurrentSkipListSet<String>> items = new ConcurrentSkipListMap<String, ConcurrentSkipListSet<String>>();
-	private static BKTree<String> bktree = null;
-	private static Logger log;
-	private static PluginDescriptionFile info;
-    private PermissionHandler Permissions = null;
-	private static final String configurationFile = "plugins" + File.separator + "OddItem.yml";
-    protected static String logPrefix;
-    private static Configuration configuration = null;
+    protected ConcurrentMap<String, ItemStack> itemMap;
+	protected ConcurrentNavigableMap<String, SortedSet<String>> items;
+    protected ConcurrentNavigableMap<String, SortedSet<String>> groups;
+	private BKTree<String> bktree = null;
+	private Logger log = null;
+	private PluginDescriptionFile info;
+    private final String configurationFile = "plugins" + File.separator + "OddItem.yml";
+    protected String logPrefix;
+    private Configuration configuration = null;
+    private Boolean defaults;
 
     protected void configure() {
         File configurationFile = new File(this.configurationFile);
@@ -38,6 +31,7 @@ public class OddItem extends JavaPlugin {
             writeConfig();
         configuration = new Configuration(configurationFile);
         configuration.load();
+        defaults = configuration.getBoolean("defaults", false);
         String comparator = configuration.getString("comparator");
         if (comparator != null) {
             if (false) {
@@ -67,24 +61,42 @@ public class OddItem extends JavaPlugin {
         ConfigurationNode items = configuration.getNode("items");
         for(String i : items.getKeys()) {
             if (this.items.get(i) == null)
-                this.items.put(i, new ConcurrentSkipListSet<String>());
+                this.items.put(i, new ConcurrentSkipListSet<String>(new OddItemAliasComparator()));
             ArrayList<String> j = new ArrayList<String>();
             j.addAll(configuration.getStringList("items." + i, new ArrayList<String>()));
             this.items.get(i).addAll(j);
-            for (String item : j) {
-                int id = 0;
-                int damage = 0;
-                if (i.contains(";")) {
-                    id = Integer.decode(i.substring(0, i.indexOf(";")));
-                    damage = Integer.decode(i.substring(i.indexOf(";") + 1));
-                } else {
-                    id = Integer.decode(i);
+            Integer id = 0;
+            Short d = 0;
+            Material m = null;
+            if (i.contains(";")) {
+                try {
+                    id = Integer.parseInt(i.substring(0, i.indexOf(";")));
+                    d = Short.parseShort(i.substring(i.indexOf(";") + 1));
+                    m = Material.getMaterial(id);
+                } catch (NumberFormatException e) {
                 }
-                itemMap.put(item, new ItemStack(Material.getMaterial(id), damage));
+            } else {
+                try {
+                    id = Integer.decode(i);
+                    m = Material.getMaterial(id);
+                } catch (NumberFormatException e) {
+                    m = Material.getMaterial(i);
+                }
+            }
+            if (m == null) {
+                log.warning(logPrefix + "Invalid format: " + i);
+                continue;
+            }
+            for (String item : j) {
+                itemMap.put(item, new ItemStack(m, 1, d));
                 bktree.add(item);
             }
         }
-
+        ConfigurationNode groups = configuration.getNode("groups");
+        for (String g : groups.getKeys()) {
+            if (this.groups.get(g) == null)
+                this.groups.put(g, new ConcurrentSkipListSet<String>());
+        }
     }
 
     public Set<String> getAliases(String query) {
@@ -103,10 +115,33 @@ public class OddItem extends JavaPlugin {
         return s;
     }
 
+    public Set<ItemStack> getItemGroup(String query) {
+        return getItemGroup(query, 1);
+    }
+
+    public Set<ItemStack> getItemGroup(String query, Integer quantity) {
+        Set<ItemStack> i = new HashSet<ItemStack>();
+        for (String x : groups.get(query)) {
+            try {
+                i.add(getItemStack(query, quantity));
+            } catch (IllegalArgumentException e) {
+                log.severe(logPrefix + "Bad data in configuration of group \"" + query + "\"");
+                log.severe(logPrefix + "Suggested correction for bad entry \"" + x + "\": " + e.getMessage());
+            }
+        }
+        return i;
+    }
+
     public ItemStack getItemStack(String query) throws IllegalArgumentException {
+        return getItemStack(query, 1);
+    }
+
+    public ItemStack getItemStack(String query, Integer quantity) throws IllegalArgumentException {
         ItemStack i = itemMap.get(query);
-        if (query != null)
+        if (i != null) {
+            i.setAmount(quantity);
             return i;
+        }
         throw new IllegalArgumentException(bktree.findBestWordMatch(query));
     }
 
@@ -118,14 +153,10 @@ public class OddItem extends JavaPlugin {
     @Override
     public void onEnable() {
         log.info(logPrefix + info.getVersion() + " enabled");
-        Plugin p = getServer().getPluginManager().getPlugin("Permissions");
-        if (p != null) {
-            getServer().getPluginManager().enablePlugin(p);
-            Permissions = ((Permissions) p).getHandler();
-        } else {
-            log.warning(logPrefix + "Permissions not found. Using op-only mode.");
-        }
         getCommand("odditem").setExecutor(new OddItemCommand(this));
+        itemMap = new ConcurrentHashMap<String, ItemStack>();
+        items = new ConcurrentSkipListMap<String, SortedSet<String>>(new OddItemIDComparator());
+        groups = new ConcurrentSkipListMap<String, SortedSet<String>>(new OddItemGroupComparator());
         configure();
         log.info(logPrefix + itemMap.size() + " aliases loaded.");
     }
@@ -138,22 +169,35 @@ public class OddItem extends JavaPlugin {
     }
 
     private void writeConfig() {
+        FileWriter fw;
         try {
-            BufferedReader i = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/OddItem.yml")));
-            BufferedWriter o = new BufferedWriter(new FileWriter(configurationFile));
+            fw = new FileWriter(configurationFile);
+        } catch (IOException e) {
+            log.severe(logPrefix + "Couldn't write config file: " + e.getMessage());
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        BufferedReader i = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/OddItem.yml")));;
+        BufferedWriter o = new BufferedWriter(fw);
+        try {
             String line = i.readLine();
             while (line != null) {
                 o.write(line + System.getProperty("line.separator"));
                 line = i.readLine();
             }
-            o.close();
-            i.close();
-        } catch (Exception e) {
-            log.severe(logPrefix + "Error writing configuration.");
-            e.printStackTrace();
+        } catch (IOException e) {
+            log.severe(logPrefix + "Error writing config: " + e.getMessage());
         } finally {
-            log.info(logPrefix + "Wrote default config");
+            try {
+                o.close();
+                i.close();
+            } catch (IOException e) {
+                log.severe(logPrefix + "Error saving config: " + e.getMessage());
+                getServer().getPluginManager().disablePlugin(this);
+                return;
+            }
         }
+        log.info(logPrefix + "Wrote default config");
     }
 
 }
