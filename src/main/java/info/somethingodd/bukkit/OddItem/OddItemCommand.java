@@ -3,10 +3,6 @@ package info.somethingodd.bukkit.OddItem;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class OddItemCommand implements CommandExecutor {
 
@@ -23,32 +19,36 @@ public class OddItemCommand implements CommandExecutor {
                 if (args[0].equals("info")) {
                     sender.sendMessage(oddItem.logPrefix + oddItem.itemMap.size() + " aliases loaded");
                     return true;
+                } else if (args[0].equals("save")) {
+                    oddItem.save();
+                    return true;
+                } else if (args[0].equals("groups")) {
+                    String g = oddItem.groups.keySet().toString();
+                    sender.sendMessage(oddItem.logPrefix + g);
+                    return true;
                 }
                 break;
             case 2:
                 if (args[0].equals("aliases") || args[0].equals("alias")) {
-                    Set<String> s = new HashSet<String>();
-                    ItemStack i = null;
+                    String message;
                     try {
-                        i = oddItem.getItemStack(args[1]);
+                        message = oddItem.getAliases(args[1]).toString();
                     } catch (IllegalArgumentException e) {
-                        sender.sendMessage(oddItem.logPrefix + " Unknown item. Suggestion: " + e.getMessage());
-                        return true;
+                        message = "no such item";
                     }
-                    String b = Integer.toString(i.getTypeId());
-                    int d = i.getDurability();
-                    if (d != 0)
-                        b += ";" + Integer.toString(i.getDurability());
-                    if (oddItem.items.get(b) != null)
-                        s.addAll(oddItem.items.get(b));
-                    if (d == 0 && oddItem.items.get(b + ";0") != null)
-                        s.addAll(oddItem.items.get(b + ";0"));
-                    sender.sendMessage(oddItem.logPrefix + s.toString());
+                    sender.sendMessage(oddItem.logPrefix + message);
                     return true;
-                } else
-                if (args[0].equals("remove")) {
+                } else if (args[0].equals("group")) {
+                    String message;
                     try {
-                        oddItem.getItemStack(args[1]);
+                        message = oddItem.getItemGroupNames(args[1]).toString();
+                    } catch (IllegalArgumentException e) {
+                        message = "no such group";
+                    }
+                    sender.sendMessage(oddItem.logPrefix + message);
+                    return true;
+                } else if (args[0].equals("remove")) {
+                    try {
                         oddItem.itemMap.remove(args[1]);
                     } catch (IllegalArgumentException e) {
                         sender.sendMessage(oddItem.logPrefix + " Unknown item. Suggestion: " + e.getMessage());

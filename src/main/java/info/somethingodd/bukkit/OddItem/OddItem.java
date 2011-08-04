@@ -9,16 +9,19 @@ import org.bukkit.util.config.Configuration;
 import org.bukkit.util.config.ConfigurationNode;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.SortedSet;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
 
 public class OddItem extends JavaPlugin {
     protected ConcurrentMap<String, ItemStack> itemMap;
 	protected ConcurrentNavigableMap<String, SortedSet<String>> items;
-    protected ConcurrentNavigableMap<String, SortedSet<String>> groups;
+    protected ConcurrentHashMap<String, LinkedList<String>> groups;
 	private BKTree<String> bktree = null;
-	private Logger log = null;
+	protected Logger log = null;
 	private PluginDescriptionFile info;
     private final String configurationFile = "plugins" + File.separator + "OddItem.yml";
     protected String logPrefix;
@@ -58,7 +61,7 @@ public class OddItem extends JavaPlugin {
         ConfigurationNode items = configuration.getNode("items");
         for(String i : items.getKeys()) {
             if (this.items.get(i) == null)
-                this.items.put(i, new ConcurrentSkipListSet<String>(new OddItemAliasComparator()));
+                this.items.put(i, new ConcurrentSkipListSet<String>(String.CASE_INSENSITIVE_ORDER));
             ArrayList<String> j = new ArrayList<String>();
             j.addAll(configuration.getStringList("items." + i, new ArrayList<String>()));
             this.items.get(i).addAll(j);
@@ -90,17 +93,22 @@ public class OddItem extends JavaPlugin {
             }
         }
         ConfigurationNode groups = configuration.getNode("groups");
-        for (String g : groups.getKeys()) {
-            if (this.groups.get(g) == null)
-                this.groups.put(g, new ConcurrentSkipListSet<String>());
+        if (groups != null) {
+            for (String g : groups.getKeys()) {
+                if (this.groups.get(g) == null)
+                    this.groups.put(g, new LinkedList<String>());
+                List<String> i = groups.getStringList(g, new LinkedList<String>());
+                this.groups.get(g).addAll(i);
+                log.info(logPrefix + "Group " + g + " added: " + i.toString());
+            }
         }
     }
 
-    public Set<String> getAliases(String query) {
-        Set<String> s = new HashSet<String>();
+    public List<String> getAliases(String query) throws IllegalArgumentException {
+        List<String> s = new LinkedList<String>();
         ItemStack i = itemMap.get(query);
         if (i == null)
-            return null;
+            throw new IllegalArgumentException("no such item");
         String b = Integer.toString(i.getTypeId());
         int d = i.getDurability();
         if (d != 0)
@@ -112,21 +120,40 @@ public class OddItem extends JavaPlugin {
         return s;
     }
 
-    public ItemStack[] getItemGroup(String query) {
+    public List<String> getItemGroupNames(String query) throws IllegalArgumentException {
+        LinkedList<ItemStack> li = (LinkedList<ItemStack>) getItemGroup(query);
+        List<String> ls = new LinkedList<String>();
+        while (!li.isEmpty()) {
+            ItemStack i = li.remove();
+            String a;
+            try {
+                a = items.get(String.valueOf(i.getTypeId()) + ";" + String.valueOf(i.getDurability())).first();
+            } catch (NullPointerException e) {
+                a = items.get(String.valueOf(i.getTypeId())).first();
+            }
+            ls.add(a);
+        }
+        return ls;
+    }
+
+    public List<ItemStack> getItemGroup(String query) throws IllegalArgumentException {
         return getItemGroup(query, 1);
     }
 
-    public ItemStack[] getItemGroup(String query, Integer quantity) {
-        SortedSet<ItemStack> i = new ConcurrentSkipListSet<ItemStack>(new OddItemGroupComparator());
-        for (String x : groups.get(query)) {
+    public List<ItemStack> getItemGroup(String query, Integer quantity) {
+        List<ItemStack> i = new LinkedList<ItemStack>();
+        List<String> g = groups.get(query);
+        if (g == null)
+            throw new IllegalArgumentException("no such group");
+        for (String x : g) {
             try {
-                i.add(getItemStack(query, quantity));
+                i.add(getItemStack(x, quantity));
             } catch (IllegalArgumentException e) {
                 log.severe(logPrefix + "Bad data in configuration of group \"" + query + "\"");
                 log.severe(logPrefix + "Suggested correction for bad entry \"" + x + "\": " + e.getMessage());
             }
         }
-        return (ItemStack[]) i.toArray();
+        return i;
     }
 
     public ItemStack getItemStack(String query) throws IllegalArgumentException {
@@ -152,8 +179,8 @@ public class OddItem extends JavaPlugin {
         log.info(logPrefix + info.getVersion() + " enabled");
         getCommand("odditem").setExecutor(new OddItemCommand(this));
         itemMap = new ConcurrentHashMap<String, ItemStack>();
-        items = new ConcurrentSkipListMap<String, SortedSet<String>>(new OddItemIDComparator());
-        groups = new ConcurrentSkipListMap<String, SortedSet<String>>(new OddItemGroupComparator());
+        items = new ConcurrentSkipListMap<String, SortedSet<String>>(String.CASE_INSENSITIVE_ORDER);
+        groups = new ConcurrentHashMap<String, LinkedList<String>>();
         configure();
         log.info(logPrefix + itemMap.size() + " aliases loaded.");
     }
@@ -174,7 +201,7 @@ public class OddItem extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        BufferedReader i = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/OddItem.yml")));;
+        BufferedReader i = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/OddItem.yml")));
         BufferedWriter o = new BufferedWriter(fw);
         try {
             String line = i.readLine();
@@ -182,6 +209,7 @@ public class OddItem extends JavaPlugin {
                 o.write(line + System.getProperty("line.separator"));
                 line = i.readLine();
             }
+            log.info(logPrefix + "Wrote default config");
         } catch (IOException e) {
             log.severe(logPrefix + "Error writing config: " + e.getMessage());
         } finally {
@@ -191,10 +219,12 @@ public class OddItem extends JavaPlugin {
             } catch (IOException e) {
                 log.severe(logPrefix + "Error saving config: " + e.getMessage());
                 getServer().getPluginManager().disablePlugin(this);
-                return;
             }
         }
-        log.info(logPrefix + "Wrote default config");
+    }
+
+    protected void save() {
+
     }
 
 }
