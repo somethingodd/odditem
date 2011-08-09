@@ -3,6 +3,7 @@ main: info.somethingodd.bukkit.OddItem.OddItem
 version: 0.7
 website: http://bukkit.somethingodd.info
 author: petteyg359
+softdepend: [Permissions]
 description: >
              Item database stuff.
 commands:

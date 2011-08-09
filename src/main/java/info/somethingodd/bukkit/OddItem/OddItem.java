@@ -1,18 +1,22 @@
 package info.somethingodd.bukkit.OddItem;
 
+import com.nijiko.permissions.PermissionHandler;
+import com.nijikokun.bukkit.Permissions.Permissions;
 import info.somethingodd.bukkit.OddItem.bktree.BKTree;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.IllegalPluginAccessException;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 import org.bukkit.util.config.ConfigurationNode;
 
+import javax.sound.sampled.Port;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
 
@@ -20,22 +24,63 @@ public class OddItem extends JavaPlugin {
     protected ConcurrentMap<String, ItemStack> itemMap;
 	protected ConcurrentNavigableMap<String, SortedSet<String>> items;
     protected ConcurrentHashMap<String, LinkedList<String>> groups;
-	private BKTree<String> bktree = null;
 	protected Logger log = null;
-	private PluginDescriptionFile info;
+	protected String logPrefix;
+    protected Configuration configuration = null;
     private final String configurationFile = "plugins" + File.separator + "OddItem.yml";
-    protected String logPrefix;
+    private BKTree<String> bktree = null;
+	private PluginDescriptionFile info;
+    private String permission = null;
+    private PermissionHandler ph = null;
+
+    /**
+     * Compares two ItemStack material and durability, ignoring quantity
+     * @param a ItemStack to compare
+     * @param b ItemStack to compare
+     * @return ItemStack are equal
+     */
+    public Boolean compare(ItemStack a, ItemStack b) {
+        return compare(a, b, false, true, true);
+    }
+
+    /**
+     * Compares two ItemStack material, durability, and quantity
+     * @param a ItemStack to compare
+     * @param b ItemStack to compare
+     * @param quantity whether to compare quantity
+     * @return ItemStack are equal
+     */
+    public Boolean compare(ItemStack a, ItemStack b, Boolean quantity) {
+        return compare(a, b, true, true, true);
+    }
+
+    /**
+     * Compares two ItemStack
+     * @param a ItemStack to compare
+     * @param b ItemStack to compare
+     * @param quantity whether to compare quantity
+     * @param material whether to compare material
+     * @param durability whether to compare durability
+     * @return ItemStack are equal
+     */
+    public Boolean compare(ItemStack a, ItemStack b, Boolean quantity, Boolean material, Boolean durability) {
+        Boolean ret = true;
+        if (quantity) ret &= (a.getAmount() == b.getAmount());
+        if (ret && material) ret &= (a.getTypeId() == b.getTypeId());
+        if (ret && durability) ret &= (a.getDurability() == b.getDurability());
+        return ret;
+    }
 
     protected void configure() {
         File configurationFile = new File(this.configurationFile);
         if (!configurationFile.exists())
             writeConfig();
-        Configuration configuration = new Configuration(configurationFile);
+        configuration = new Configuration(configurationFile);
         configuration.load();
+        permission = configuration.getString("permission", "yeti");
         String comparator = configuration.getString("comparator");
         if (comparator != null) {
-            if (false) {
-            } else if (comparator.equalsIgnoreCase("c") || comparator.equalsIgnoreCase("caverphone")) {
+            if (comparator.equalsIgnoreCase("c") || comparator.equalsIgnoreCase("caverphone")) {
                 bktree = new BKTree<String>("c");
                 log.info(logPrefix + "Using Caverphone for suggestions.");
             } else if (comparator.equalsIgnoreCase("k") || comparator.equalsIgnoreCase("cologne")) {
@@ -70,10 +115,11 @@ public class OddItem extends JavaPlugin {
             Material m = null;
             if (i.contains(";")) {
                 try {
-                    id = Integer.parseInt(i.substring(0, i.indexOf(";")));
                     d = Short.parseShort(i.substring(i.indexOf(";") + 1));
+                    id = Integer.parseInt(i.substring(0, i.indexOf(";")));
                     m = Material.getMaterial(id);
                 } catch (NumberFormatException e) {
+                    m = Material.getMaterial(i.substring(0, i.indexOf(";")));
                 }
             } else {
                 try {
@@ -104,6 +150,12 @@ public class OddItem extends JavaPlugin {
         }
     }
 
+    /**
+     * Gets all aliases for an item
+     * @param query name of item
+     * @return names of aliases
+     * @throws IllegalArgumentException exception if no such item exists
+     */
     public List<String> getAliases(String query) throws IllegalArgumentException {
         List<String> s = new LinkedList<String>();
         ItemStack i = itemMap.get(query);
@@ -120,27 +172,63 @@ public class OddItem extends JavaPlugin {
         return s;
     }
 
+    /**
+     * Returns list of all items in a group as "#;#" (id;durability)
+     * @param query item group name
+     * @return list of items
+     * @throws IllegalArgumentException exception if no such group exists
+     */
     public List<String> getItemGroupNames(String query) throws IllegalArgumentException {
-        LinkedList<ItemStack> li = (LinkedList<ItemStack>) getItemGroup(query);
-        List<String> ls = new LinkedList<String>();
-        while (!li.isEmpty()) {
-            ItemStack i = li.remove();
-            String a;
-            try {
-                a = items.get(String.valueOf(i.getTypeId()) + ";" + String.valueOf(i.getDurability())).first();
-            } catch (NullPointerException e) {
-                a = items.get(String.valueOf(i.getTypeId())).first();
-            }
-            ls.add(a);
-        }
-        return ls;
+        LinkedList<String> names = groups.get(query);
+        if (names == null)
+            throw new IllegalArgumentException("no such group");
+        return names;
     }
 
+    /**
+     * Returns list of ItemStack for items in a group, all quantity 1
+     * @param query item group name
+     * @return list of ItemStack
+     * @throws IllegalArgumentException exception if no such group exists
+     */
     public List<ItemStack> getItemGroup(String query) throws IllegalArgumentException {
         return getItemGroup(query, 1);
     }
 
-    public List<ItemStack> getItemGroup(String query, Integer quantity) {
+    /**
+     * Returns list of ItemStack for items in a group with specific quantity per ItemStack
+     * @param query item group name
+     * @param quantity quantity for ItemStack
+     * @return list of ItemStack
+     * @throws IllegalArgumentException exception if no such group exists or quantity list doesn't match group length
+     */
+    public List<ItemStack> getItemGroup(String query, List<Integer> quantity) throws IllegalArgumentException {
+        List<ItemStack> i = new LinkedList<ItemStack>();
+        List<String> g = groups.get(query);
+        if (g == null)
+            throw new IllegalArgumentException("no such group");
+        if (quantity.size() != g.size())
+            throw new IllegalPluginAccessException("non-matching quantity list and group length");
+        ListIterator<Integer> q = quantity.listIterator();
+        for (String x : g) {
+            try {
+                i.add(getItemStack(x, q.next()));
+            } catch (IllegalArgumentException e) {
+                log.severe(logPrefix + "Bad data in configuration of group \"" + query + "\"");
+                log.severe(logPrefix + "Suggested correction for bad entry \"" + x + "\": " + e.getMessage());
+            }
+        }
+        return i;
+    }
+
+    /**
+     * Returns list of ItemStack for items in a group with specific quantity for all ItemStack
+     * @param query item group name
+     * @param quantity quantity for ItemStack
+     * @return list of ItemStack
+     * @throws IllegalArgumentException exception if no such group exists
+     */
+    public List<ItemStack> getItemGroup(String query, Integer quantity) throws IllegalArgumentException {
         List<ItemStack> i = new LinkedList<ItemStack>();
         List<String> g = groups.get(query);
         if (g == null)
@@ -156,10 +244,23 @@ public class OddItem extends JavaPlugin {
         return i;
     }
 
+    /**
+     * Returns an ItemStack of quantity 1 of alias query
+     * @param query item name
+     * @return ItemStack
+     * @throws IllegalArgumentException exception if item not found, message contains closest match
+     */
     public ItemStack getItemStack(String query) throws IllegalArgumentException {
         return getItemStack(query, 1);
     }
 
+    /**
+     * Returns an ItemStack of specific quantity of alias query
+     * @param query item name
+     * @param quantity quantity
+     * @return ItemStack
+     * @throws IllegalArgumentException exception if item not found, message contains closest match
+     */
     public ItemStack getItemStack(String query, Integer quantity) throws IllegalArgumentException {
         ItemStack i = itemMap.get(query);
         if (i != null) {
@@ -176,8 +277,11 @@ public class OddItem extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        Plugin p = getServer().getPluginManager().getPlugin("Permissions");
+        if (p != null)
+            ph = ((Permissions) p).getHandler();
         log.info(logPrefix + info.getVersion() + " enabled");
-        getCommand("odditem").setExecutor(new OddItemCommand(this));
+        getCommand("odditem").setExecutor(new OddItemCommandExecutor(this));
         itemMap = new ConcurrentHashMap<String, ItemStack>();
         items = new ConcurrentSkipListMap<String, SortedSet<String>>(String.CASE_INSENSITIVE_ORDER);
         groups = new ConcurrentHashMap<String, LinkedList<String>>();
@@ -227,4 +331,10 @@ public class OddItem extends JavaPlugin {
 
     }
 
+    protected boolean uglyPermission(Player player, String permission) {
+        if (permission.equals("yeti")) {
+            return ph.has(player, permission);
+        }
+        return player.hasPermission(permission);
+    }
 }

@@ -1,3 +1,7 @@
+# Comparator selects an option for relating names to each other, so that if an invalid name is requested, OddItem
+# can supply a suggested closest match. (c)averphone  (k)ölner phonetik  (m)etaphone  (s)oundex  (r)efined soundex
+# If using German translations, you might try option K. Otherwise, see what works best for you.
+comparator: r
 items:
   '0':
   - air
@@ -5,30 +9,27 @@ items:
   - sky
   '1':
   - rock
+  - smoothrock
   - smoothstone
   - stone
-  - smoothrock
   '2':
   - grass
   '3':
   - dirt
   '4':
-  - cobblestone
-  - cobble
   - cob
+  - cobble
+  - cobblestone
   '5':
-  - wood
   - plank
+  - wood
   '6;0':
   - sapling
   - oaksapling
-  - normalsapling
   '6;1':
   - pinesapling
-  - darksapling
   '6;2':
   - birchsapling
-  - whitesapling
   '7':
   - adminium
   - bedrock
@@ -43,44 +44,43 @@ items:
   '12':
   - sand
   '13':
-  - gravel
   - grav
+  - gravel
   '14':
   - goldore
   - gore
   '15':
-  - ironore
   - iore
+  - ironore
   '16':
   - coalore
   - core
   '17;0':
-  - tree
   - log
+  - oak
   - oaklog
-  - oaktree
+  - oakwood
   '17;1':
-  - redwood
-  - pinetree
-  - darklog
+  - pine
+  - pinelog
+  - pinewood
   '17;2':
   - birch
-  - birchwood
-  - whitelog
   - birchlog
+  - birchwood
   '18;0':
-  - leaves
   - leaf
+  - leaves
   '18;1':
-  - pineleaves
-  - pineleaf
-  - darkleaves
   - darkleaf
+  - darkleaves
+  - pineleaf
+  - pineleaves
   '18;2':
-  - birchleaves
   - birchleaf
-  - whiteleaves
+  - birchleaves
   - whiteleaf
+  - whiteleaves
   '19':
   - sponge
   '20':
@@ -90,165 +90,187 @@ items:
   - lapisore
   - llore
   '22':
-  - lapislazuliblock
   - lapisblock
-  - llblock
+  - lapislazuliblock
   - lblock
+  - llblock
   '23':
   - dispenser
   '24':
   - sandstone
   '25':
-  - noteblock
   - musicblock
+  - noteblock
   '27':
-  - poweredrail
-  - poweredrails
   - boosterrail
   - boosterrails
+  - brail
+  - btrack
+  - poweredrail
+  - poweredrails
+  - prail
+  - ptrack
   '28':
   - detectorrail
   - detectorrails
+  - drail
+  - dtrack
   '29':
-  - stickypiston
   - spiston
-  - stickyp
+  - stickypiston
   '30':
   - web
   '31':
-  - wildgrass
   - tallgrass
+  - wildgrass
   '32':
   - deadshrub
-  - deserttree
   - desertgrass
   - deserttallgrass
+  - deserttree
   '33':
   - piston
-  - normalpiston
-  - npiston
   '35;0':
   - cloth
-  - wool
-  - whitewool
   - whitecloth
+  - whitewool
+  - wool
   '35;1':
-  - orangewool
   - orangecloth
+  - orangewool
   '35;2':
-  - magentawool
   - magentacloth
+  - magentawool
   '35;3':
-  - lightbluewool
   - lightbluecloth
+  - lightbluewool
   '35;4':
-  - yellowwool
   - yellowcloth
+  - yellowwool
   '35;5':
-  - limewool
-  - limecloth
-  - lightgreenwool
   - lightgreencloth
+  - lightgreenwool
+  - limecloth
+  - limewool
   '35;6':
-  - pinkwool
   - pinkcloth
+  - pinkwool
   '35;7':
-  - graywool
   - graycloth
+  - graywool
   '35;8':
-  - ligthgraywool
   - lightgraycloth
+  - lightgraywool
+  - silvercloth
+  - silverwool
   '35;9':
-  - cyanwool
   - cyancloth
+  - cyanwool
   '35;10':
-  - purplewool
   - purplecloth
+  - purplewool
   '35;11':
-  - bluewool
   - bluecloth
+  - bluewool
   '35;12':
-  - brownwool
   - browncloth
+  - brownwool
   '35;13':
-  - greenwool
-  - greencloth
+  - darkgrencloth
   - darkgreenwool
-  - darkgreencloth
+  - greencloth
+  - greenwool
   '35;14':
-  - redwool
   - redcloth
+  - redwool
   '35;15':
-  - blackwool
   - blackcloth
+  - blackwool
   '37':
-  - flower
-  - yeflower
+  - dandelion
   - yellowflower
   '38':
-  - rose
-  - reflower
   - redflower
+  - rose
   '39':
   - brownmushroom
   '40':
   - redmushroom
   '41':
+  - gblock
   - gold
   - goldblock
-  - gblock
   '42':
+  - iblock
   - iron
   - ironblock
-  - iblock
   '43':
-  - doublestair
+  - doubleslab
   - doublestep
+  '43;1':
+  - dsandslab
+  - dsandstep
+  - dsslab
+  - dsstep
+  '43;2':
+  - dwoodslab
+  - dwoodstep
+  - dwslab
+  - dwstep
+  '43;3':
+  - dcobbleslab
+  - dcobblestep
+  - dcslab
+  - dcstep
   '44':
-  - stair
-  - stairs
-  - step
   - slab
+  - step
   '44;1':
-  - sandstep
   - sandslab
+  - sandstep
+  - sslab
+  - sstep
   '44;2':
-  - woodstep
   - woodslab
+  - woodstep
+  - wslab
+  - wstep
   '44;3':
-  - cobblestep
   - cobbleslab
+  - cobblestep
+  - cslab
+  - cstep
   '45':
-  - brickwall
   - brickblock
+  - brickwall
   '46':
-  - tnt
   - bomb
+  - tnt
   '47':
-  - bookshelf
   - bookcase
+  - bookshelf
   '48':
-  - mossycobblestone
-  - mossycobble
-  - mossy
   - moss
+  - mossy
+  - mossycobble
+  - mossycobblestone
   '49':
-  - obsidian
-  - obs
   - lavarock
+  - obs
+  - obsidian
   '50':
-  - torch
   - light
+  - torch
   '51':
   - fire
   '52':
   - mobspawner
   - spawner
   '53':
-  - woodstairs
-  - woodenstairs
   - woodstair
+  - woodstairs
   - woodenstair
+  - woodenstairs
   - wstair
   - wstairs
   '54':
@@ -261,22 +283,22 @@ items:
   - diamondore
   - dore
   '57':
-  - diamondblock
   - dblock
+  - diamondblock
   '58':
-  - workbench
-  - worktable
-  - work
+  - craft
   - crafter
   - crafttable
-  - craft
+  - work
+  - workbench
+  - worktable
   '59':
   - cropblock
   - wheatblock
   '60':
-  - soil
   - farm
   - farmground
+  - soil
   '61':
   - furnace
   '62':
@@ -284,20 +306,22 @@ items:
   '63':
   - signblock
   '64':
-  - wooddoorblock
   - fencegate
+  - wooddoorblock
   '65':
   - ladder
   - ladders
   '66':
-  - rails
-  - tracks
   - rail
+  - rails
   - track
+  - tracks
   '67':
-  - cobblestonestairs
   - cobblestairs
+  - cobblestonestairs
   - cobstairs
+  - cstair
+  - cstairs
   '68':
   - signblocktop
   '69':
@@ -315,18 +339,19 @@ items:
   - rsore
   '74':
   - redstoneorealt
-  - rsorealt
   - redstoneorelit
+  - rsorealt
   - rsorelit
   '75':
   - redstonetorchoff
   - rstorchoff
   '76':
-  - redstonetorchon
-  - rstorchon
   - redstonetorch
-  - rstorch
+  - redstonetorchon
   - rst
+  - rstorch
+  - rstorchon
+  - rtorch
   '77':
   - button
   '78':
@@ -343,79 +368,79 @@ items:
   '83':
   - reedblock
   '84':
-  - jukebox
   - juke
+  - jukebox
   '85':
   - fence
   '86':
   - pumpkin
   '87':
-  - brimstone
-  - redsand
-  - hellsand
-  - nethersand
-  - netherblock
-  - nether
-  - netherrack
-  - netherstone
   - bloodstone
+  - brimstone
   - hell
+  - hellsand
+  - nether
+  - netherblock
+  - netherrack
+  - nethersand
+  - netherstone
+  - redsand
   '88':
+  - mud
   - slowsand
   - soulsand
-  - mud
   '89':
-  - lightstone
-  - lightblock
-  - glowstone
-  - glowblock
   - glow
+  - glowblock
+  - glowstone
+  - lightblock
+  - lightstone
   '90':
   - portal
   - portalblock
   '91':
-  - lantern
   - jack
   - jackolantern
-  - pumpkintorch
+  - lantern
   - pumpkinlantern
+  - pumpkintorch
   '92':
   - cakeblock
   '93':
-  - rsrepeateroff
+  - diodeoff
   - redstonerepeateroff
   - repeateroff
-  - diodeoff
+  - rsrepeateroff
   '94':
+  - diodeon
   - rsrepeateron
   - redstonerepeateron
   - repeateron
-  - diodeon
   '95':
-  - mysterychest
   - aprilchest
   - foolchest
+  - mysterychest
   '96':
-  - trapdoor
   - hatch
+  - trapdoor
   '256':
   - ironshovel
-  - ischovel
   - is
+  - ishovel
   '257':
-  - ironpickaxe
-  - ipick
   - ip
+  - ipick
   - ironpick
+  - ironpickaxe
   '258':
-  - ironaxe
-  - iaxe
   - ia
+  - iaxe
+  - ironaxe
   '259':
-  - flintandsteel
-  - firestarter
   - fands
   - fas
+  - firestarter
+  - flintandsteel
   - lighter
   '260':
   - apple
@@ -428,15 +453,15 @@ items:
   '263;1':
   - charcoal
   '264':
-  - diamond
   - d
+  - diamond
   '265':
-  - ironbar
   - i
+  - ironbar
   - ironingot
   '266':
-  - goldbar
   - g
+  - goldbar
   - goldingot
   '267':
   - ironsword
@@ -451,31 +476,30 @@ items:
   - ws
   - wshovel
   '270':
-  - woodpickaxe
   - woodpick
+  - woodpickaxe
   - wp
-  - pick
   '271':
-  - woodaxe
   - wa
   - waxe
+  - woodaxe
   '272':
-  - stonesword
-  - ssword
   - ssw
+  - ssword
+  - stonesword
   '273':
-  - stoneshovel
-  - sshovel
   - ss
+  - sshovel
+  - stoneshovel
   '274':
-  - stonepickaxe
-  - stonepick
   - sp
   - spick
+  - stonepick
+  - stonepickaxe
   '275':
-  - stoneaxe
   - sa
   - saxe
+  - stoneaxe
   '276':
   - diamondsword
   - dsw
@@ -485,25 +509,23 @@ items:
   - ds
   - dshovel
   '278':
+  - diamondpick
   - diamondpickaxe
   - dp
-  - diamondpick
   - dpick
   '279':
-  - diamondaxe
   - da
   - daxe
+  - diamondaxe
   '280':
   - stick
   '281':
   - bowl
   '282':
-  - soup
   - mushroomsoup
-  - mushysoup
   - mushroomstew
+  - soup
   - stew
-  - mushystew
   '283':
   - goldsword
   - gsw
@@ -513,39 +535,39 @@ items:
   - gs
   - gshovel
   '285':
+  - goldpick
   - goldpickaxe
   - gp
-  - goldpick
   - gpick
   '286':
-  - goldaxe
   - ga
   - gaxe
+  - goldaxe
   '287':
   - string
   '288':
   - feather
   '289':
   - gunpowder
+  - sulfur
   '290':
-  - woodhoe
   - wh
+  - woodhoe
   '291':
-  - stonehoe
   - sh
+  - stonehoe
   '292':
-  - ironhoe
   - ih
+  - ironhoe
   '293':
-  - diamondhoe
   - dh
+  - diamondhoe
   '294':
-  - goldhoe
   - gh
+  - goldhoe
   '295':
-  - seeds
   - seed
-  - crop
+  - seeds
   '296':
   - wheat
   '297':
@@ -554,84 +576,92 @@ items:
   - leatherhelmet
   - lhelm
   '299':
-  - leatherchestplate
-  - leatherchest
   - lchest
   - leatherbody
+  - leatherchest
+  - leatherchestplate
   - leathershirt
+  - lshirt
   '300':
   - leatherpants
   - lpants
   '301':
-  - leatherboots
   - lboots
+  - leatherboots
   '302':
-  - chainmailhelmet
-  - chhelm
   - chainhelmet
+  - chainmailhelmet
+  - chelm
+  - chhelm
   '303':
-  - chainmailchestplate
-  - chainchest
-  - chchest
+  - cchest
   - chainbody
-  - chainshirt
+  - chainchest
   - chainchestplate
+  - chainmailchestplate
+  - chainshirt
+  - chchest
+  - chshirt
+  - cshirt
   '304':
   - chainmailpants
-  - chpants
   - chainpants
+  - chpants
+  - cpants
   '305':
+  - cboots
   - chboots
-  - chainmailboots
-  '305':
   - chainboots
+  - chainmailboots
   '306':
-  - ironhelmet
   - ihelm
+  - ironhelmet
   '307':
-  - ironchestplate
-  - ironchest
   - ichest
   - ironbody
+  - ironchest
+  - ironchestplate
   - ironshirt
+  - ishirt
   '308':
-  - ironpants
   - ipants
+  - ironpants
   '309':
-  - ironboots
   - iboots
+  - ironboots
   '310':
-  - diamondhelmet
   - dhelm
+  - diamondhelmet
   '311':
-  - diamondchestplate
-  - diamondchest
   - dchest
   - diamondbody
+  - diamondchest
+  - diamondchestplate
   - diamondshirt
+  - dshirt
   '312':
-  - diamondpants
-  - dpants
   - diamondleggings
+  - diamondpants
   - dleggings
+  - dpants
   '313':
-  - diamondboots
   - dboots
+  - diamondboots
   '314':
-  - goldhelmet
   - ghelm
+  - goldhelmet
   '315':
-  - goldchestplate
-  - goldchest
   - gchest
   - goldbody
+  - goldchest
+  - goldchestplate
   - goldshirt
   '316':
   - goldpants
   - gpants
   '317':
-  - goldboots
   - gboots
+  - goldboots
   '318':
   - flint
   '319':
@@ -640,39 +670,42 @@ items:
   - porkchop
   - rawbeef
   '320':
+  - beef
+  - cookedbeef
   - cookedmeat
   - cookedpork
   - cookedporkchop
-  - beef
-  - cookedbeef
   '321':
   - painting
   '322':
-  - goldenapple
-  - goldapple
   - gapple
+  - goldapple
+  - goldenapple
   '323':
   - sign
   '324':
+  - wdoor
   - wooddoor
   - woodendoor
-  - wdoor
   '325':
   - bucket
   '326':
   - waterbucket
+  - wbucket
   '327':
   - lavabucket
+  - lbucket
   '328':
+  - cart
   - minecart
   '329':
   - saddle
   '330':
-  - irondoor
   - idoor
+  - irondoor
   '331':
-  - redstonedust
   - redstone
+  - redstonedust
   - rsdust
   - rs
   '332':
@@ -682,16 +715,16 @@ items:
   '334':
   - leather
   '335':
+  - mbucket
   - milkbucket
   '336':
   - brick
   '337':
   - clay
   '338':
+  - bamboo
   - reed
   - sugarcane
-  - sugarcanes
-  - bamboo
   '339':
   - paper
   '340':
@@ -699,8 +732,12 @@ items:
   '341':
   - slimeorb
   '342':
+  - scart
+  - sminecart
   - storageminecart
   '343':
+  - pcart
+  - pminecart
   - poweredminecart
   '344':
   - egg
@@ -711,43 +748,44 @@ items:
   - fishrod
   - rod
   '347':
-  - watch
   - clock
+  - watch
   '348':
-  - lightstonedust
-  - lsdust
-  - lightdust
   - glowdust
   - gsdust
   - glowstonedust
+  - lightstonedust
+  - lsdust
+  - lightdust
   '349':
   - fish
   - rawfish
   '350':
+  - cfish
   - cookedfish
   '351;0':
   - black
   - blackdye
   - ink
-  - inksack
   - inksac
+  - inksack
   '351;1':
   - red
   - reddye
   - rosered
   '351;2':
+  - cactusgreen
   - green
   - greendye
-  - cactusgreen
   '351;3':
   - brown
   - browndye
-  - cocobeans
+  - cocoabeans
   '351;4':
   - blue
   - bluedye
-  - lapislazuli
   - lapis
+  - lapislazuli
   '351;5':
   - purple
   - purpledye                                                                                             z
@@ -757,6 +795,10 @@ items:
   '351;7':
   - lightgray
   - lightgraydye
+  - lightgrey
+  - lightgreydye
+  - silver
+  - silverdye
   '351;8':
   - gray
   - graydye
@@ -767,9 +809,9 @@ items:
   - lime
   - limedye
   '351;11':
+  - dandelionyellow
   - yellow
   - yellowdye
-  - dandelionyellow
   '351;12':
   - lightblue
   - lightbluedye
@@ -780,9 +822,9 @@ items:
   - orange
   - orangedye
   '351;15':
+  - bonemeal
   - white
   - whitedye
-  - bonemeal
   '352':
   - bone
   '353':
@@ -792,23 +834,23 @@ items:
   '355':
   - bed
   '356':
-  - redstonerepeater
-  - rsrepeater
-  - redrepeater
-  - repeater
   - diode
+  - redrepeater
+  - redstonerepeater
+  - repeater
+  - rsrepeater
   '357':
   - cookie
   '358':
   - map
   '359':
-  - shears
   - scissors
+  - shears
   '2256':
-  - yellowrecord
   - thirteen
   - yellowdisc
+  - yellowrecord
   '2257':
-  - greenrecord
   - cat
   - greendisc
+  - greenrecord

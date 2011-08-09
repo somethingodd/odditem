@@ -63,7 +63,7 @@ public class BKTree <E> {
 	 * are off by 1 edit distance.
 	 * @param searchObject
 	 * @param threshold
-	 * @return
+	 * @return matching objects
 	 */
 	public HashMap<E, Integer> query(E searchObject, int threshold) {
 		matches = new HashMap<E,Integer>();
