@@ -173,6 +173,29 @@ public class OddItem extends JavaPlugin {
     }
 
     /**
+     * Returns all group names
+     * @return list of all groups
+     */
+    public List<String> getGroups() {
+        return getGroups(null);
+    }
+
+    /**
+     * Returns all group names starting with a string
+     * @param group name to look for
+     * @return list of matching groups
+     */
+    public List<String> getGroups(String group) {
+        List<String> groups = new LinkedList<String>();
+        Set<String> gs = this.groups.keySet();
+        for (String g : gs) {
+            if (group == null || (g.length() >= group.length() && g.regionMatches(true, 0, group, 0, group.length())))
+                groups.add(g);
+        }
+        return groups;
+    }
+
+    /**
      * Returns list of all items in a group as "#;#" (id;durability)
      * @param query item group name
      * @return list of items
@@ -224,7 +247,7 @@ public class OddItem extends JavaPlugin {
     /**
      * Returns list of ItemStack for items in a group with specific quantity for all ItemStack
      * @param query item group name
-     * @param quantity quantity for ItemStack
+     * @param quantity quantity for ItemStack, or -1 to use quantities from OddItem.yml
      * @return list of ItemStack
      * @throws IllegalArgumentException exception if no such group exists
      */
@@ -234,11 +257,22 @@ public class OddItem extends JavaPlugin {
         if (g == null)
             throw new IllegalArgumentException("no such group");
         for (String x : g) {
+            String a = x;
+            Integer q = quantity;
             try {
-                i.add(getItemStack(x, quantity));
+                if (x.contains(":")) {
+                    a  = x.substring(0, x.indexOf(":"));
+                    try {
+                       if (quantity == -1)
+                           q = Integer.parseInt(x.substring(x.indexOf(":") + 1));
+                    } catch (NumberFormatException e) {
+                        log.severe(logPrefix + "Bad quantity in configuration of group \"" + query + "\"");
+                    }
+                }
+                i.add(getItemStack(a, q));
             } catch (IllegalArgumentException e) {
-                log.severe(logPrefix + "Bad data in configuration of group \"" + query + "\"");
-                log.severe(logPrefix + "Suggested correction for bad entry \"" + x + "\": " + e.getMessage());
+                log.severe(logPrefix + "Invalid alias in configuration of group \"" + query + "\"");
+                log.severe(logPrefix + "Suggested correction: \"" + x + "\": " + e.getMessage());
             }
         }
         return i;

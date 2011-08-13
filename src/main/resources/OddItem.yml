@@ -2,6 +2,9 @@
 # can supply a suggested closest match. (c)averphone  (k)ölner phonetik  (m)etaphone  (s)oundex  (r)efined soundex
 # If using German translations, you might try option K. Otherwise, see what works best for you.
 comparator: r
+groups:
+  # An item may have a quantity specified by appending a colon and then the number. Remember to quote the string!
+  samplegroup: ['greenwool','ironblock:2','diode']
 items:
   '0':
   - air
