@@ -266,7 +266,8 @@ public class OddItem extends JavaPlugin {
                        if (quantity == -1)
                            q = Integer.parseInt(x.substring(x.indexOf(":") + 1));
                     } catch (NumberFormatException e) {
-                        log.severe(logPrefix + "Bad quantity in configuration of group \"" + query + "\"");
+                        q = 1;
+                        log.warning(logPrefix + "Bad or no quantity in configuration of group \"" + query + "\" for \"" + query + "\", default to 1");
                     }
                 }
                 i.add(getItemStack(a, q));
