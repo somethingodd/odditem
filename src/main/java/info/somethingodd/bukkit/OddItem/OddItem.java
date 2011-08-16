@@ -109,6 +109,8 @@ public class OddItem extends JavaPlugin {
                 this.items.put(i, new ConcurrentSkipListSet<String>(String.CASE_INSENSITIVE_ORDER));
             ArrayList<String> j = new ArrayList<String>();
             j.addAll(configuration.getStringList("items." + i, new ArrayList<String>()));
+            j.add(i);
+            // Add all aliases
             this.items.get(i).addAll(j);
             Integer id = 0;
             Short d = 0;
