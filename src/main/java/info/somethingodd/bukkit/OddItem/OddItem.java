@@ -4,7 +4,6 @@ import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 import info.somethingodd.bukkit.OddItem.bktree.BKTree;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.IllegalPluginAccessException;
@@ -14,7 +13,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 import org.bukkit.util.config.ConfigurationNode;
 
-import javax.sound.sampled.Port;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
