@@ -15,8 +15,10 @@ public class OddItemCommandExecutor implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!oddItem.uglyPermission((Player) sender, "odditem"))
+        if (!sender.isOp() && !oddItem.uglyPermission((Player) sender, "odditem")) {
+            sender.sendMessage("Not allowed.");
             return true;
+        }
         switch (args.length) {
             case 1:
                 if (args[0].equals("info")) {
