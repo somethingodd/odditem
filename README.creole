@@ -1,6 +1,7 @@
 = OddItem
 == Unified custom items list and parser
 [[https://flattr.com/thing/146398/OddItem-Unified-custom-items-list-and-parser|{{https://api.flattr.com/button/flattr-badge-large.png|Flattr}}]]
+[[https://flattr.com/thing/146398/OddItem-Unified-custom-items-list-and-parser|{{flattr.png|Flattr}}]]
 [[https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7FGM7BUA5X9TE|{{https://www.paypalobjects.com/WEBSCR-640-20110306-1/en_US/i/btn/btn_donate_SM.gif|PayPal}}]]
 Download [[http://bukkit.somethingodd.info/files/OddItem.jar|jar]]
 
