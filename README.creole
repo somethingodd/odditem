@@ -1,0 +1,33 @@
+= OddItem
+== Unified custom items list and parser
+[[https://flattr.com/thing/146398/OddItem-Unified-custom-items-list-and-parser|{{https://api.flattr.com/button/flattr-badge-large.png}}]]
+[[https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7FGM7BUA5X9TE|{{https://www.paypalobjects.com/WEBSCR-640-20110306-1/en_US/i/btn/btn_donate_SM.gif}}]]
+Download [[http://bukkit.somethingodd.info/files/OddItem.jar|jar]]
+
+This plugin allows creation of a single text file for custom item names (cstairs for cobblestone stairs, wbucket for water bucket, dpick for diamond pickaxe, etc.). If an item is not found, it will throw an exception with the closest matching alias (in case of typos; e.g. if user enters /i woof 1, and wood is in item.txt, this will return an exception with wood, and the interfacing plugin could suggest that to the user)
+
+=== Features:
+* Get item by OddItem.yml
+* Throw exception with closest match when item not found
+* Multiple suggestion engines (using Apache commons-codec)
+
+
+=== Commands:
+* /odditem aliases <item>
+Lists aliases for <item>
+* /odditem group <group>
+Lists items in <group>
+* /odditem groups
+Lists group names
+* /odditem info
+Prints number of items currently loaded
+* /odditem remove <item>
+Removes <item> from alias list
+
+=== Permissions:
+Will use Nijikokun/TheYeti/rcjrrjcr Permissions if installed, or SuperPerms.
+Only one node for now, if you want finer control, tell me and I'll add it.
+* odditem
+all commands
+
+==== [[http://javadoc.somethingodd.info/OddItem/info/somethingodd/bukkit/OddItem/OddItem.html|JavaDoc]]
