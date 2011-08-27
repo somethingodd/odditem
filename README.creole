@@ -30,4 +30,5 @@ Only one node for now, if you want finer control, tell me and I'll add it.
 * odditem
 all commands
 
-==== [[http://javadoc.somethingodd.info/OddItem/info/somethingodd/bukkit/OddItem/OddItem.html|JavaDoc]]
+==== API:
+[[http://javadoc.somethingodd.info/OddItem/info/somethingodd/bukkit/OddItem/OddItem.html|JavaDoc]]
