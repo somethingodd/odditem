@@ -1,6 +1,6 @@
 name: OddItem
 main: info.somethingodd.bukkit.OddItem.OddItem
-version: 0.7.3.1
+version: 0.7.4
 website: http://bukkit.somethingodd.info
 author: petteyg359
 softdepend: [Permissions]
@@ -12,5 +12,4 @@ commands:
            /<command> [aliases item]|[info]|[list]|[reload]
            aliases - Lists aliases for item
            info - Shows number of items loaded.
-           list - Lists items.
-           reload - Reloads item data.
+permissions:
