@@ -25,7 +25,7 @@ import java.util.NoSuchElementException;
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
-public class OddItemGroup {
+public class OddItemGroup implements Iterable<ItemStack> {
     private String groupType = null;
     private Iterator<ItemStack> iterator = null;
     private List<ItemStack> items = null;
@@ -53,6 +53,12 @@ public class OddItemGroup {
 
     public void clear() {
         items = null;
+    }
+
+    public Iterator<ItemStack> iterator() {
+        if (items == null) items = Collections.synchronizedList(new ArrayList<ItemStack>());
+        if (iterator == null) iterator = items.iterator();
+        return iterator;
     }
 
     public int size() {

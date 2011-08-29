@@ -23,38 +23,31 @@ import org.bukkit.entity.Player;
  */
 public class OddItemCommandExecutor implements CommandExecutor {
 
-    OddItem oddItem = null;
-
-    public OddItemCommandExecutor(OddItem oddItem) {
-        this.oddItem = oddItem;
-    }
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length == 0 || !sender.isOp() && !oddItem.uglyPermission((Player) sender, "odditem."+args[0])) {
-            sender.sendMessage("Invalid command.");
-            return true;
-        }
         switch (args.length) {
             case 1:
-                if (args[0].equals("info")) {
-                    sender.sendMessage(oddItem.logPrefix + oddItem.itemMap.size() + " aliases loaded");
+                if (args[0].equals("info") && (!(sender instanceof Player) || OddItem.uglyPermission((Player) sender, "odditem." + args[0]))) {
+                    sender.sendMessage(OddItem.logPrefix + OddItem.itemMap.size() + " aliases loaded");
                     return true;
+                } else if (args[0].equals("reload") && (!(sender instanceof Player) || OddItem.uglyPermission((Player) sender, "odditem." + args[0]))) {
+                    OddItem.configure();
                 }
                 break;
             case 2:
-                if (args[0].equals("aliases") || args[0].equals("alias")) {
+                if (args[0].equals("aliases") || args[0].equals("alias") && (!(sender instanceof Player) || OddItem.uglyPermission((Player) sender, "odditem.alias"))) {
                     String message;
                     try {
-                        message = oddItem.getAliases(args[1]).toString();
+                        message = OddItem.getAliases(args[1]).toString();
                     } catch (IllegalArgumentException e) {
                         message = "no such item";
                     }
-                    sender.sendMessage(oddItem.logPrefix + message);
+                    sender.sendMessage(OddItem.logPrefix + message);
                     return true;
                 }
                 break;
         }
+        sender.sendMessage("Invalid command.");
         return false;
     }
 }

@@ -4,12 +4,12 @@ version: 0.7.4
 website: http://bukkit.somethingodd.info
 author: petteyg359
 softdepend: [Permissions]
-description: >
-             Item database stuff.
+description: Item database stuff.
 commands:
-  odditem:
-    usage: |
-           /<command> [aliases item]|[info]|[list]|[reload]
-           aliases - Lists aliases for item
-           info - Shows number of items loaded.
+    odditem:
+        usage:  |
+                /<command> [aliases item]|[info]|[list]|[reload]
+                aliases - Lists aliases for item
+                info - Shows number of items loaded.
 permissions:
+    odditem
