@@ -16,43 +16,27 @@ package info.somethingodd.bukkit.OddItem;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public class OddItemGroup implements Iterable<ItemStack> {
-    private String groupType = null;
+    private String data = null;
     private Iterator<ItemStack> iterator = null;
     private List<ItemStack> items = null;
 
-    public OddItemGroup() {
+    public OddItemGroup(List<ItemStack> i, String data) {
+        items = Collections.synchronizedList(new ArrayList<ItemStack>());
+        for (ItemStack is : i)
+            items.add(is);
+        this.data = data;
     }
 
-    public String type() {
-        return groupType;
-    }
-
-    public void type(String groupType) {
-        this.groupType = groupType;
-    }
-
-    public void add(ItemStack i) {
-        if (items == null) items = Collections.synchronizedList(new ArrayList<ItemStack>());
-        items.add(i);
-    }
-
-    public void addAll(Collection<ItemStack> c) {
-        if (items == null) items = Collections.synchronizedList(new ArrayList<ItemStack>());
-        items.addAll(c);
-    }
-
-    public void clear() {
-        items = null;
+    public String data() {
+        return data;
     }
 
     public Iterator<ItemStack> iterator() {
@@ -66,13 +50,8 @@ public class OddItemGroup implements Iterable<ItemStack> {
         return 0;
     }
 
-    public ItemStack get(int i) throws IndexOutOfBoundsException {
-        if (items != null && size() > i) return items.get(i);
-        throw new IndexOutOfBoundsException();
-    }
-
     /**
-     * Returns whether group contains ItemStack, ignoring quantities
+     * Returns whether group contains ItemStack
      * @param is ItemStack to look for
      * @return boolean group contains ItemStack
      */
@@ -87,22 +66,29 @@ public class OddItemGroup implements Iterable<ItemStack> {
      * @return boolean group contains ItemStack
      */
     public boolean contains(ItemStack is, boolean quantity) {
+        return contains(is, true, quantity);
+    }
+
+    /**
+     * Returns whether group contains ItemStack
+     * @param is ItemStack to look for
+     * @param durability boolean whether to check durability of ItemStack
+     * @param quantity boolean whether to check quantity of ItemStack
+     * @return boolean group contains ItemStack
+     */
+    public boolean contains(ItemStack is, boolean durability, boolean quantity) {
         if (items == null) return false;
-        Iterator<ItemStack> i = items.iterator();
-        while (i.hasNext())
-            if (OddItem.compare(is, i.next(), quantity)) return true;
+        for (ItemStack i : items)
+            if (OddItem.compare(is, i, durability, quantity)) return true;
         return false;
     }
 
-    public boolean hasNext() {
-        if (items == null) items = Collections.synchronizedList(new ArrayList<ItemStack>());
-        if (iterator == null) iterator = items.iterator();
-        return iterator.hasNext();
-    }
-
-    public ItemStack next() throws NoSuchElementException {
-        if (items == null) items = Collections.synchronizedList(new ArrayList<ItemStack>());
-        if (iterator == null) iterator = items.iterator();
-        return iterator.next();
+    public boolean equals(ItemStack i) {
+        if (items == null) return false;
+        if (items.size() != 1) return false;
+        if (items.get(0).getTypeId() != i.getTypeId()) return false;
+        if (items.get(0).getDurability() != i.getDurability()) return false;
+        if (items.get(0).getAmount() != i.getAmount()) return false;
+        return true;
     }
 }

@@ -12,4 +12,15 @@ commands:
                 aliases - Lists aliases for item
                 info - Shows number of items loaded.
 permissions:
-    odditem
+    odditem:
+        children:
+            odditem.alias: true
+            odditem.info: true
+            odditem.reload: true
+        default: op
+    odditem.alias:
+        default: true
+    odditem.info:
+        default: true
+    odditem.reload:
+        default: op

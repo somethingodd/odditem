@@ -20,6 +20,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.IllegalPluginAccessException;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -70,7 +71,7 @@ public class OddItem extends JavaPlugin {
      * @return ItemStack are equal
      */
     public static Boolean compare(ItemStack a, ItemStack b) {
-        return compare(a, b, false, true, true);
+        return compare(a, b, true, false);
     }
 
     /**
@@ -81,7 +82,7 @@ public class OddItem extends JavaPlugin {
      * @return ItemStack are equal
      */
     public static Boolean compare(ItemStack a, ItemStack b, Boolean quantity) {
-        return compare(a, b, quantity, true, true);
+        return compare(a, b, true, quantity);
     }
 
     /**
@@ -89,15 +90,13 @@ public class OddItem extends JavaPlugin {
      * @param a ItemStack to compare
      * @param b ItemStack to compare
      * @param quantity whether to compare quantity
-     * @param material whether to compare material
      * @param durability whether to compare durability
      * @return ItemStack are equal
      */
-    public static Boolean compare(ItemStack a, ItemStack b, Boolean quantity, Boolean material, Boolean durability) {
+    public static Boolean compare(ItemStack a, ItemStack b, Boolean durability, Boolean quantity) {
         Boolean ret = true;
-        if (quantity) ret &= (a.getAmount() == b.getAmount());
-        if (ret && material) ret &= (a.getTypeId() == b.getTypeId());
-        if (ret && durability) ret &= (a.getDurability() == b.getDurability());
+        if (durability) ret &= (a.getDurability() == b.getDurability());
+        if (ret && quantity) ret &= (a.getAmount() == b.getAmount());
         return ret;
     }
 
@@ -110,7 +109,6 @@ public class OddItem extends JavaPlugin {
             writeConfig();
         configuration = new Configuration(configFile);
         configuration.load();
-        permission = configuration.getString("permission", "bukkit");
         String comparator = configuration.getString("comparator");
         if (comparator != null) {
             if (comparator.equalsIgnoreCase("c") || comparator.equalsIgnoreCase("caverphone")) {
@@ -145,9 +143,9 @@ public class OddItem extends JavaPlugin {
             j.add(i);
             // Add all aliases
             items.get(i).addAll(j);
-            Integer id = 0;
+            Integer id;
             Short d = 0;
-            Material m = null;
+            Material m;
             if (i.contains(";")) {
                 try {
                     d = Short.parseShort(i.substring(i.indexOf(";") + 1));
@@ -177,28 +175,40 @@ public class OddItem extends JavaPlugin {
         if (groups != null) {
             for (String g : groupsNode.getKeys()) {
                 List<String> i = new ArrayList<String>();
-                if (groups.get(g) == null)
-                    groups.put(g, new OddItemGroup());
                 if (groupsNode.getKeys(g) == null) {
                     i.addAll(groupsNode.getStringList(g, new ArrayList<String>()));
+                    groupsNode.removeProperty(g);
                     groupsNode.setProperty(g+".items", i);
                     groupsNode.setProperty(g+".type", "unknown");
                 } else {
                     i.addAll(groupsNode.getStringList(g+".items", new ArrayList<String>()));
                 }
+                List<ItemStack> itemStackList = new ArrayList<ItemStack>();
                 for (String is : i) {
+                    ItemStack itemStack;
+                    Integer q = null;
                     try {
-                        ItemStack itemStack = getItemStack(is);
-                        groups.get(g).add(itemStack);
+                        if (is.contains(",")) {
+                            q = Integer.valueOf(is.substring(is.indexOf(",")+1));
+                            is = is.substring(0, is.indexOf(","));
+                            itemStack = getItemStack(is, q);
+                        } else {
+                            itemStack = getItemStack(is);
+                        }
+                        log.info(logPrefix + "Adding " + is + (q != null ? " x" + q : "") + " to group \"" + g + "\"");
+                        if (itemStack != null) itemStackList.add(itemStack);
                     } catch (IllegalArgumentException e) {
-                        log.warning(logPrefix + "Invalid alias in group " + g);
+                        log.warning(logPrefix + "Invalid item \"" + is + "\" in group \"" + g + "\"");
                         groups.remove(g);
+                    } catch (NullPointerException e) {
+                        log.warning(logPrefix + "NPE adding ItemStack \"" + is + "\" to group " + g);
                     }
-                    if (groups.get(g) != null) groups.get(g).type(groupsNode.getString(g + ".type"));
+                    groups.put(g, new OddItemGroup(itemStackList, groupsNode.getString(g + ".type")));
                 }
                 if (groups.get(g) != null) log.info(logPrefix + "Group " + g + " (" + groups.get(g).type() + ") added.");
             }
         }
+        permission = configuration.getString("permission", "bukkit");
         configuration.save();
     }
 
@@ -229,7 +239,7 @@ public class OddItem extends JavaPlugin {
      * @return list of all groups
      */
     public static Set<String> getGroups() {
-        return getGroups(null);
+        return getGroups("");
     }
 
     /**
@@ -240,7 +250,7 @@ public class OddItem extends JavaPlugin {
     public static Set<String> getGroups(String group) {
         Set<String> gs = new HashSet<String>();
         for (String g : groups.keySet()) {
-            if (group == null || (g.length() >= group.length() && g.regionMatches(true, 0, group, 0, group.length())))
+            if (group == "" || (g.length() >= group.length() && g.regionMatches(true, 0, group, 0, group.length())))
                 gs.add(g);
         }
         return gs;
@@ -344,16 +354,23 @@ public class OddItem extends JavaPlugin {
     @Override
     public void onEnable() {
         configurationFile = this.getDataFolder() + System.getProperty("file.separator") + "OddItem.yml";
+        try {
+            if (!this.getDataFolder().exists()) this.getDataFolder().mkdir();
+        } catch (SecurityException e) {
+            log.severe(logPrefix);
+            e.printStackTrace();
+        }
         pluginManager = getServer().getPluginManager();
         oddItem = getClass();
         log.info(logPrefix + info.getVersion() + " enabled");
         getCommand("odditem").setExecutor(new OddItemCommandExecutor());
         configure();
         log.info(logPrefix + itemMap.size() + " aliases loaded.");
-        try {
-            ph = ((Permissions) getServer().getPluginManager().getPlugin("Permissions")).getHandler();
-        } catch (NullPointerException e) {
-            if (permission.equals("yeti"))
+        Plugin p = getServer().getPluginManager().getPlugin("Permissions");
+        if (permission.equals("yeti")) {
+            if (p != null)
+                ph = ((Permissions) p).getHandler();
+            else
                 log.severe(logPrefix + "Configuration specifies Nijikokun/TheYeti/rcjrrjcr Permissions, but plugin is not available");
         }
     }
@@ -404,7 +421,7 @@ public class OddItem extends JavaPlugin {
     }
 
     protected static boolean uglyPermission(Player player, String permission) {
-        if (permission.equals("yeti") && ph != null) {
+        if (ph != null) {
             return ph.has(player, permission);
         }
         return player.hasPermission(permission);
