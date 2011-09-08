@@ -231,7 +231,6 @@ public class OddItem extends JavaPlugin {
     }
 
     /**
-     * Returns all group names
      * @return list of all groups
      */
     public static List<String> getGroups() {
@@ -239,7 +238,7 @@ public class OddItem extends JavaPlugin {
     }
 
     /**
-     * Returns all group names starting with a string
+     * Returns group names that start with string
      * @param group name to look for
      * @return list of matching groups
      */
@@ -253,24 +252,8 @@ public class OddItem extends JavaPlugin {
     }
 
     /**
-     * Returns list of all items in a group as "#;#" (id;durability)
      * @param query item group name
-     * @return list of items
-     * @throws IllegalArgumentException exception if no such group exists
-     */
-    public static List<String> getItemGroupNames(String query) throws IllegalArgumentException {
-        List<String> names = new ArrayList<String>();
-        if (groups.get(query) == null) throw new IllegalArgumentException("no such group");
-        for (ItemStack i : groups.get(query)) {
-            names.add(i.getTypeId() + ";" + i.getDurability());
-        }
-        return names;
-    }
-
-    /**
-     * Returns list of ItemStack for items in a group, all quantity 1
-     * @param query item group name
-     * @return list of ItemStack
+     * @return OddItemGroup
      * @throws IllegalArgumentException exception if no such group exists
      */
     public static OddItemGroup getItemGroup(String query) throws IllegalArgumentException {
