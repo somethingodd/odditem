@@ -52,7 +52,7 @@ public class OddItemGroup implements Iterable<ItemStack> {
     }
 
     /**
-     * Returns whether group contains ItemStack
+     * Returns whether group contains ItemStack matching material and durability, ignoring quantity
      * @param is ItemStack to look for
      * @return boolean group contains ItemStack
      */
@@ -61,7 +61,7 @@ public class OddItemGroup implements Iterable<ItemStack> {
     }
 
     /**
-     * Returns whether group contains ItemStack
+     * Returns whether group contains ItemStack matching material and durability
      * @param is ItemStack to look for
      * @param quantity boolean whether to check quantity of ItemStack
      * @return boolean group contains ItemStack
@@ -71,7 +71,7 @@ public class OddItemGroup implements Iterable<ItemStack> {
     }
 
     /**
-     * Returns whether group contains ItemStack
+     * Returns whether group contains ItemStack matching material
      * @param is ItemStack to look for
      * @param durability boolean whether to check durability of ItemStack
      * @param quantity boolean whether to check quantity of ItemStack
