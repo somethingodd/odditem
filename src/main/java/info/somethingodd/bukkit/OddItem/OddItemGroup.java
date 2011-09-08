@@ -14,6 +14,7 @@
 package info.somethingodd.bukkit.OddItem;
 
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.config.ConfigurationNode;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,18 +25,18 @@ import java.util.List;
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public class OddItemGroup implements Iterable<ItemStack> {
-    private String data = null;
+    private ConfigurationNode data = null;
     private Iterator<ItemStack> iterator = null;
     private List<ItemStack> items = null;
 
-    public OddItemGroup(List<ItemStack> i, String data) {
+    public OddItemGroup(List<ItemStack> i, ConfigurationNode data) {
         items = Collections.synchronizedList(new ArrayList<ItemStack>());
         for (ItemStack is : i)
             items.add(is);
         this.data = data;
     }
 
-    public String data() {
+    public ConfigurationNode getData() {
         return data;
     }
 
@@ -81,6 +82,10 @@ public class OddItemGroup implements Iterable<ItemStack> {
         for (ItemStack i : items)
             if (OddItem.compare(is, i, durability, quantity)) return true;
         return false;
+    }
+
+    public ItemStack get(int index) throws IndexOutOfBoundsException {
+        return items.get(index);
     }
 
     public boolean equals(ItemStack i) {

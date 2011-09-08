@@ -19,7 +19,6 @@ import info.somethingodd.bukkit.OddItem.bktree.BKTree;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -34,10 +33,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -179,7 +175,7 @@ public class OddItem extends JavaPlugin {
                     i.addAll(groupsNode.getStringList(g, new ArrayList<String>()));
                     groupsNode.removeProperty(g);
                     groupsNode.setProperty(g+".items", i);
-                    groupsNode.setProperty(g+".type", "unknown");
+                    groupsNode.setProperty(g+".data", "null");
                 } else {
                     i.addAll(groupsNode.getStringList(g+".items", new ArrayList<String>()));
                 }
@@ -203,9 +199,9 @@ public class OddItem extends JavaPlugin {
                     } catch (NullPointerException e) {
                         log.warning(logPrefix + "NPE adding ItemStack \"" + is + "\" to group " + g);
                     }
-                    groups.put(g, new OddItemGroup(itemStackList, groupsNode.getString(g + ".type")));
+                    groups.put(g, new OddItemGroup(itemStackList, groupsNode.getNode(g + ".data")));
                 }
-                if (groups.get(g) != null) log.info(logPrefix + "Group " + g + " (" + groups.get(g).type() + ") added.");
+                if (groups.get(g) != null) log.info(logPrefix + "Group " + g + " added.");
             }
         }
         permission = configuration.getString("permission", "bukkit");
@@ -238,7 +234,7 @@ public class OddItem extends JavaPlugin {
      * Returns all group names
      * @return list of all groups
      */
-    public static Set<String> getGroups() {
+    public static List<String> getGroups() {
         return getGroups("");
     }
 
@@ -247,10 +243,10 @@ public class OddItem extends JavaPlugin {
      * @param group name to look for
      * @return list of matching groups
      */
-    public static Set<String> getGroups(String group) {
-        Set<String> gs = new HashSet<String>();
+    public static List<String> getGroups(String group) {
+        List<String> gs = new ArrayList<String>();
         for (String g : groups.keySet()) {
-            if (group == "" || (g.length() >= group.length() && g.regionMatches(true, 0, group, 0, group.length())))
+            if (group.equals("") || (g.length() >= group.length() && g.regionMatches(true, 0, group, 0, group.length())))
                 gs.add(g);
         }
         return gs;
@@ -262,10 +258,12 @@ public class OddItem extends JavaPlugin {
      * @return list of items
      * @throws IllegalArgumentException exception if no such group exists
      */
-    public static Set<String> getItemGroupNames(String query) throws IllegalArgumentException {
-        Set<String> names = groups.keySet();
-        if (names == null)
-            throw new IllegalArgumentException("no such group");
+    public static List<String> getItemGroupNames(String query) throws IllegalArgumentException {
+        List<String> names = new ArrayList<String>();
+        if (groups.get(query) == null) throw new IllegalArgumentException("no such group");
+        for (ItemStack i : groups.get(query)) {
+            names.add(i.getTypeId() + ";" + i.getDurability());
+        }
         return names;
     }
 
@@ -275,49 +273,9 @@ public class OddItem extends JavaPlugin {
      * @return list of ItemStack
      * @throws IllegalArgumentException exception if no such group exists
      */
-    public static List<ItemStack> getItemGroup(String query) throws IllegalArgumentException {
-        return getItemGroup(query, 1);
-    }
-
-    /**
-     * Returns list of ItemStack for items in a group with specific quantity per ItemStack
-     * @param query item group name
-     * @param quantity quantity for ItemStack - if legnth is shorter than group, last quantity will be repeated
-     * @return list of ItemStack
-     * @throws IllegalArgumentException exception if no such group exists
-     */
-    public static List<ItemStack> getItemGroup(String query, List<Integer> quantity) throws IllegalArgumentException {
-        List<ItemStack> i = new ArrayList<ItemStack>();
-        OddItemGroup g = groups.get(query);
-        if (g == null)
-            throw new IllegalArgumentException("no such group");
-        if (quantity.size() != g.size())
-            throw new IllegalPluginAccessException("non-matching quantity list and group length");
-        ListIterator<Integer> qi = quantity.listIterator();
-        int q = qi.next();
-        for (ItemStack x : g) {
-            i.add(new ItemStack(x.getTypeId(), q, x.getDurability()));
-            if (qi.hasNext()) q = qi.next();
-        }
-        return i;
-    }
-
-    /**
-     * Returns list of ItemStack for items in a group with specific quantity for all ItemStack
-     * @param query item group name
-     * @param quantity quantity for ItemStack, or -1 to use quantities from OddItem.yml
-     * @return list of ItemStack
-     * @throws IllegalArgumentException exception if no such group exists
-     */
-    public static List<ItemStack> getItemGroup(String query, Integer quantity) throws IllegalArgumentException {
-        List<ItemStack> i = new ArrayList<ItemStack>();
-        OddItemGroup g = groups.get(query);
-        if (g == null)
-            throw new IllegalArgumentException("no such group");
-        for (ItemStack x : g) {
-            i.add(new ItemStack(x.getTypeId(), quantity, x.getDurability()));
-        }
-        return i;
+    public static OddItemGroup getItemGroup(String query) throws IllegalArgumentException {
+        if (groups.get(query) == null) throw new IllegalArgumentException("no such group");
+        return groups.get(query);
     }
 
     /**
@@ -338,8 +296,17 @@ public class OddItem extends JavaPlugin {
      * @throws IllegalArgumentException exception if item not found, message contains closest match
      */
     public static ItemStack getItemStack(String query, Integer quantity) throws IllegalArgumentException {
-        ItemStack i = itemMap.get(query);
-        if (i != null) {
+        ItemStack i;
+        if (query.startsWith("map")) {
+            try {
+                i = new ItemStack(Material.MAP, 1, (query.contains(";") ? Short.valueOf(query.substring(query.indexOf(";")+1)) : 0));
+            } catch (NumberFormatException e) {
+                i = new ItemStack(Material.MAP, 1, (short) 0);
+            }
+        } else {
+            i = itemMap.get(query);
+        }
+        if (i != null && !query.startsWith("map")) {
             i.setAmount(quantity);
             return i;
         }
