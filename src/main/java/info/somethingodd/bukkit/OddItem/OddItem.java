@@ -16,12 +16,11 @@ package info.somethingodd.bukkit.OddItem;
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 import info.somethingodd.bukkit.OddItem.bktree.BKTree;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 import org.bukkit.util.config.ConfigurationNode;
@@ -32,6 +31,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -54,12 +55,9 @@ public class OddItem extends JavaPlugin {
     protected static ConcurrentHashMap<String, OddItemGroup> groups = null;
     protected static ConcurrentMap<String, ItemStack> itemMap = null;
     protected static String logPrefix = null;
-    private static PluginManager pluginManager = null;
-    private static Class oddItem = null;
     private static PermissionHandler ph = null;
     private static BKTree<String> bktree = null;
     private static String configurationFile = null;
-    private static String permission = null;
 	private static PluginDescriptionFile info;
 
     /**
@@ -104,7 +102,7 @@ public class OddItem extends JavaPlugin {
         groups = new ConcurrentHashMap<String, OddItemGroup>();
         File configFile = new File(configurationFile);
         if (!configFile.exists())
-            writeConfig();
+            if (!writeConfig()) return;
         configuration = new Configuration(configFile);
         configuration.load();
         String comparator = configuration.getString("comparator");
@@ -206,7 +204,15 @@ public class OddItem extends JavaPlugin {
                 if (groups.get(g) != null) log.info(logPrefix + "Group " + g + " added.");
             }
         }
-        permission = configuration.getString("permission", "bukkit");
+        if (!configuration.getBoolean("bukkitpermissions", true)) {
+            try {
+            Bukkit.getPluginManager().enablePlugin(Bukkit.getPluginManager().getPlugin("Permissions"));
+            ph = ((Permissions) Bukkit.getPluginManager().getPlugin("Permissions")).getHandler();
+            } catch (NullPointerException e) {
+                log.warning(logPrefix + "Couldn't load Permissions, reverting to Bukkit.");
+            }
+        }
+        if (configuration.getBoolean("phonehome", true)) phoneHome();
         configuration.save();
     }
 
@@ -312,26 +318,11 @@ public class OddItem extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        configurationFile = this.getDataFolder() + System.getProperty("file.separator") + "OddItem.yml";
-        try {
-            if (!this.getDataFolder().exists()) this.getDataFolder().mkdir();
-        } catch (SecurityException e) {
-            log.severe(logPrefix);
-            e.printStackTrace();
-        }
-        pluginManager = getServer().getPluginManager();
-        oddItem = getClass();
         log.info(logPrefix + info.getVersion() + " enabled");
         getCommand("odditem").setExecutor(new OddItemCommandExecutor());
-        configure();
         log.info(logPrefix + itemMap.size() + " aliases loaded.");
-        Plugin p = getServer().getPluginManager().getPlugin("Permissions");
-        if (permission.equals("yeti")) {
-            if (p != null)
-                ph = ((Permissions) p).getHandler();
-            else
-                log.severe(logPrefix + "Configuration specifies Nijikokun/TheYeti/rcjrrjcr Permissions, but plugin is not available");
-        }
+        configurationFile = this.getDataFolder() + System.getProperty("file.separator") + "OddItem.yml";
+        configure();
     }
 
     @Override
@@ -341,16 +332,21 @@ public class OddItem extends JavaPlugin {
         logPrefix = "[" + info.getName() + "] ";
     }
 
-    private static void writeConfig() {
+    private static boolean writeConfig() {
         FileWriter fw;
         try {
+            Bukkit.getPluginManager().getPlugin("OddItem").getDataFolder().mkdir();
             fw = new FileWriter(configurationFile);
+        } catch (SecurityException e) {
+            log.severe(logPrefix + "Couldn't create config dir: " + e.getMessage());
+            Bukkit.getPluginManager().disablePlugin(Bukkit.getPluginManager().getPlugin("OddItem"));
+            return false;
         } catch (IOException e) {
             log.severe(logPrefix + "Couldn't write config file: " + e.getMessage());
-            pluginManager.disablePlugin(pluginManager.getPlugin("OddItem"));
-            return;
+            Bukkit.getPluginManager().disablePlugin(Bukkit.getPluginManager().getPlugin("OddItem"));
+            return false;
         }
-        BufferedReader i = new BufferedReader(new InputStreamReader(oddItem.getResourceAsStream("/OddItem.yml")));
+        BufferedReader i = new BufferedReader(new InputStreamReader(Bukkit.getPluginManager().getPlugin("OddItem").getClass().getResourceAsStream("/OddItem.yml")));
         BufferedWriter o = new BufferedWriter(fw);
         try {
             String line = i.readLine();
@@ -367,9 +363,10 @@ public class OddItem extends JavaPlugin {
                 i.close();
             } catch (IOException e) {
                 log.severe(logPrefix + "Error saving config: " + e.getMessage());
-                pluginManager.disablePlugin(pluginManager.getPlugin("OddItem"));
+                Bukkit.getPluginManager().disablePlugin(Bukkit.getPluginManager().getPlugin("OddItem"));
             }
         }
+        return true;
     }
 
     protected void save() {
@@ -384,5 +381,19 @@ public class OddItem extends JavaPlugin {
             return ph.has(player, permission);
         }
         return player.hasPermission(permission);
+    }
+
+    private static void phoneHome() {
+        String url = String.format("http://plugins.blockface.org/usage/update.php?name=%s&build=%s&plugin=%s&port=%s",
+                Bukkit.getServer().getName(),
+                info.getVersion(),
+                info.getName(),
+                Bukkit.getServer().getPort());
+        try {
+            URL blockface = new URL(url);
+            URLConnection con = blockface.openConnection();
+        } catch (Exception e) {
+            return;
+        }
     }
 }

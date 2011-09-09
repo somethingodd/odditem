@@ -1,3 +1,5 @@
+# If true, use Bukkit permissions. If false, use Nijikokun/TheYeti/rcjrrjcr Permissions.
+bukkitpermissions: true
 # Comparator selects an option for relating names to each other, so that if an invalid name is requested, OddItem
 # can supply a suggested closest match. (c)averphone  (k)ölner phonetik  (m)etaphone  (s)oundex  (r)efined soundex
 # If using German translations, you might try option 'k'. Otherwise, you could try them all and find whatever works
