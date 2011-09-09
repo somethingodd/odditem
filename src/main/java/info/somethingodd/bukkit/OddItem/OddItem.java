@@ -33,7 +33,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -259,6 +261,13 @@ public class OddItem extends JavaPlugin {
     public static OddItemGroup getItemGroup(String query) throws IllegalArgumentException {
         if (groups.get(query) == null) throw new IllegalArgumentException("no such group");
         return groups.get(query);
+    }
+
+    /**
+     * @return Set<ItemStack> all defined items
+     */
+    public static Set<ItemStack> getItemStacks() {
+        return new HashSet<ItemStack>(itemMap.values());
     }
 
     /**
