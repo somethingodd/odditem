@@ -264,7 +264,7 @@ public class OddItem extends JavaPlugin {
     }
 
     /**
-     * @return Set<ItemStack> all defined items
+     * @return Set&lt;ItemStack&gt; all defined items
      */
     public static Set<ItemStack> getItemStacks() {
         return new HashSet<ItemStack>(itemMap.values());
