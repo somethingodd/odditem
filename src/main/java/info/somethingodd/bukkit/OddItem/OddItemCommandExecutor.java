@@ -25,17 +25,26 @@ public class OddItemCommandExecutor implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        try {
+            if (sender instanceof Player && !((Player) sender).hasPermission("odditem." + args[0])) {
+                sender.sendMessage("Not allowed.");
+                return true;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            sender.sendMessage("Invalid.");
+            return true;
+        }
         switch (args.length) {
             case 1:
-                if (args[0].equals("info") && (!(sender instanceof Player) || OddItem.uglyPermission((Player) sender, "odditem." + args[0]))) {
+                if (args[0].equals("info")) {
                     sender.sendMessage(OddItem.logPrefix + OddItem.itemMap.size() + " aliases loaded");
                     return true;
-                } else if (args[0].equals("reload") && (!(sender instanceof Player) || OddItem.uglyPermission((Player) sender, "odditem." + args[0]))) {
+                } else if (args[0].equals("reload")) {
                     OddItem.configure();
                 }
                 break;
             case 2:
-                if (args[0].equals("aliases") || args[0].equals("alias") && (!(sender instanceof Player) || OddItem.uglyPermission((Player) sender, "odditem.alias"))) {
+                if (args[0].equals("alias")) {
                     String message;
                     try {
                         message = OddItem.getAliases(args[1]).toString();

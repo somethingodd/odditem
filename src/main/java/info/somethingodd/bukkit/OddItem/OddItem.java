@@ -13,14 +13,10 @@
  */
 package info.somethingodd.bukkit.OddItem;
 
-import com.nijiko.permissions.PermissionHandler;
-import com.nijikokun.bukkit.Permissions.Permissions;
 import info.somethingodd.bukkit.OddItem.bktree.BKTree;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 import org.bukkit.util.config.ConfigurationNode;
@@ -31,8 +27,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -55,10 +49,9 @@ public class OddItem extends JavaPlugin {
     protected static ConcurrentHashMap<String, OddItemGroup> groups = null;
     protected static ConcurrentMap<String, ItemStack> itemMap = null;
     protected static String logPrefix = null;
-    private static PermissionHandler ph = null;
     private static BKTree<String> bktree = null;
     private static String configurationFile = null;
-	private static PluginDescriptionFile info;
+    private static Integer task = null;
 
     /**
      * Compares two ItemStack material and durability, ignoring quantity
@@ -204,15 +197,6 @@ public class OddItem extends JavaPlugin {
                 if (groups.get(g) != null) log.info(logPrefix + "Group " + g + " added.");
             }
         }
-        if (!configuration.getBoolean("bukkitpermissions", true)) {
-            try {
-            Bukkit.getPluginManager().enablePlugin(Bukkit.getPluginManager().getPlugin("Permissions"));
-            ph = ((Permissions) Bukkit.getPluginManager().getPlugin("Permissions")).getHandler();
-            } catch (NullPointerException e) {
-                log.warning(logPrefix + "Couldn't load Permissions, reverting to Bukkit.");
-            }
-        }
-        if (configuration.getBoolean("phonehome", true)) phoneHome();
         configuration.save();
     }
 
@@ -314,39 +298,43 @@ public class OddItem extends JavaPlugin {
     @Override
     public void onDisable() {
         log.info(logPrefix + "disabled");
+        itemMap = null;
+        items = null;
+        groups = null;
+        bktree = null;
+        logPrefix = null;
+        log = null;
+        configurationFile = null;
+        configuration = null;
+        if (task != null) {
+            Bukkit.getServer().getScheduler().cancelTask(task);
+            task = null;
+        }
     }
 
     @Override
     public void onEnable() {
-        log.info(logPrefix + info.getVersion() + " enabled");
-        getCommand("odditem").setExecutor(new OddItemCommandExecutor());
-        log.info(logPrefix + itemMap.size() + " aliases loaded.");
+        log = Bukkit.getServer().getLogger();
+        logPrefix = "[" + getDescription().getName() + "] ";
+        log.info(logPrefix + getDescription().getVersion() + " enabled");
         configurationFile = this.getDataFolder() + System.getProperty("file.separator") + "OddItem.yml";
         configure();
-    }
-
-    @Override
-    public void onLoad() {
-        info = getDescription();
-        log = getServer().getLogger();
-        logPrefix = "[" + info.getName() + "] ";
+        getCommand("odditem").setExecutor(new OddItemCommandExecutor());
+        log.info(logPrefix + itemMap.size() + " aliases loaded.");
     }
 
     private static boolean writeConfig() {
         FileWriter fw;
+        File config = new File(configurationFile);
+        if (!config.getParentFile().exists()) config.getParentFile().mkdir();
         try {
-            Bukkit.getPluginManager().getPlugin("OddItem").getDataFolder().mkdir();
             fw = new FileWriter(configurationFile);
-        } catch (SecurityException e) {
-            log.severe(logPrefix + "Couldn't create config dir: " + e.getMessage());
-            Bukkit.getPluginManager().disablePlugin(Bukkit.getPluginManager().getPlugin("OddItem"));
-            return false;
         } catch (IOException e) {
             log.severe(logPrefix + "Couldn't write config file: " + e.getMessage());
-            Bukkit.getPluginManager().disablePlugin(Bukkit.getPluginManager().getPlugin("OddItem"));
+            Bukkit.getServer().getPluginManager().disablePlugin(Bukkit.getServer().getPluginManager().getPlugin("OddItem"));
             return false;
         }
-        BufferedReader i = new BufferedReader(new InputStreamReader(Bukkit.getPluginManager().getPlugin("OddItem").getClass().getResourceAsStream("/OddItem.yml")));
+        BufferedReader i = new BufferedReader(new InputStreamReader(Bukkit.getServer().getPluginManager().getPlugin("OddItem").getClass().getResourceAsStream("/OddItem.yml")));
         BufferedWriter o = new BufferedWriter(fw);
         try {
             String line = i.readLine();
@@ -369,31 +357,10 @@ public class OddItem extends JavaPlugin {
         return true;
     }
 
-    protected void save() {
+    protected static void save() {
         configuration = new Configuration(new File(configurationFile));
         configuration.setProperty("items", items);
         configuration.setProperty("groups", groups);
         configuration.save();
-    }
-
-    protected static boolean uglyPermission(Player player, String permission) {
-        if (ph != null) {
-            return ph.has(player, permission);
-        }
-        return player.hasPermission(permission);
-    }
-
-    private static void phoneHome() {
-        String url = String.format("http://plugins.blockface.org/usage/update.php?name=%s&build=%s&plugin=%s&port=%s",
-                Bukkit.getServer().getName(),
-                info.getVersion(),
-                info.getName(),
-                Bukkit.getServer().getPort());
-        try {
-            URL blockface = new URL(url);
-            URLConnection con = blockface.openConnection();
-        } catch (Exception e) {
-            return;
-        }
     }
 }
