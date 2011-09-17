@@ -351,7 +351,7 @@ public class OddItem extends JavaPlugin {
                 i.close();
             } catch (IOException e) {
                 log.severe(logPrefix + "Error saving config: " + e.getMessage());
-                Bukkit.getPluginManager().disablePlugin(Bukkit.getPluginManager().getPlugin("OddItem"));
+                Bukkit.getServer().getPluginManager().disablePlugin(Bukkit.getServer().getPluginManager().getPlugin("OddItem"));
             }
         }
         return true;
