@@ -18,15 +18,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.config.Configuration;
-import org.bukkit.util.config.ConfigurationNode;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -35,8 +27,6 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Logger;
 
 /**
@@ -44,14 +34,11 @@ import java.util.logging.Logger;
  */
 public class OddItem extends JavaPlugin {
     protected static Logger log = null;
-	protected static Configuration configuration = null;
     protected static ConcurrentNavigableMap<String, SortedSet<String>> items = null;
     protected static ConcurrentHashMap<String, OddItemGroup> groups = null;
     protected static ConcurrentMap<String, ItemStack> itemMap = null;
     protected static String logPrefix = null;
-    private static BKTree<String> bktree = null;
-    private static String configurationFile = null;
-    private static Integer task = null;
+    protected static BKTree<String> bktree = null;
 
     /**
      * Compares two ItemStack material and durability, ignoring quantity
@@ -87,117 +74,6 @@ public class OddItem extends JavaPlugin {
         if (durability) ret &= (a.getDurability() == b.getDurability());
         if (ret && quantity) ret &= (a.getAmount() == b.getAmount());
         return ret;
-    }
-
-    protected static void configure() {
-        itemMap = new ConcurrentHashMap<String, ItemStack>();
-        items = new ConcurrentSkipListMap<String, SortedSet<String>>(String.CASE_INSENSITIVE_ORDER);
-        groups = new ConcurrentHashMap<String, OddItemGroup>();
-        File configFile = new File(configurationFile);
-        if (!configFile.exists())
-            if (!writeConfig()) return;
-        configuration = new Configuration(configFile);
-        configuration.load();
-        String comparator = configuration.getString("comparator");
-        if (comparator != null) {
-            if (comparator.equalsIgnoreCase("c") || comparator.equalsIgnoreCase("caverphone")) {
-                bktree = new BKTree<String>("c");
-                log.info(logPrefix + "Using Caverphone for suggestions.");
-            } else if (comparator.equalsIgnoreCase("k") || comparator.equalsIgnoreCase("cologne")) {
-                bktree = new BKTree<String>("k");
-                log.info(logPrefix + "Using ColognePhonetic for suggestions.");
-            } else if (comparator.equalsIgnoreCase("m") || comparator.equalsIgnoreCase("metaphone")) {
-                bktree = new BKTree<String>("m");
-                log.info(logPrefix + "Using Metaphone for suggestions.");
-            } else if (comparator.equalsIgnoreCase("s") || comparator.equalsIgnoreCase("soundex")) {
-                bktree = new BKTree<String>("s");
-                log.info(logPrefix + "Using SoundEx for suggestions.");
-            } else if (comparator.equalsIgnoreCase("r") || comparator.equalsIgnoreCase("refinedsoundex")) {
-                bktree = new BKTree<String>("r");
-                log.info(logPrefix + "Using RefinedSoundEx for suggestions.");
-            } else {
-                bktree = new BKTree<String>("l");
-                log.info(logPrefix + "Using Levenshtein for suggestions.");
-            }
-        } else {
-            bktree = new BKTree<String>("l");
-            log.info(logPrefix + "Using Levenshtein for suggestions.");
-        }
-        ConfigurationNode itemsNode = configuration.getNode("items");
-        for(String i : itemsNode.getKeys()) {
-            if (items.get(i) == null)
-                items.put(i, new ConcurrentSkipListSet<String>(String.CASE_INSENSITIVE_ORDER));
-            ArrayList<String> j = new ArrayList<String>();
-            j.addAll(configuration.getStringList("items." + i, new ArrayList<String>()));
-            j.add(i);
-            // Add all aliases
-            items.get(i).addAll(j);
-            Integer id;
-            Short d = 0;
-            Material m;
-            if (i.contains(";")) {
-                try {
-                    d = Short.parseShort(i.substring(i.indexOf(";") + 1));
-                    id = Integer.parseInt(i.substring(0, i.indexOf(";")));
-                    m = Material.getMaterial(id);
-                } catch (NumberFormatException e) {
-                    m = Material.getMaterial(i.substring(0, i.indexOf(";")));
-                }
-            } else {
-                try {
-                    id = Integer.decode(i);
-                    m = Material.getMaterial(id);
-                } catch (NumberFormatException e) {
-                    m = Material.getMaterial(i);
-                }
-            }
-            if (m == null) {
-                log.warning(logPrefix + "Invalid format: " + i);
-                continue;
-            }
-            for (String item : j) {
-                itemMap.put(item, new ItemStack(m, 1, d));
-                bktree.add(item);
-            }
-        }
-        ConfigurationNode groupsNode = configuration.getNode("groups");
-        if (groups != null) {
-            for (String g : groupsNode.getKeys()) {
-                List<String> i = new ArrayList<String>();
-                if (groupsNode.getKeys(g) == null) {
-                    i.addAll(groupsNode.getStringList(g, new ArrayList<String>()));
-                    groupsNode.removeProperty(g);
-                    groupsNode.setProperty(g+".items", i);
-                    groupsNode.setProperty(g+".data", "null");
-                } else {
-                    i.addAll(groupsNode.getStringList(g+".items", new ArrayList<String>()));
-                }
-                List<ItemStack> itemStackList = new ArrayList<ItemStack>();
-                for (String is : i) {
-                    ItemStack itemStack;
-                    Integer q = null;
-                    try {
-                        if (is.contains(",")) {
-                            q = Integer.valueOf(is.substring(is.indexOf(",")+1));
-                            is = is.substring(0, is.indexOf(","));
-                            itemStack = getItemStack(is, q);
-                        } else {
-                            itemStack = getItemStack(is);
-                        }
-                        log.info(logPrefix + "Adding " + is + (q != null ? " x" + q : "") + " to group \"" + g + "\"");
-                        if (itemStack != null) itemStackList.add(itemStack);
-                    } catch (IllegalArgumentException e) {
-                        log.warning(logPrefix + "Invalid item \"" + is + "\" in group \"" + g + "\"");
-                        groups.remove(g);
-                    } catch (NullPointerException e) {
-                        log.warning(logPrefix + "NPE adding ItemStack \"" + is + "\" to group " + g);
-                    }
-                    groups.put(g, new OddItemGroup(itemStackList, groupsNode.getNode(g + ".data")));
-                }
-                if (groups.get(g) != null) log.info(logPrefix + "Group " + g + " added.");
-            }
-        }
-        configuration.save();
     }
 
     /**
@@ -249,6 +125,7 @@ public class OddItem extends JavaPlugin {
      * @throws IllegalArgumentException exception if no such group exists
      */
     public static OddItemGroup getItemGroup(String query) throws IllegalArgumentException {
+        log.info(groups.toString());
         if (groups.get(query) == null) throw new IllegalArgumentException("no such group");
         return groups.get(query);
     }
@@ -304,12 +181,6 @@ public class OddItem extends JavaPlugin {
         bktree = null;
         logPrefix = null;
         log = null;
-        configurationFile = null;
-        configuration = null;
-        if (task != null) {
-            Bukkit.getServer().getScheduler().cancelTask(task);
-            task = null;
-        }
     }
 
     @Override
@@ -317,50 +188,14 @@ public class OddItem extends JavaPlugin {
         log = Bukkit.getServer().getLogger();
         logPrefix = "[" + getDescription().getName() + "] ";
         log.info(logPrefix + getDescription().getVersion() + " enabled");
-        configurationFile = this.getDataFolder() + System.getProperty("file.separator") + "OddItem.yml";
-        configure();
+        try {
+            OddItemConfiguration.configure(getDataFolder().getAbsolutePath() + System.getProperty("file.separator") + "OddItem.yml");
+        } catch (Exception e) {
+            log.severe(logPrefix + "Configuration error!");
+            log.severe(e.getMessage());
+            e.printStackTrace();
+        }
         getCommand("odditem").setExecutor(new OddItemCommandExecutor());
         log.info(logPrefix + itemMap.size() + " aliases loaded.");
-    }
-
-    private static boolean writeConfig() {
-        FileWriter fw;
-        File config = new File(configurationFile);
-        if (!config.getParentFile().exists()) config.getParentFile().mkdir();
-        try {
-            fw = new FileWriter(configurationFile);
-        } catch (IOException e) {
-            log.severe(logPrefix + "Couldn't write config file: " + e.getMessage());
-            Bukkit.getServer().getPluginManager().disablePlugin(Bukkit.getServer().getPluginManager().getPlugin("OddItem"));
-            return false;
-        }
-        BufferedReader i = new BufferedReader(new InputStreamReader(Bukkit.getServer().getPluginManager().getPlugin("OddItem").getClass().getResourceAsStream("/OddItem.yml")));
-        BufferedWriter o = new BufferedWriter(fw);
-        try {
-            String line = i.readLine();
-            while (line != null) {
-                o.write(line + System.getProperty("line.separator"));
-                line = i.readLine();
-            }
-            log.info(logPrefix + "Wrote default config");
-        } catch (IOException e) {
-            log.severe(logPrefix + "Error writing config: " + e.getMessage());
-        } finally {
-            try {
-                o.close();
-                i.close();
-            } catch (IOException e) {
-                log.severe(logPrefix + "Error saving config: " + e.getMessage());
-                Bukkit.getServer().getPluginManager().disablePlugin(Bukkit.getServer().getPluginManager().getPlugin("OddItem"));
-            }
-        }
-        return true;
-    }
-
-    protected static void save() {
-        configuration = new Configuration(new File(configurationFile));
-        configuration.setProperty("items", items);
-        configuration.setProperty("groups", groups);
-        configuration.save();
     }
 }
