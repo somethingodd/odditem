@@ -295,5 +295,3 @@ items:
     '359': [scissors, shears]
     '2256': [thirteen, yellowdisc, yellowrecord]
     '2257': [cat, greendisc, greenrecord]
-# Whether to send statistics to bukkit.somethingodd.info
-statistics: true
