@@ -14,10 +14,9 @@
 package info.somethingodd.bukkit.OddItem;
 
 import info.somethingodd.bukkit.OddItem.bktree.BKTree;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,21 +26,26 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
-import java.util.logging.Logger;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
-public class OddItem extends JavaPlugin {
-    protected static Logger log = null;
+public final class OddItem extends OddItemBase {
     protected static ConcurrentNavigableMap<String, SortedSet<String>> items = null;
     protected static ConcurrentHashMap<String, OddItemGroup> groups = null;
     protected static ConcurrentMap<String, ItemStack> itemMap = null;
-    protected static String logPrefix = null;
     protected static BKTree<String> bktree = null;
+
+    protected static void clear() {
+        items = null;
+        groups = null;
+        itemMap = null;
+        bktree = null;
+    }
 
     /**
      * Compares two ItemStack material and durability, ignoring quantity
+     *
      * @param a ItemStack to compare
      * @param b ItemStack to compare
      * @return ItemStack are equal
@@ -52,8 +56,9 @@ public class OddItem extends JavaPlugin {
 
     /**
      * Compares two ItemStack material, durability, and quantity
-     * @param a ItemStack to compare
-     * @param b ItemStack to compare
+     *
+     * @param a        ItemStack to compare
+     * @param b        ItemStack to compare
      * @param quantity whether to compare quantity
      * @return ItemStack are equal
      */
@@ -63,9 +68,10 @@ public class OddItem extends JavaPlugin {
 
     /**
      * Compares two ItemStack
-     * @param a ItemStack to compare
-     * @param b ItemStack to compare
-     * @param quantity whether to compare quantity
+     *
+     * @param a          ItemStack to compare
+     * @param b          ItemStack to compare
+     * @param quantity   whether to compare quantity
      * @param durability whether to compare durability
      * @return ItemStack are equal
      */
@@ -78,6 +84,7 @@ public class OddItem extends JavaPlugin {
 
     /**
      * Gets all aliases for an item
+     *
      * @param query name of item
      * @return names of aliases
      * @throws IllegalArgumentException exception if no such item exists
@@ -107,6 +114,7 @@ public class OddItem extends JavaPlugin {
 
     /**
      * Returns group names that start with string
+     *
      * @param group name to look for
      * @return list of matching groups
      */
@@ -125,7 +133,6 @@ public class OddItem extends JavaPlugin {
      * @throws IllegalArgumentException exception if no such group exists
      */
     public static OddItemGroup getItemGroup(String query) throws IllegalArgumentException {
-        log.info(groups.toString());
         if (groups.get(query) == null) throw new IllegalArgumentException("no such group");
         return groups.get(query);
     }
@@ -139,6 +146,7 @@ public class OddItem extends JavaPlugin {
 
     /**
      * Returns an ItemStack of quantity 1 of alias query
+     *
      * @param query item name
      * @return ItemStack
      * @throws IllegalArgumentException exception if item not found, message contains closest match
@@ -149,7 +157,8 @@ public class OddItem extends JavaPlugin {
 
     /**
      * Returns an ItemStack of specific quantity of alias query
-     * @param query item name
+     *
+     * @param query    item name
      * @param quantity quantity
      * @return ItemStack
      * @throws IllegalArgumentException exception if item not found, message contains closest match
@@ -158,7 +167,7 @@ public class OddItem extends JavaPlugin {
         ItemStack i;
         if (query.startsWith("map")) {
             try {
-                i = new ItemStack(Material.MAP, 1, (query.contains(";") ? Short.valueOf(query.substring(query.indexOf(";")+1)) : 0));
+                i = new ItemStack(Material.MAP, 1, (query.contains(";") ? Short.valueOf(query.substring(query.indexOf(";") + 1)) : 0));
             } catch (NumberFormatException e) {
                 i = new ItemStack(Material.MAP, 1, (short) 0);
             }
@@ -172,30 +181,82 @@ public class OddItem extends JavaPlugin {
         throw new IllegalArgumentException(bktree.findBestWordMatch(query));
     }
 
-    @Override
-    public void onDisable() {
-        log.info(logPrefix + "disabled");
-        itemMap = null;
-        items = null;
-        groups = null;
-        bktree = null;
-        logPrefix = null;
-        log = null;
+    /**
+     * Returns whether player's inventory contains itemStack
+     * @param player Player to use inventory
+     * @param itemStack ItemStack to look for
+     * @return itemStack is contained in inventory
+     */
+    public static Boolean contains(Player player, ItemStack itemStack) {
+        return contains(player, itemStack, true);
     }
 
-    @Override
-    public void onEnable() {
-        log = Bukkit.getServer().getLogger();
-        logPrefix = "[" + getDescription().getName() + "] ";
-        log.info(logPrefix + getDescription().getVersion() + " enabled");
-        try {
-            OddItemConfiguration.configure(getDataFolder().getAbsolutePath() + System.getProperty("file.separator") + "OddItem.yml");
-        } catch (Exception e) {
-            log.severe(logPrefix + "Configuration error!");
-            log.severe(e.getMessage());
-            e.printStackTrace();
+    /**
+     * Returns whether player's inventory contains itemStack, possibly ignoring quantity
+     * @param player Player to use inventory
+     * @param itemStack ItemStack to look for
+     * @param quantity whether to check quantity
+     * @return itemStack is contained in inventory
+     */
+    public static Boolean contains(Player player, ItemStack itemStack, boolean quantity) {
+        return contains(player, itemStack, true, quantity);
+    }
+
+    /**
+     * Returns whether player's inventory contains itemStack, possibly ignoring durability and quantity
+     * @param player Player to use inventory
+     * @param itemStack ItemStack to look for
+     * @param durability whether to check durability
+     * @param quantity whether to check quantity
+     * @return itemStack is contained in inventory
+     */
+    public static Boolean contains(Player player, ItemStack itemStack, boolean durability, boolean quantity) {
+        ItemStack[] inventory = player.getInventory().getContents();
+        for (int i = 0; i < inventory.length; i++) {
+            if (compare(inventory[i], itemStack, durability, quantity)) return true;
         }
-        getCommand("odditem").setExecutor(new OddItemCommandExecutor());
-        log.info(logPrefix + itemMap.size() + " aliases loaded.");
+        return false;
+    }
+
+    /**
+     * Removes itemStack from player's inventory
+     *
+     * @param player Player to remove itemStack from
+     * @param itemStack ItemStack to remove
+     * @return amount left over (i.e. {@link org.bukkit.entity.Player player} had less than itemStack.getAmount() available)
+     */
+    public static Integer removeItem(Player player, ItemStack itemStack) {
+        ItemStack[] inventory = player.getInventory().getContents();
+        int amount = itemStack.getAmount();
+        for (int i = 0; i < inventory.length; i++) {
+            if (compare(inventory[i], itemStack)) {
+                if (amount > inventory[i].getAmount()) {
+                    amount -= inventory[i].getAmount();
+                    inventory[i].setAmount(0);
+                } else if (amount > 0) {
+                    inventory[i].setAmount(inventory[i].getAmount() - amount);
+                    amount = 0;
+                } else {
+                    inventory[i].setAmount(0);
+                }
+            }
+            if (amount == 0) break;
+        }
+        return amount;
+    }
+
+    /**
+     * Removes itemStacks from players's inventory
+     *
+     * @param player     Player to remove itemStacks from
+     * @param itemStacks ItemStacks to remove
+     * @return amounts left over (i.e. player had less than itemStack.getAmount() available)
+     */
+    public static Integer[] removeItem(Player player, ItemStack[] itemStacks) {
+        Integer[] amount = new Integer[itemStacks.length];
+        for (int i = 0; i < itemStacks.length; i++) {
+            amount[i] = removeItem(player, itemStacks[i]);
+        }
+        return amount;
     }
 }

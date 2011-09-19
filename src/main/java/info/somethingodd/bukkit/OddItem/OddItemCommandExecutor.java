@@ -22,11 +22,16 @@ import org.bukkit.entity.Player;
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public class OddItemCommandExecutor implements CommandExecutor {
+    private OddItemBase oddItemBase = null;
+
+    public OddItemCommandExecutor(OddItemBase oddItemBase) {
+        this.oddItemBase = oddItemBase;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try {
-            if (sender instanceof Player && !((Player) sender).hasPermission("odditem." + args[0])) {
+            if (sender instanceof Player && !sender.hasPermission("odditem." + args[0])) {
                 sender.sendMessage("Not allowed.");
                 return true;
             }
@@ -37,10 +42,8 @@ public class OddItemCommandExecutor implements CommandExecutor {
         switch (args.length) {
             case 1:
                 if (args[0].equals("info")) {
-                    sender.sendMessage(OddItem.logPrefix + OddItem.itemMap.size() + " aliases loaded");
+                    sender.sendMessage(oddItemBase.logPrefix + OddItem.itemMap.size() + " aliases loaded");
                     return true;
-                } else if (args[0].equals("reload")) {
-                    OddItem.configure();
                 }
                 break;
             case 2:
@@ -51,7 +54,7 @@ public class OddItemCommandExecutor implements CommandExecutor {
                     } catch (IllegalArgumentException e) {
                         message = "no such item";
                     }
-                    sender.sendMessage(OddItem.logPrefix + message);
+                    sender.sendMessage(oddItemBase.logPrefix + message);
                     return true;
                 }
                 break;
