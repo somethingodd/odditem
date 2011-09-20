@@ -76,7 +76,7 @@ public final class OddItem extends OddItemBase {
      * @return ItemStack are equal
      */
     public static Boolean compare(ItemStack a, ItemStack b, Boolean durability, Boolean quantity) {
-        Boolean ret = true;
+        Boolean ret = a.getTypeId() == b.getTypeId();
         if (durability) ret &= (a.getDurability() == b.getDurability());
         if (ret && quantity) ret &= (a.getAmount() == b.getAmount());
         return ret;
