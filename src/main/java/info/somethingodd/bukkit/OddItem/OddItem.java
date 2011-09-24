@@ -21,9 +21,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NavigableSet;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 
@@ -31,8 +30,8 @@ import java.util.concurrent.ConcurrentNavigableMap;
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public final class OddItem extends OddItemBase {
-    protected static ConcurrentNavigableMap<String, SortedSet<String>> items = null;
-    protected static ConcurrentHashMap<String, OddItemGroup> groups = null;
+    protected static ConcurrentNavigableMap<String, NavigableSet<String>> items = null;
+    protected static ConcurrentNavigableMap<String, OddItemGroup> groups = null;
     protected static ConcurrentMap<String, ItemStack> itemMap = null;
     protected static BKTree<String> bktree = null;
 
@@ -106,6 +105,8 @@ public final class OddItem extends OddItemBase {
     }
 
     /**
+     * Returns all group names
+     *
      * @return list of all groups
      */
     public static List<String> getGroups() {

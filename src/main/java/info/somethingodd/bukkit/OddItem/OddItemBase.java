@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 public class OddItemBase extends JavaPlugin {
     protected Logger log = null;
     protected String logPrefix = null;
+    protected String configFile = null;
 
     @Override
     public void onDisable() {
@@ -31,6 +32,7 @@ public class OddItemBase extends JavaPlugin {
         OddItem.clear();
         logPrefix = null;
         log = null;
+        configFile = null;
     }
 
     @Override
@@ -38,9 +40,10 @@ public class OddItemBase extends JavaPlugin {
         log = Bukkit.getServer().getLogger();
         logPrefix = "[" + getDescription().getName() + "] ";
         log.info(logPrefix + getDescription().getVersion() + " enabled");
+        configFile = getDataFolder() + System.getProperty("file.separator") + "OddItem.yml";
         try {
             OddItemConfiguration configuration = new OddItemConfiguration(this);
-            configuration.configure(getDataFolder() + System.getProperty("file.separator") + "OddItem.yml");
+            configuration.configure(configFile);
         } catch (Exception e) {
             log.severe(logPrefix + "Configuration error!");
             e.printStackTrace();

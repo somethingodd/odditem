@@ -18,7 +18,7 @@ groups:
                 # in a group with priority 3. All players with permission for priority 3 would then
                 # be able to use 'reddye' with OddGive.
                 priority: 1
-        items: ['lapisblock:2', greendye, reddye, air]
+        items: ['lapisblock,2', greendye, reddye, air]
     # Sample OddGive group, blacklisting 'tnt' and 'lighter' for any players with permission
     # "oddgive.groups.2"
     # Suggestion: Add permissions "oddgive.groups.x" to each of your groups, where x starts at 0

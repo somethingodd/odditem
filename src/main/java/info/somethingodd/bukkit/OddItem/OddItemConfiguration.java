@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
+import java.util.NavigableSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -49,8 +49,8 @@ public final class OddItemConfiguration {
         if (!file.exists())
             if (!writeConfig(file)) throw new Exception("Could not create configuration file!");
         OddItem.itemMap = new ConcurrentHashMap<String, ItemStack>();
-        OddItem.items = new ConcurrentSkipListMap<String, SortedSet<String>>(String.CASE_INSENSITIVE_ORDER);
-        OddItem.groups = new ConcurrentHashMap<String, OddItemGroup>();
+        OddItem.items = new ConcurrentSkipListMap<String, NavigableSet<String>>();
+        OddItem.groups = new ConcurrentSkipListMap<String, OddItemGroup>();
         Configuration configuration = new Configuration(file);
         configuration.load();
         String comparator = configuration.getString("comparator");
@@ -80,13 +80,7 @@ public final class OddItemConfiguration {
         }
         ConfigurationNode itemsNode = configuration.getNode("items");
         for (String i : itemsNode.getKeys()) {
-            if (OddItem.items.get(i) == null)
-                OddItem.items.put(i, new ConcurrentSkipListSet<String>(String.CASE_INSENSITIVE_ORDER));
-            ArrayList<String> itemAliases = new ArrayList<String>();
-            itemAliases.addAll(configuration.getStringList("items." + i, new ArrayList<String>()));
-            itemAliases.add(i);
-            // Add all aliases
-            OddItem.items.get(i).addAll(itemAliases);
+
             Integer id;
             Short d = 0;
             Material m;
@@ -106,6 +100,13 @@ public final class OddItemConfiguration {
                     m = Material.getMaterial(i);
                 }
             }
+            if (OddItem.items.get(i) == null)
+                OddItem.items.put(i, new ConcurrentSkipListSet<String>(String.CASE_INSENSITIVE_ORDER));
+            List<String> itemAliases = new ArrayList<String>();
+            itemAliases.addAll(configuration.getStringList("items." + i, new ArrayList<String>()));
+            itemAliases.add(m.getId() + ";" + d);
+            // Add all aliases
+            OddItem.items.get(i).addAll(itemAliases);
             if (m != null) {
                 for (String itemAlias : itemAliases) {
                     OddItem.itemMap.put(itemAlias, new ItemStack(m, 1, d));

@@ -14,6 +14,7 @@
 package info.somethingodd.bukkit.OddItem;
 
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.config.Configuration;
 import org.bukkit.util.config.ConfigurationNode;
 
 import java.util.ArrayList;
@@ -26,8 +27,11 @@ import java.util.List;
  */
 public class OddItemGroup implements Iterable<ItemStack> {
     private ConfigurationNode data = null;
-    private Iterator<ItemStack> iterator = null;
     private List<ItemStack> items = null;
+    private String name = null;
+
+    public OddItemGroup() {
+    }
 
     public OddItemGroup(List<ItemStack> i, ConfigurationNode data) {
         items = Collections.synchronizedList(new ArrayList<ItemStack>());
@@ -36,14 +40,43 @@ public class OddItemGroup implements Iterable<ItemStack> {
         this.data = data;
     }
 
+    public OddItemGroup(ConfigurationNode node) {
+        fromYAML(node);
+    }
+
     public ConfigurationNode getData() {
         return data;
     }
 
+    public void setData(ConfigurationNode data) {
+        this.data = data;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void add(ItemStack itemStack) {
+        if (items == null) items = Collections.synchronizedList(new ArrayList<ItemStack>());
+        items.add(itemStack);
+    }
+
+    public boolean remove(ItemStack itemStack) {
+        return items.remove(itemStack);
+    }
+
+    public ItemStack remove(int index) {
+        return items.remove(index);
+    }
+
+    @Override
     public Iterator<ItemStack> iterator() {
         if (items == null) items = Collections.synchronizedList(new ArrayList<ItemStack>());
-        if (iterator == null) iterator = items.iterator();
-        return iterator;
+        return items.iterator();
     }
 
     public int size() {
@@ -88,12 +121,33 @@ public class OddItemGroup implements Iterable<ItemStack> {
         return items.get(index);
     }
 
-    public boolean equals(ItemStack i) {
-        if (items == null) return false;
-        if (items.size() != 1) return false;
-        if (items.get(0).getTypeId() != i.getTypeId()) return false;
-        if (items.get(0).getDurability() != i.getDurability()) return false;
-        if (items.get(0).getAmount() != i.getAmount()) return false;
-        return true;
+    public ConfigurationNode toYAML() {
+        ConfigurationNode node = Configuration.getEmptyNode();
+        node.setProperty("data", data);
+        List<String> items = new ArrayList<String>();
+        Iterator<ItemStack> i = iterator();
+        while (i.hasNext()) {
+            ItemStack itemStack = i.next();
+            items.add(OddItem.getAliases(itemStack.getTypeId() + ";" + itemStack.getDurability()).get(0));
+        }
+        node.setProperty("items", items);
+        return node;
+    }
+
+    public void fromYAML(ConfigurationNode node) throws IllegalArgumentException {
+        data = node.getNode("data");
+        for (String item : node.getStringList("items", new ArrayList<String>())) {
+            items.add(OddItem.getItemStack(item));
+        }
+    }
+
+    public String toString() {
+        Iterator<ItemStack> i = iterator();
+        List<String> items = new ArrayList<String>();
+        while (i.hasNext()) {
+            ItemStack itemStack = i.next();
+            items.add(OddItem.getAliases(itemStack.getTypeId() + ";" + itemStack.getDurability()).get(0));
+        }
+        return items.toString();
     }
 }

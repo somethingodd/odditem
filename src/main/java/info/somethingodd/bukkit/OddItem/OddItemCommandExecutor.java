@@ -44,6 +44,17 @@ public class OddItemCommandExecutor implements CommandExecutor {
                 if (args[0].equals("info")) {
                     sender.sendMessage(oddItemBase.logPrefix + OddItem.itemMap.size() + " aliases loaded");
                     return true;
+                } else if (args[0].equals("reload")) {
+                    try {
+                        OddItem.clear();
+                        new OddItemConfiguration(oddItemBase).configure(oddItemBase.configFile);
+                        return true;
+                    } catch (Exception e) {
+                        sender.sendMessage(oddItemBase.logPrefix + "Error!");
+                        oddItemBase.log.severe(oddItemBase.logPrefix + "Error on /reload! - " + e.getMessage());
+                        e.printStackTrace();
+                        oddItemBase.getServer().getPluginManager().disablePlugin(oddItemBase);
+                    }
                 }
                 break;
             case 2:
@@ -59,7 +70,6 @@ public class OddItemCommandExecutor implements CommandExecutor {
                 }
                 break;
         }
-        sender.sendMessage("Invalid command.");
         return false;
     }
 }
