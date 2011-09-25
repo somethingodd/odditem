@@ -16,6 +16,7 @@ package info.somethingodd.bukkit.OddItem;
 import info.somethingodd.bukkit.OddItem.bktree.BKTree;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -43,14 +44,70 @@ public final class OddItem extends OddItemBase {
     }
 
     /**
+     * Compares two Inventory for identical contents ignoring order
+     *
+     * @param a          first Inventory
+     * @param b          second Inventory
+     * @return Inventories are identical
+     */
+    public static boolean compare(Inventory a, Inventory b) {
+        return compare(a, b, true);
+    }
+
+    /**
+     * Compares two Inventory for identical contents ignoring order, and possibly ignoring quantity
+     *
+     * @param a          first Inventory
+     * @param b          second Inventory
+     * @param quantity   whether to check quantity
+     * @return Inventories are identical
+     */
+    public static boolean compare(Inventory a, Inventory b, boolean quantity) {
+        return compare(a, b, true, quantity);
+    }
+
+    /**
+     * Compares two Inventory for identical contents ignoring order, and possibly ignoring durability and quantity
+     *
+     * @param a          first Inventory
+     * @param b          second Inventory
+     * @param durability whether to check durability
+     * @param quantity   whether to check quantity
+     * @return Inventories are identical
+     */
+    public static boolean compare(Inventory a, Inventory b, boolean durability, boolean quantity) {
+        List<ItemStack> ia = new ArrayList<ItemStack>();
+        List<ItemStack> ib = new ArrayList<ItemStack>();
+        for (int i = 0; i < a.getSize(); i++) {
+            ia.add(a.getItem(i));
+        }
+        for (int i = 0; i < b.getSize(); i++) {
+            ib.add(b.getItem(i));
+        }
+        for (int i = 0; i < ia.size(); i++) {
+            boolean inequal = true;
+            for (int j = 0; j < ib.size(); j++) {
+                if (compare(ia.get(i), ib.get(j), durability, quantity)) {
+                    inequal = false;
+                    ia.remove(i);
+                    ib.remove(j);
+                    break;
+                }
+            }
+            if (inequal) return false;
+        }
+        return true;
+    }
+
+    /**
      * Compares two ItemStack material and durability, ignoring quantity
      *
      * @param a ItemStack to compare
      * @param b ItemStack to compare
      * @return ItemStack are equal
      */
-    public static Boolean compare(ItemStack a, ItemStack b) {
-        return compare(a, b, true, false);
+    public static boolean compare(ItemStack a, ItemStack b) {
+        return compare(a, b, false);
     }
 
     /**
@@ -61,7 +118,7 @@ public final class OddItem extends OddItemBase {
      * @param quantity whether to compare quantity
      * @return ItemStack are equal
      */
-    public static Boolean compare(ItemStack a, ItemStack b, Boolean quantity) {
+    public static boolean compare(ItemStack a, ItemStack b, boolean quantity) {
         return compare(a, b, true, quantity);
     }
 
@@ -74,12 +131,84 @@ public final class OddItem extends OddItemBase {
      * @param durability whether to compare durability
      * @return ItemStack are equal
      */
-    public static Boolean compare(ItemStack a, ItemStack b, Boolean durability, Boolean quantity) {
+    public static boolean compare(ItemStack a, ItemStack b, boolean durability, boolean quantity) {
         Boolean ret = a.getTypeId() == b.getTypeId();
         if (durability) ret &= (a.getDurability() == b.getDurability());
         if (ret && quantity) ret &= (a.getAmount() == b.getAmount());
         return ret;
     }
+
+    /**
+     * Returns whether player's inventory contains itemStack
+     * @param player Player to use inventory
+     * @param itemStack ItemStack to look for
+     * @return itemStack is contained in inventory
+     */
+    public static boolean contains(Player player, ItemStack itemStack) {
+        return contains(player, itemStack, true);
+    }
+
+    /**
+     * Returns whether inventory contains itemStack, possibly ignoring durability and quantity
+     *
+     * @param inventory inventory to look in
+     * @param itemStack ItemStack to look for
+     * @return itemStack is contained in inventory
+     */
+    public static boolean contains(Inventory inventory, ItemStack itemStack) {
+        return contains(inventory, itemStack, true);
+    }
+
+    /**
+     * Returns whether player's inventory contains itemStack, possibly ignoring quantity
+     * @param player Player to use inventory
+     * @param itemStack ItemStack to look for
+     * @param quantity whether to check quantity
+     * @return itemStack is contained in inventory
+     */
+    public static boolean contains(Player player, ItemStack itemStack, boolean quantity) {
+        return contains(player, itemStack, true, quantity);
+    }
+
+    /**
+     * Returns whether inventory contains itemStack, possibly ignoring durability and quantity
+     * @param inventory inventory to look in
+     * @param itemStack ItemStack to look for
+     * @param quantity whether to check quantity
+     * @return itemStack is contained in inventory
+     */
+    public static boolean contains(Inventory inventory, ItemStack itemStack, boolean quantity) {
+        return contains(inventory, itemStack, true, quantity);
+    }
+
+    /**
+     * Returns whether player's inventory contains itemStack, possibly ignoring durability and quantity
+     * @param player Player to use inventory
+     * @param itemStack ItemStack to look for
+     * @param durability whether to check durability
+     * @param quantity whether to check quantity
+     * @return itemStack is contained in inventory
+     */
+    public static boolean contains(Player player, ItemStack itemStack, boolean durability, boolean quantity) {
+        return contains(player.getInventory(), itemStack, durability, quantity);
+    }
+
+    /**
+     * Returns whether inventory contains itemStack, possibly ignoring durability and quantity
+     * @param inventory inventory to look in
+     * @param itemStack ItemStack to look for
+     * @param durability whether to check durability
+     * @param quantity whether to check quantity
+     * @return itemStack is contained in inventory
+     */
+    public static boolean contains(Inventory inventory, ItemStack itemStack, boolean durability, boolean quantity) {
+        ItemStack[] contents = inventory.getContents();
+        for (int i = 0; i < contents.length; i++) {
+            if (compare(contents[i], itemStack, durability, quantity)) return true;
+        }
+        return false;
+    }
+
 
     /**
      * Gets all aliases for an item
@@ -139,13 +268,6 @@ public final class OddItem extends OddItemBase {
     }
 
     /**
-     * @return Set&lt;ItemStack&gt; all defined items
-     */
-    public static Set<ItemStack> getItemStacks() {
-        return new HashSet<ItemStack>(itemMap.values());
-    }
-
-    /**
      * Returns an ItemStack of quantity 1 of alias query
      *
      * @param query item name
@@ -183,40 +305,10 @@ public final class OddItem extends OddItemBase {
     }
 
     /**
-     * Returns whether player's inventory contains itemStack
-     * @param player Player to use inventory
-     * @param itemStack ItemStack to look for
-     * @return itemStack is contained in inventory
+     * @return Set&lt;ItemStack&gt; all defined items
      */
-    public static Boolean contains(Player player, ItemStack itemStack) {
-        return contains(player, itemStack, true);
-    }
-
-    /**
-     * Returns whether player's inventory contains itemStack, possibly ignoring quantity
-     * @param player Player to use inventory
-     * @param itemStack ItemStack to look for
-     * @param quantity whether to check quantity
-     * @return itemStack is contained in inventory
-     */
-    public static Boolean contains(Player player, ItemStack itemStack, boolean quantity) {
-        return contains(player, itemStack, true, quantity);
-    }
-
-    /**
-     * Returns whether player's inventory contains itemStack, possibly ignoring durability and quantity
-     * @param player Player to use inventory
-     * @param itemStack ItemStack to look for
-     * @param durability whether to check durability
-     * @param quantity whether to check quantity
-     * @return itemStack is contained in inventory
-     */
-    public static Boolean contains(Player player, ItemStack itemStack, boolean durability, boolean quantity) {
-        ItemStack[] inventory = player.getInventory().getContents();
-        for (int i = 0; i < inventory.length; i++) {
-            if (compare(inventory[i], itemStack, durability, quantity)) return true;
-        }
-        return false;
+    public static Set<ItemStack> getItemStacks() {
+        return new HashSet<ItemStack>(itemMap.values());
     }
 
     /**
@@ -224,9 +316,9 @@ public final class OddItem extends OddItemBase {
      *
      * @param player Player to remove itemStack from
      * @param itemStack ItemStack to remove
-     * @return amount left over (i.e. {@link org.bukkit.entity.Player player} had less than itemStack.getAmount() available)
+     * @return amount left over (i.e. player had less than itemStack.getAmount() available)
      */
-    public static Integer removeItem(Player player, ItemStack itemStack) {
+    public static int removeItem(Player player, ItemStack itemStack) {
         ItemStack[] inventory = player.getInventory().getContents();
         int amount = itemStack.getAmount();
         for (int i = 0; i < inventory.length; i++) {
@@ -253,8 +345,8 @@ public final class OddItem extends OddItemBase {
      * @param itemStacks ItemStacks to remove
      * @return amounts left over (i.e. player had less than itemStack.getAmount() available)
      */
-    public static Integer[] removeItem(Player player, ItemStack[] itemStacks) {
-        Integer[] amount = new Integer[itemStacks.length];
+    public static int[] removeItem(Player player, ItemStack[] itemStacks) {
+        int[] amount = new int[itemStacks.length];
         for (int i = 0; i < itemStacks.length; i++) {
             amount[i] = removeItem(player, itemStacks[i]);
         }
