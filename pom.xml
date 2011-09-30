@@ -5,16 +5,6 @@
     <version>0.8</version>
     <name>OddItem</name>
     <url>http://bukkit.somethingodd.info</url>
-    <repositories>
-        <repository>
-            <id>bukkit</id>
-            <url>http://repo.bukkit.org/artifactory/repo</url>
-        </repository>
-        <repository>
-            <id>somethingodd</id>
-            <url>http://repo.somethingodd.info</url>
-        </repository>
-    </repositories>
     <build>
         <plugins>
             <plugin>
@@ -70,21 +60,35 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.5</version>
+        </dependency>
+        <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>craftbukkit</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.5</version>
+            <groupId>org.getspout</groupId>
+            <artifactId>spoutapi</artifactId>
+            <version>dev-SNAPSHOT</version>
         </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <id>bukkit</id>
+            <url>http://repo.bukkit.org/artifactory/repo</url>
+        </repository>
+        <repository>
+            <id>somethingodd</id>
+            <url>http://repo.somethingodd.info</url>
+        </repository>
+        <repository>
+            <id>spout</id>
+            <url>http://repo.getspout.org</url>
+        </repository>
+    </repositories>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
