@@ -286,7 +286,7 @@ public final class OddItem extends OddItemBase {
      * @return ItemStack
      * @throws IllegalArgumentException exception if item not found, message contains closest match
      */
-    public static ItemStack getItemStack(String query, Integer quantity) throws IllegalArgumentException {
+    public static ItemStack getItemStack(String query, int quantity) throws IllegalArgumentException {
         ItemStack i;
         if (query.startsWith("map")) {
             try {
