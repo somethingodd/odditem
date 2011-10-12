@@ -278,6 +278,11 @@ public final class OddItem extends OddItemBase {
         return getItemStack(query, 1);
     }
 
+    @Deprecated
+    public static ItemStack getItemStack(String query, Integer quantity) throws IllegalArgumentException {
+        return getItemStack(query, quantity.intValue());
+    }
+
     /**
      * Returns an ItemStack of specific quantity of alias query
      *
