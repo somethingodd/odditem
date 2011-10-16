@@ -246,7 +246,7 @@ public final class OddItem extends OddItemBase {
      * @return list of aliases
      */
     public static List<String> getAliases(ItemStack item) {
-        return getAliases(item.getId(), item.getDurability());
+        return getAliases(item.getTypeId(), item.getDurability());
     }
 
     /**
