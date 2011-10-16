@@ -382,7 +382,7 @@ public final class OddItem extends OddItemBase {
      * @param itemStacks ItemStacks to remove
      * @return amounts left over (i.e. player had less than itemStack.getAmount() available)
      */
-    public static int[] removeItem(Player player, ItemStack[] itemStacks) {
+    public static int[] removeItem(Player player, ItemStack... itemStacks) {
         int[] amount = new int[itemStacks.length];
         for (int i = 0; i < itemStacks.length; i++) {
             amount[i] = removeItem(player, itemStacks[i]);
