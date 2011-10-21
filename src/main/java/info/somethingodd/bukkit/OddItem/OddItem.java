@@ -20,6 +20,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NavigableSet;
@@ -209,28 +210,59 @@ public final class OddItem extends OddItemBase {
         return false;
     }
 
+    /**
+     * Gets all aliases for an item, given the item ID and durability
+     *
+     * @param typeId the item ID
+     * @param durability the item's damage value
+     * @return list of aliases
+     */
+    public static List<String> getAliases(int typeId, short durability) {
+        List<String> result = new ArrayList<String>();
+        Collection<String> aliases;
+
+        // Durability can be omitted if it is zero
+        if (durability == 0) {
+            aliases = items.get(Integer.toString(typeId));
+            if (aliases != null) {
+                result.addAll(aliases);
+            }
+        }
+
+        // Try "typeId;durability" pair
+        aliases = items.get(typeId + ";" + durability);
+        if (aliases != null) {
+            result.addAll(aliases);
+        }
+
+        // Return the result
+        return result;
+    }
+
+    /**
+     * Gets all aliases for the item represented by an ItemStack
+     *
+     * @param item the ItemStack to use
+     * @return list of aliases
+     */
+    public static List<String> getAliases(ItemStack item) {
+        return getAliases(item.getTypeId(), item.getDurability());
+    }
 
     /**
      * Gets all aliases for an item
      *
      * @param query name of item
-     * @return names of aliases
-     * @throws IllegalArgumentException exception if no such item exists
+     * @return list of aliases
+     * @throws IllegalArgumentException if no such item exists
      */
     public static List<String> getAliases(String query) throws IllegalArgumentException {
-        List<String> s = new ArrayList<String>();
-        ItemStack i = itemMap.get(query);
-        if (i == null)
-            throw new IllegalArgumentException("no such item");
-        String b = Integer.toString(i.getTypeId());
-        int d = i.getDurability();
-        if (d != 0)
-            b += ";" + Integer.toString(i.getDurability());
-        if (items.get(b) != null)
-            s.addAll(items.get(b));
-        if (d == 0 && items.get(b + ";0") != null)
-            s.addAll(items.get(b + ";0"));
-        return s;
+        ItemStack itemStack = itemMap.get(query);
+        if (itemStack != null) {
+            return getAliases(itemStack);
+        } else {
+            throw new IllegalArgumentException("No such item: " + query);
+        }
     }
 
     /**
@@ -286,7 +318,7 @@ public final class OddItem extends OddItemBase {
     /**
      * Returns an ItemStack of specific quantity of alias query
      *
-     * @param query    item name
+     * @param query item name
      * @param quantity quantity
      * @return ItemStack
      * @throws IllegalArgumentException exception if item not found, message contains closest match
@@ -350,7 +382,7 @@ public final class OddItem extends OddItemBase {
      * @param itemStacks ItemStacks to remove
      * @return amounts left over (i.e. player had less than itemStack.getAmount() available)
      */
-    public static int[] removeItem(Player player, ItemStack[] itemStacks) {
+    public static int[] removeItem(Player player, ItemStack... itemStacks) {
         int[] amount = new int[itemStacks.length];
         for (int i = 0; i < itemStacks.length; i++) {
             amount[i] = removeItem(player, itemStacks[i]);
