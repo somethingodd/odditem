@@ -39,6 +39,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
  */
 public final class OddItemConfiguration {
     private OddItemBase oddItemBase = null;
+    private int version;
 
     public OddItemConfiguration(OddItemBase OddItemBase) {
         this.oddItemBase = OddItemBase;
@@ -53,14 +54,15 @@ public final class OddItemConfiguration {
         OddItem.groups = new ConcurrentSkipListMap<String, OddItemGroup>();
         Configuration configuration = new Configuration(file);
         configuration.load();
+        version = configuration.getInt("configVersion", 0);
         String comparator = configuration.getString("comparator");
         if (comparator != null) {
             if (comparator.equalsIgnoreCase("c") || comparator.equalsIgnoreCase("caverphone")) {
                 OddItem.bktree = new BKTree<String>("c");
                 oddItemBase.log.info(oddItemBase.logPrefix + "Using Caverphone for suggestions.");
-            } else if (comparator.equalsIgnoreCase("k") || comparator.equalsIgnoreCase("cooddItemBase.logne")) {
+            } else if (comparator.equalsIgnoreCase("k") || comparator.equalsIgnoreCase("cologne")) {
                 OddItem.bktree = new BKTree<String>("k");
-                oddItemBase.log.info(oddItemBase.logPrefix + "Using CooddItemBase.lognePhonetic for suggestions.");
+                oddItemBase.log.info(oddItemBase.logPrefix + "Using ColognePhonetic for suggestions.");
             } else if (comparator.equalsIgnoreCase("m") || comparator.equalsIgnoreCase("metaphone")) {
                 OddItem.bktree = new BKTree<String>("m");
                 oddItemBase.log.info(oddItemBase.logPrefix + "Using Metaphone for suggestions.");
@@ -187,5 +189,9 @@ public final class OddItemConfiguration {
             }
         }
         return true;
+    }
+
+    private int getVersion() {
+        return version;
     }
 }

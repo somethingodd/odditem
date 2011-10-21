@@ -16,6 +16,15 @@ package info.somethingodd.bukkit.OddItem;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.logging.Logger;
 
 /**
@@ -50,5 +59,43 @@ public class OddItemBase extends JavaPlugin {
         }
         getCommand("odditem").setExecutor(new OddItemCommandExecutor(this));
         log.info(logPrefix + OddItem.itemMap.size() + " aliases loaded.");
+    }
+
+    private void doUpdate() {
+        BufferedReader bufferedReader;
+        BufferedWriter bufferedWriter;
+        String line;
+        URL url;
+        URLConnection urlConnection;
+        try {
+            url = new URL("http://odditem.bukkit.somethingodd.info/OddItem.yml");
+            try {
+                urlConnection = url.openConnection();
+                urlConnection.setDoOutput(true);
+                try {
+                    bufferedReader = new BufferedReader(new InputStreamReader(url.openStream()));
+                    try {
+                        bufferedWriter = new BufferedWriter(new FileWriter(new File(getDataFolder() + System.getProperty("file.separator") + "OddItem.yml.new")));
+                        try {
+                            while ((line = bufferedReader.readLine()) != null) {
+                                bufferedWriter.write(line);
+                            }
+                            bufferedWriter.flush();
+                            bufferedWriter.close();
+                        } catch (IOException e) {
+                            log.warning(logPrefix + "Failed to write to update file...");
+                        }
+                    } catch (IOException e) {
+                        log.warning(logPrefix + "Failed to open update file...");
+                    }
+                } catch (IOException e) {
+                    log.warning(logPrefix + "Failed to open update stream...");
+                }
+            } catch (IOException e) {
+                log.warning(logPrefix + "Failed to connect to update...");
+            }
+        } catch (MalformedURLException e) {
+            log.severe(logPrefix + "Failed to construct update URL...");
+        }
     }
 }
