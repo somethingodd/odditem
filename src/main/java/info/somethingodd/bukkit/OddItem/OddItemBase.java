@@ -61,7 +61,7 @@ public class OddItemBase extends JavaPlugin {
         log.info(logPrefix + OddItem.itemMap.size() + " aliases loaded.");
     }
 
-    private void doUpdate() {
+    private void download() {
         BufferedReader bufferedReader;
         BufferedWriter bufferedWriter;
         String line;

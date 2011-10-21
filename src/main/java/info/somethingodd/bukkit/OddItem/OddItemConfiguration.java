@@ -54,7 +54,7 @@ public final class OddItemConfiguration {
         OddItem.groups = new ConcurrentSkipListMap<String, OddItemGroup>();
         Configuration configuration = new Configuration(file);
         configuration.load();
-        version = configuration.getInt("configVersion", 0);
+        version = configuration.getInt("listversion", 0);
         String comparator = configuration.getString("comparator");
         if (comparator != null) {
             if (comparator.equalsIgnoreCase("c") || comparator.equalsIgnoreCase("caverphone")) {
@@ -82,7 +82,6 @@ public final class OddItemConfiguration {
         }
         ConfigurationNode itemsNode = configuration.getNode("items");
         for (String i : itemsNode.getKeys()) {
-
             Integer id;
             Short d = 0;
             Material m;
@@ -93,6 +92,7 @@ public final class OddItemConfiguration {
                     m = Material.getMaterial(id);
                 } catch (NumberFormatException e) {
                     m = Material.getMaterial(i.substring(0, i.indexOf(";")));
+                    id = m.getId();
                 }
             } else {
                 try {
@@ -100,13 +100,14 @@ public final class OddItemConfiguration {
                     m = Material.getMaterial(id);
                 } catch (NumberFormatException e) {
                     m = Material.getMaterial(i);
+                    id = m.getId();
                 }
             }
             if (OddItem.items.get(i) == null)
                 OddItem.items.put(i, new ConcurrentSkipListSet<String>(String.CASE_INSENSITIVE_ORDER));
             List<String> itemAliases = new ArrayList<String>();
             itemAliases.addAll(configuration.getStringList("items." + i, new ArrayList<String>()));
-            itemAliases.add(m.getId() + ";" + d);
+            itemAliases.add(id + ";" + d);
             // Add all aliases
             OddItem.items.get(i).addAll(itemAliases);
             if (m != null) {
