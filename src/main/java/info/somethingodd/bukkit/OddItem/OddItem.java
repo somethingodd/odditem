@@ -23,19 +23,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentNavigableMap;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public final class OddItem extends OddItemBase {
-    protected static ConcurrentNavigableMap<String, NavigableSet<String>> items = null;
-    protected static ConcurrentNavigableMap<String, OddItemGroup> groups = null;
-    protected static ConcurrentMap<String, ItemStack> itemMap = null;
-    protected static BKTree<String> bktree = null;
+    protected static Map<String, NavigableSet<String>> items;
+    protected static Map<String, OddItemGroup> groups;
+    protected static Map<String, ItemStack> itemMap;
+    protected static BKTree<String> bktree;
 
     protected static void clear() {
         items = null;
