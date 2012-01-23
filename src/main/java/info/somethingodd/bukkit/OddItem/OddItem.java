@@ -24,14 +24,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.NavigableSet;
 import java.util.Set;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public final class OddItem extends OddItemBase {
-    protected static Map<String, NavigableSet<String>> items;
+    protected static Map<String, Set<String>> items;
     protected static Map<String, OddItemGroup> groups;
     protected static Map<String, ItemStack> itemMap;
     protected static BKTree<String> bktree;

@@ -13,6 +13,8 @@
  */
 package info.somethingodd.bukkit.OddItem;
 
+import info.somethingodd.bukkit.OddItem.bktree.BKTree;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -24,9 +26,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.NavigableSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
@@ -92,11 +97,69 @@ public class OddItemConfiguration2 {
         }
 
         OddItem.itemMap = Collections.synchronizedMap(new HashMap<String, ItemStack>());
-        OddItem.items = Collections.synchronizedMap(new HashMap<String, NavigableSet<String>>());
+        OddItem.items = Collections.synchronizedMap(new HashMap<String, Set<String>>());
         OddItem.groups = Collections.synchronizedMap(new HashMap<String, OddItemGroup>());
 
         String comparator = configuration.getString("comparator");
+        if (comparator.equalsIgnoreCase("c") || comparator.equalsIgnoreCase("caverphone")) {
+            OddItem.bktree = new BKTree<String>("c");
+            oddItemBase.log.info(oddItemBase.logPrefix + "Using Caverphone for suggestions.");
+        } else if (comparator.equalsIgnoreCase("k") || comparator.equalsIgnoreCase("cologne")) {
+            OddItem.bktree = new BKTree<String>("k");
+            oddItemBase.log.info(oddItemBase.logPrefix + "Using ColognePhonetic for suggestions.");
+        } else if (comparator.equalsIgnoreCase("m") || comparator.equalsIgnoreCase("metaphone")) {
+            OddItem.bktree = new BKTree<String>("m");
+            oddItemBase.log.info(oddItemBase.logPrefix + "Using Metaphone for suggestions.");
+        } else if (comparator.equalsIgnoreCase("s") || comparator.equalsIgnoreCase("soundex")) {
+            OddItem.bktree = new BKTree<String>("s");
+            oddItemBase.log.info(oddItemBase.logPrefix + "Using SoundEx for suggestions.");
+        } else if (comparator.equalsIgnoreCase("r") || comparator.equalsIgnoreCase("refinedsoundex")) {
+            OddItem.bktree = new BKTree<String>("r");
+            oddItemBase.log.info(oddItemBase.logPrefix + "Using RefinedSoundEx for suggestions.");
+        } else {
+            OddItem.bktree = new BKTree<String>("l");
+            oddItemBase.log.info(oddItemBase.logPrefix + "Using Levenshtein for suggestions.");
+        }
 
-        ConfigurationSection items = configuration.getConfigurationSection("items");
+        ConfigurationSection itemsSection = configuration.getConfigurationSection("items");
+        for (String i : itemsSection.getKeys(false)) {
+            int id;
+            short d = 0;
+            Material m;
+            if (i.contains(";")) {
+                try {
+                    d = Short.parseShort(i.substring(i.indexOf(";") + 1));
+                    id = Integer.parseInt(i.substring(0, i.indexOf(";")));
+                    m = Material.getMaterial(id);
+                } catch (NumberFormatException e) {
+                    m = Material.getMaterial(i.substring(0, i.indexOf(";")));
+                    id = m.getId();
+                }
+            } else {
+                try {
+                    id = Integer.decode(i);
+                    m = Material.getMaterial(id);
+                } catch (NumberFormatException e) {
+                    m = Material.getMaterial(i);
+                    id = m.getId();
+                }
+            }
+            if (OddItem.items.get(i) == null)
+                OddItem.items.put(i, Collections.synchronizedSet(new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)));
+            List<String> itemAliases = new ArrayList<String>();
+            itemAliases.addAll(itemsSection.getStringList(i));
+            itemAliases.add(id + ";" + d);
+            // Add all aliases
+            OddItem.items.get(i).addAll(itemAliases);
+            if (m != null) {
+                for (String itemAlias : itemAliases) {
+                    OddItem.itemMap.put(itemAlias, new ItemStack(m, 1, d));
+                    OddItem.bktree.add(itemAlias);
+                }
+            } else {
+                oddItemBase.log.warning(oddItemBase.logPrefix + "Invalid format: " + i);
+            }
+        }
+
     }
 }
