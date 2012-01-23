@@ -1,6 +1,6 @@
 /* This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation, "either" version 3 of the License, "or"
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -9,81 +9,122 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, "see" <http://www.gnu.org/licenses/>.
  */
 package info.somethingodd.bukkit.OddItem;
 
 import info.somethingodd.bukkit.OddItem.bktree.BKTree;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.Configuration;
-import org.bukkit.util.config.ConfigurationNode;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.NavigableSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
-public final class OddItemConfiguration {
-    private OddItemBase oddItemBase = null;
-    private int version;
+public class OddItemConfiguration {
+    private OddItemBase oddItemBase;
+    private File configurationFile;
+    private YamlConfiguration defaultConfiguration;
+    private YamlConfiguration configuration;
 
-    public OddItemConfiguration(OddItemBase OddItemBase) {
-        this.oddItemBase = OddItemBase;
+    public OddItemConfiguration(OddItemBase oddItemBase) {
+        this.oddItemBase = oddItemBase;
     }
 
-    public void configure(String fileName) throws Exception {
-        File file = new File(fileName);
-        if (!file.exists())
-            if (!writeConfig(file)) throw new Exception("Could not create configuration file!");
-        OddItem.itemMap = new ConcurrentHashMap<String, ItemStack>();
-        OddItem.items = new ConcurrentSkipListMap<String, NavigableSet<String>>();
-        OddItem.groups = new ConcurrentSkipListMap<String, OddItemGroup>();
-        Configuration configuration = new Configuration(file);
-        configuration.load();
-        version = configuration.getInt("listversion", 0);
-        String comparator = configuration.getString("comparator");
-        if (comparator != null) {
-            if (comparator.equalsIgnoreCase("c") || comparator.equalsIgnoreCase("caverphone")) {
-                OddItem.bktree = new BKTree<String>("c");
-                oddItemBase.log.info(oddItemBase.logPrefix + "Using Caverphone for suggestions.");
-            } else if (comparator.equalsIgnoreCase("k") || comparator.equalsIgnoreCase("cologne")) {
-                OddItem.bktree = new BKTree<String>("k");
-                oddItemBase.log.info(oddItemBase.logPrefix + "Using ColognePhonetic for suggestions.");
-            } else if (comparator.equalsIgnoreCase("m") || comparator.equalsIgnoreCase("metaphone")) {
-                OddItem.bktree = new BKTree<String>("m");
-                oddItemBase.log.info(oddItemBase.logPrefix + "Using Metaphone for suggestions.");
-            } else if (comparator.equalsIgnoreCase("s") || comparator.equalsIgnoreCase("soundex")) {
-                OddItem.bktree = new BKTree<String>("s");
-                oddItemBase.log.info(oddItemBase.logPrefix + "Using SoundEx for suggestions.");
-            } else if (comparator.equalsIgnoreCase("r") || comparator.equalsIgnoreCase("refinedsoundex")) {
-                OddItem.bktree = new BKTree<String>("r");
-                oddItemBase.log.info(oddItemBase.logPrefix + "Using RefinedSoundEx for suggestions.");
-            } else {
-                OddItem.bktree = new BKTree<String>("l");
-                oddItemBase.log.info(oddItemBase.logPrefix + "Using Levenshtein for suggestions.");
+    public void configure() {
+        configurationFile = new File(oddItemBase.getDataFolder() + File.separator + "OddItem.yml");
+        if (!configurationFile.exists()) {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(oddItemBase.getResource("OddItem.yml")));
+            StringBuilder stringBuilder = new StringBuilder();
+            try {
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line);
+                    stringBuilder.append('\n');
+                }
+            } catch (IOException e) {
+                oddItemBase.log.warning(oddItemBase.logPrefix + "Error writing configuration: " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    oddItemBase.log.severe(oddItemBase.logPrefix + "Couldn't close a file!!!" + e.getMessage());
+                    e.printStackTrace();
+                }
             }
+            BufferedWriter bufferedWriter;
+            try {
+                bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configurationFile)));
+                bufferedWriter.write(stringBuilder.toString());
+                bufferedWriter.close();
+            } catch (IOException e) {
+                oddItemBase.log.warning(oddItemBase.logPrefix + "Couldn't write configuration..." + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
+
+        defaultConfiguration = new YamlConfiguration();
+        try {
+            defaultConfiguration.load(oddItemBase.getResource("OddItem.yml"));
+        } catch (Exception e) {
+            oddItemBase.log.warning(oddItemBase.logPrefix + "Error loading default configuration: " + e.getMessage());
+            e.printStackTrace();
+        }
+        configuration = new YamlConfiguration();
+        try {
+            configuration.load(configurationFile);
+            configuration.setDefaults(defaultConfiguration);
+        } catch (Exception e) {
+            oddItemBase.log.warning(oddItemBase.logPrefix + "Error loading configuration: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        OddItem.itemMap = Collections.synchronizedMap(new HashMap<String, ItemStack>());
+        OddItem.items = Collections.synchronizedMap(new HashMap<String, Set<String>>());
+        OddItem.groups = Collections.synchronizedMap(new HashMap<String, OddItemGroup>());
+
+        String comparator = configuration.getString("comparator");
+        if (comparator.equalsIgnoreCase("c") || comparator.equalsIgnoreCase("caverphone")) {
+            OddItem.bktree = new BKTree<String>("c");
+            oddItemBase.log.info(oddItemBase.logPrefix + "Using Caverphone for suggestions.");
+        } else if (comparator.equalsIgnoreCase("k") || comparator.equalsIgnoreCase("cologne")) {
+            OddItem.bktree = new BKTree<String>("k");
+            oddItemBase.log.info(oddItemBase.logPrefix + "Using ColognePhonetic for suggestions.");
+        } else if (comparator.equalsIgnoreCase("m") || comparator.equalsIgnoreCase("metaphone")) {
+            OddItem.bktree = new BKTree<String>("m");
+            oddItemBase.log.info(oddItemBase.logPrefix + "Using Metaphone for suggestions.");
+        } else if (comparator.equalsIgnoreCase("s") || comparator.equalsIgnoreCase("soundex")) {
+            OddItem.bktree = new BKTree<String>("s");
+            oddItemBase.log.info(oddItemBase.logPrefix + "Using SoundEx for suggestions.");
+        } else if (comparator.equalsIgnoreCase("r") || comparator.equalsIgnoreCase("refinedsoundex")) {
+            OddItem.bktree = new BKTree<String>("r");
+            oddItemBase.log.info(oddItemBase.logPrefix + "Using RefinedSoundEx for suggestions.");
         } else {
             OddItem.bktree = new BKTree<String>("l");
             oddItemBase.log.info(oddItemBase.logPrefix + "Using Levenshtein for suggestions.");
         }
-        ConfigurationNode itemsNode = configuration.getNode("items");
-        for (String i : itemsNode.getKeys()) {
-            Integer id;
-            Short d = 0;
+
+        ConfigurationSection itemsSection = configuration.getConfigurationSection("items");
+        for (String i : itemsSection.getKeys(false)) {
+            int id;
+            short d = 0;
             Material m;
             if (i.contains(";")) {
                 try {
@@ -104,9 +145,9 @@ public final class OddItemConfiguration {
                 }
             }
             if (OddItem.items.get(i) == null)
-                OddItem.items.put(i, new ConcurrentSkipListSet<String>(String.CASE_INSENSITIVE_ORDER));
+                OddItem.items.put(i, Collections.synchronizedSet(new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)));
             List<String> itemAliases = new ArrayList<String>();
-            itemAliases.addAll(configuration.getStringList("items." + i, new ArrayList<String>()));
+            itemAliases.addAll(itemsSection.getStringList(i));
             itemAliases.add(id + ";" + d);
             // Add all aliases
             OddItem.items.get(i).addAll(itemAliases);
@@ -119,17 +160,19 @@ public final class OddItemConfiguration {
                 oddItemBase.log.warning(oddItemBase.logPrefix + "Invalid format: " + i);
             }
         }
-        ConfigurationNode groupsNode = configuration.getNode("groups");
+
+        ConfigurationSection groupsSection = configuration.getConfigurationSection("groups");
         if (OddItem.groups != null) {
-            for (String g : groupsNode.getKeys()) {
+            for (String g : groupsSection.getKeys(false)) {
                 List<String> i = new ArrayList<String>();
-                if (groupsNode.getKeys(g) == null) {
-                    i.addAll(groupsNode.getStringList(g, new ArrayList<String>()));
-                    groupsNode.removeProperty(g);
-                    groupsNode.setProperty(g + ".items", i);
-                    groupsNode.setProperty(g + ".data", "null");
+                if (groupsSection.getConfigurationSection(g) == null) {
+                    i.addAll(groupsSection.getStringList(g));
+                    ConfigurationSection gS = groupsSection.createSection(g);
+                    gS.set("items", i);
+                    gS.set("data", null);
+                    groupsSection.set(g, gS);
                 } else {
-                    i.addAll(groupsNode.getStringList(g + ".items", new ArrayList<String>()));
+                    i.addAll(groupsSection.getConfigurationSection(g).getStringList("items"));
                 }
                 List<ItemStack> itemStackList = new ArrayList<ItemStack>();
                 for (String is : i) {
@@ -151,48 +194,11 @@ public final class OddItemConfiguration {
                     } catch (NullPointerException e) {
                         oddItemBase.log.warning(oddItemBase.logPrefix + "NPE adding ItemStack \"" + is + "\" to group " + g);
                     }
-                    OddItem.groups.put(g, new OddItemGroup(itemStackList, groupsNode.getNode(g + ".data")));
+                    OddItem.groups.put(g, new OddItemGroup(itemStackList, groupsSection.getConfigurationSection("data")));
                 }
-                if (OddItem.groups.get(g) != null) oddItemBase.log.info(oddItemBase.logPrefix + "Group " + g + " added.");
+                if (OddItem.groups.get(g) != null)
+                    oddItemBase.log.info(oddItemBase.logPrefix + "Group " + g + " added.");
             }
         }
-        configuration.save();
-    }
-
-    private boolean writeConfig(File file) {
-        FileWriter fw;
-        if (!file.getParentFile().exists()) file.getParentFile().mkdir();
-        try {
-            fw = new FileWriter(file);
-        } catch (IOException e) {
-            oddItemBase.log.severe(oddItemBase.logPrefix + "Couldn't write config file: " + e.getMessage());
-            Bukkit.getServer().getPluginManager().disablePlugin(Bukkit.getServer().getPluginManager().getPlugin("OddItem"));
-            return false;
-        }
-        BufferedReader i = new BufferedReader(new InputStreamReader(new BufferedInputStream(oddItemBase.getClass().getResourceAsStream("/OddItem.yml"))));
-        BufferedWriter o = new BufferedWriter(fw);
-        try {
-            String line = i.readLine();
-            while (line != null) {
-                o.write(line + System.getProperty("line.separator"));
-                line = i.readLine();
-            }
-            oddItemBase.log.info(oddItemBase.logPrefix + "Wrote default config");
-        } catch (IOException e) {
-            oddItemBase.log.severe(oddItemBase.logPrefix + "Error writing config: " + e.getMessage());
-        } finally {
-            try {
-                o.close();
-                i.close();
-            } catch (IOException e) {
-                oddItemBase.log.severe(oddItemBase.logPrefix + "Error saving config: " + e.getMessage());
-                Bukkit.getServer().getPluginManager().disablePlugin(Bukkit.getServer().getPluginManager().getPlugin("OddItem"));
-            }
-        }
-        return true;
-    }
-
-    private int getVersion() {
-        return version;
     }
 }

@@ -13,9 +13,8 @@
  */
 package info.somethingodd.bukkit.OddItem;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.Configuration;
-import org.bukkit.util.config.ConfigurationNode;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,29 +25,25 @@ import java.util.List;
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public class OddItemGroup implements Iterable<ItemStack> {
-    private ConfigurationNode data = null;
+    private ConfigurationSection data = null;
     private List<ItemStack> items = null;
     private String name = null;
 
     public OddItemGroup() {
     }
 
-    public OddItemGroup(List<ItemStack> i, ConfigurationNode data) {
+    public OddItemGroup(List<ItemStack> i, ConfigurationSection data) {
         items = Collections.synchronizedList(new ArrayList<ItemStack>());
         for (ItemStack is : i)
             items.add(is);
         this.data = data;
     }
 
-    public OddItemGroup(ConfigurationNode node) {
-        fromYAML(node);
-    }
-
-    public ConfigurationNode getData() {
+    public ConfigurationSection getData() {
         return data;
     }
 
-    public void setData(ConfigurationNode data) {
+    public void setData(ConfigurationSection data) {
         this.data = data;
     }
 
@@ -119,35 +114,5 @@ public class OddItemGroup implements Iterable<ItemStack> {
 
     public ItemStack get(int index) throws IndexOutOfBoundsException {
         return items.get(index);
-    }
-
-    public ConfigurationNode toYAML() {
-        ConfigurationNode node = Configuration.getEmptyNode();
-        node.setProperty("data", data);
-        List<String> items = new ArrayList<String>();
-        Iterator<ItemStack> i = iterator();
-        while (i.hasNext()) {
-            ItemStack itemStack = i.next();
-            items.add(OddItem.getAliases(itemStack.getTypeId() + ";" + itemStack.getDurability()).get(0));
-        }
-        node.setProperty("items", items);
-        return node;
-    }
-
-    public void fromYAML(ConfigurationNode node) throws IllegalArgumentException {
-        data = node.getNode("data");
-        for (String item : node.getStringList("items", new ArrayList<String>())) {
-            items.add(OddItem.getItemStack(item));
-        }
-    }
-
-    public String toString() {
-        Iterator<ItemStack> i = iterator();
-        List<String> items = new ArrayList<String>();
-        while (i.hasNext()) {
-            ItemStack itemStack = i.next();
-            items.add(OddItem.getAliases(itemStack.getTypeId() + ";" + itemStack.getDurability()).get(0));
-        }
-        return items.toString();
     }
 }
