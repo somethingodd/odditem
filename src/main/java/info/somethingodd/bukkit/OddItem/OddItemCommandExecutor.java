@@ -47,7 +47,7 @@ public class OddItemCommandExecutor implements CommandExecutor {
                 } else if (args[0].equals("reload")) {
                     try {
                         OddItem.clear();
-                        new OddItemConfiguration(oddItemBase).configure(oddItemBase.configFile);
+                        new OddItemConfiguration(oddItemBase).configure();
                         return true;
                     } catch (Exception e) {
                         sender.sendMessage(oddItemBase.logPrefix + "Error!");
