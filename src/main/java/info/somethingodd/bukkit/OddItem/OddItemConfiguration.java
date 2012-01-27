@@ -19,13 +19,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,38 +42,6 @@ public class OddItemConfiguration {
 
     public void configure() {
         configurationFile = new File(oddItemBase.getDataFolder() + File.separator + "OddItem.yml");
-        if (!configurationFile.exists()) {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(oddItemBase.getResource("OddItem.yml")));
-            StringBuilder stringBuilder = new StringBuilder();
-            try {
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    stringBuilder.append(line);
-                    stringBuilder.append('\n');
-                }
-            } catch (IOException e) {
-                oddItemBase.log.warning(oddItemBase.logPrefix + "Error writing configuration: " + e.getMessage());
-                e.printStackTrace();
-            } finally {
-                try {
-                    bufferedReader.close();
-                } catch (IOException e) {
-                    oddItemBase.log.severe(oddItemBase.logPrefix + "Couldn't close a file!!!" + e.getMessage());
-                    e.printStackTrace();
-                }
-            }
-            BufferedWriter bufferedWriter;
-            try {
-                bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configurationFile)));
-                bufferedWriter.write(stringBuilder.toString());
-                bufferedWriter.close();
-            } catch (IOException e) {
-                oddItemBase.log.warning(oddItemBase.logPrefix + "Couldn't write configuration..." + e.getMessage());
-                e.printStackTrace();
-            }
-        }
-
-
         defaultConfiguration = new YamlConfiguration();
         try {
             defaultConfiguration.load(oddItemBase.getResource("OddItem.yml"));
@@ -91,6 +53,7 @@ public class OddItemConfiguration {
         try {
             configuration.load(configurationFile);
             configuration.setDefaults(defaultConfiguration);
+            configuration.save(configurationFile);
         } catch (Exception e) {
             oddItemBase.log.warning(oddItemBase.logPrefix + "Error loading configuration: " + e.getMessage());
             e.printStackTrace();
