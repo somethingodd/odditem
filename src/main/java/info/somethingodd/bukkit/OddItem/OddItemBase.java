@@ -48,42 +48,4 @@ public class OddItemBase extends JavaPlugin {
         getCommand("odditem").setExecutor(new OddItemCommandExecutor(this));
         log.info(logPrefix + OddItem.itemMap.size() + " aliases loaded.");
     }
-
-    /*private void download() {
-        BufferedReader bufferedReader;
-        BufferedWriter bufferedWriter;
-        String line;
-        URL url;
-        URLConnection urlConnection;
-        try {
-            url = new URL("http://odditem.bukkit.somethingodd.info/OddItem.yml");
-            try {
-                urlConnection = url.openConnection();
-                urlConnection.setDoOutput(true);
-                try {
-                    bufferedReader = new BufferedReader(new InputStreamReader(url.openStream()));
-                    try {
-                        bufferedWriter = new BufferedWriter(new FileWriter(new File(getDataFolder() + System.getProperty("file.separator") + "OddItem.yml.new")));
-                        try {
-                            while ((line = bufferedReader.readLine()) != null) {
-                                bufferedWriter.write(line);
-                            }
-                            bufferedWriter.flush();
-                            bufferedWriter.close();
-                        } catch (IOException e) {
-                            log.warning(logPrefix + "Failed to write to update file...");
-                        }
-                    } catch (IOException e) {
-                        log.warning(logPrefix + "Failed to open update file...");
-                    }
-                } catch (IOException e) {
-                    log.warning(logPrefix + "Failed to open update stream...");
-                }
-            } catch (IOException e) {
-                log.warning(logPrefix + "Failed to connect to update...");
-            }
-        } catch (MalformedURLException e) {
-            log.severe(logPrefix + "Failed to construct update URL...");
-        }
-    }*/
 }
