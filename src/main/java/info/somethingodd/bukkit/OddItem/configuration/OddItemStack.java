@@ -73,4 +73,14 @@ public class OddItemStack implements ConfigurationSerializable {
         serialized.put(name(), names);
         return serialized;
     }
+
+    public OddItemStack deserialize(Map<String, Object> serialized) {
+        String id = serialized.keySet().iterator().next();
+        List<String> names = (List<String>) serialized.get(item);
+        return new OddItemStack(names, id);
+    }
+
+    public OddItemStack valueOf(Map<String, Object> serialized) {
+        return deserialize(serialized);
+    }
 }
