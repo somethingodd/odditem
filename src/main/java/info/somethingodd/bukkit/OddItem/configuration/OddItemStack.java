@@ -17,6 +17,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -29,21 +30,23 @@ public class OddItemStack implements ConfigurationSerializable {
     private List<String> names;
     private ItemStack item;
 
-    public OddItemStack(List<String> names, String id) {
-        Collections.copy(this.names, names);
+    public OddItemStack(List<String> names, int typeId, short damage) {
+        this.names = new ArrayList<String>();
+        this.names.addAll(names);
+        item = new ItemStack(typeId, 1, damage);
+    }
+
+    public OddItemStack(Map<String, Object> serialized) {
+        String id = serialized.keySet().iterator().next();
+        names = (ArrayList<String>) serialized.get(id);
         short damage = 0;
         int typeId = 0;
         if (id.contains(";")) {
-            damage = Short.valueOf(id.substring(id.indexOf(";"), id.length()));
+            damage = Short.valueOf(id.substring(id.indexOf(";") + 1, id.length()));
             typeId = Integer.valueOf(id.substring(0, id.indexOf(";")));
         } else {
             typeId = Integer.valueOf(id);
         }
-        item = new ItemStack(typeId, 1, damage);
-    }
-
-    public OddItemStack(List<String> names, int typeId, short damage) {
-        Collections.copy(this.names, names);
         item = new ItemStack(typeId, 1, damage);
     }
 
@@ -59,7 +62,7 @@ public class OddItemStack implements ConfigurationSerializable {
         return item.getType();
     }
 
-    public String name() {
+    public String id() {
         return new StringBuilder().append(getTypeId()).append(";").append(getDurability()).toString();
     }
 
@@ -70,17 +73,29 @@ public class OddItemStack implements ConfigurationSerializable {
     @Override
     public Map<String, Object> serialize() {
         Map<String, Object> serialized = new HashMap<String, Object>();
-        serialized.put(name(), names);
+        serialized.put(id(), names);
         return serialized;
     }
 
-    public OddItemStack deserialize(Map<String, Object> serialized) {
-        String id = serialized.keySet().iterator().next();
-        List<String> names = (List<String>) serialized.get(item);
-        return new OddItemStack(names, id);
+    public static OddItemStack deserialize(Map<String, Object> serialized) {
+        return new OddItemStack(serialized);
     }
 
-    public OddItemStack valueOf(Map<String, Object> serialized) {
-        return deserialize(serialized);
+    public static OddItemStack valueOf(Map<String, Object> serialized) {
+        return new OddItemStack(serialized);
+    }
+
+    public int hashCode() {
+        int hashCode = 17;
+        hashCode += getTypeId();
+        hashCode += getDurability();
+        return hashCode;
+    }
+
+    public boolean equals(OddItemStack other) {
+        if (this.getTypeId() != other.getTypeId()) return false;
+        if (this.getDurability() != other.getDurability()) return false;
+        if (!(this.names.containsAll(other.names) && other.names.containsAll(names))) return false;
+        return true;
     }
 }
