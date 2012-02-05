@@ -103,12 +103,12 @@ public class BKTree <E> {
 	}
 
     private class Distance {
-        private Caverphone2 c = null;
-        private ColognePhonetic k = null;
+        private Caverphone2 c;
+        private ColognePhonetic k;
         private LevenshteinDistance l = new LevenshteinDistance();
-        private Metaphone m = null;
-        private RefinedSoundex r = null;
-        private Soundex s = null;
+        private Metaphone m;
+        private RefinedSoundex r;
+        private Soundex s;
 
         public Distance(String comparator) {
             if (comparator.equals("c"))
@@ -117,10 +117,11 @@ public class BKTree <E> {
                 this.k = new ColognePhonetic();
             else if (comparator.equals("m"))
                 this.m = new Metaphone();
-            else if (comparator.equals("r"))
-                this.r = new RefinedSoundex();
             else if (comparator.equals("s"))
                 this.s = new Soundex();
+            else
+                this.r = new RefinedSoundex();
+
         }
 
         public int distance(E a, E b) {

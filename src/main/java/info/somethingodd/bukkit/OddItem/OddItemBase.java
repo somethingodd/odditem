@@ -22,8 +22,8 @@ import java.util.logging.Logger;
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public class OddItemBase extends JavaPlugin {
-    protected Logger log = null;
-    protected String logPrefix = null;
+    protected Logger log;
+    protected String logPrefix;
 
     @Override
     public void onDisable() {

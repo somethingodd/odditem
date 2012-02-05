@@ -32,24 +32,22 @@ import java.util.TreeSet;
  */
 public class OddItemConfiguration {
     private OddItemBase oddItemBase;
-    private File configurationFile;
-    private YamlConfiguration defaultConfiguration;
-    private YamlConfiguration configuration;
+    private static String comparator = "l";
 
     public OddItemConfiguration(OddItemBase oddItemBase) {
         this.oddItemBase = oddItemBase;
     }
 
     public void configure() {
-        configurationFile = new File(oddItemBase.getDataFolder() + File.separator + "OddItem.yml");
-        defaultConfiguration = new YamlConfiguration();
+        File configurationFile = new File(oddItemBase.getDataFolder() + File.separator + "OddItem.yml");
+        YamlConfiguration defaultConfiguration = new YamlConfiguration();
         try {
             defaultConfiguration.load(oddItemBase.getResource("OddItem.yml"));
         } catch (Exception e) {
             oddItemBase.log.warning(oddItemBase.logPrefix + "Error loading default configuration: " + e.getMessage());
             e.printStackTrace();
         }
-        configuration = new YamlConfiguration();
+        YamlConfiguration configuration = new YamlConfiguration();
         try {
             configuration.load(configurationFile);
             configuration.setDefaults(defaultConfiguration);
@@ -81,6 +79,7 @@ public class OddItemConfiguration {
             oddItemBase.log.info(oddItemBase.logPrefix + "Using RefinedSoundEx for suggestions.");
         } else {
             OddItem.bktree = new BKTree<String>("l");
+
             oddItemBase.log.info(oddItemBase.logPrefix + "Using Levenshtein for suggestions.");
         }
 
@@ -163,5 +162,9 @@ public class OddItemConfiguration {
                     oddItemBase.log.info(oddItemBase.logPrefix + "Group " + g + " added.");
             }
         }
+    }
+
+    public static String getComparator() {
+        return new String(comparator);
     }
 }
