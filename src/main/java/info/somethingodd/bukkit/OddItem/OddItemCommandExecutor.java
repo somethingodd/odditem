@@ -17,6 +17,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
@@ -40,6 +41,12 @@ public class OddItemCommandExecutor implements CommandExecutor {
             return true;
         }
         switch (args.length) {
+            case 0:
+                if (sender instanceof Player) {
+                    ItemStack itemStack = ((Player) sender).getItemInHand();
+                    return true;
+                }
+                break;
             case 1:
                 if (args[0].equals("info")) {
                     sender.sendMessage(oddItemBase.logPrefix + OddItem.itemMap.size() + " aliases loaded");

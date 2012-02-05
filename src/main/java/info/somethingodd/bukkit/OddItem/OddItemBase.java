@@ -13,7 +13,9 @@
  */
 package info.somethingodd.bukkit.OddItem;
 
+import info.somethingodd.bukkit.OddItem.configuration.OddItemAliases;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Logger;
@@ -47,5 +49,9 @@ public class OddItemBase extends JavaPlugin {
         }
         getCommand("odditem").setExecutor(new OddItemCommandExecutor(this));
         log.info(logPrefix + OddItem.itemMap.size() + " aliases loaded.");
+    }
+
+    static {
+        ConfigurationSerialization.registerClass(OddItemAliases.class);
     }
 }

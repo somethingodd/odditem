@@ -20,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -68,11 +69,11 @@ public class OddItemAliases implements ConfigurationSerializable {
     }
 
     public Map<String, Set<String>> getAliases() {
-        return aliases;
+        return Collections.synchronizedMap(Collections.unmodifiableMap(aliases));
     }
 
     public Map<String, ItemStack> getItems() {
-        return items;
+        return Collections.synchronizedMap(Collections.unmodifiableMap(items));
     }
 
     public BKTree<String> getSuggestions() {
