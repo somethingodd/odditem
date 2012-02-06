@@ -13,15 +13,7 @@
  */
 package info.somethingodd.bukkit.OddItem;
 
-import info.somethingodd.bukkit.OddItem.bktree.BKTree;
-import info.somethingodd.bukkit.OddItem.configuration.OddItemAliases;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
-
-import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Set;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
@@ -34,49 +26,10 @@ public class OddItemConfiguration {
     }
 
     public void configure() {
-        File configurationFile = new File(oddItemBase.getDataFolder() + File.separator + "OddItem.yml");
-        YamlConfiguration defaultConfiguration = new YamlConfiguration();
-        try {
-            defaultConfiguration.load(oddItemBase.getResource("OddItem.yml"));
-        } catch (Exception e) {
-            oddItemBase.log.warning(oddItemBase.logPrefix + "Error loading default configuration: " + e.getMessage());
-            e.printStackTrace();
-        }
-        YamlConfiguration configuration = new YamlConfiguration();
-        try {
-            configuration.load(configurationFile);
-            configuration.setDefaults(defaultConfiguration);
-            configuration.save(configurationFile);
-        } catch (Exception e) {
-            oddItemBase.log.warning(oddItemBase.logPrefix + "Error loading configuration: " + e.getMessage());
-            e.printStackTrace();
-        }
+        YamlConfiguration yamlConfiguration = (YamlConfiguration) oddItemBase.getConfig();
+        yamlConfiguration.getString("comparator", "r");
 
-        String comparator = configuration.getString("comparator");
-        if (comparator.equalsIgnoreCase("c") || comparator.equalsIgnoreCase("caverphone")) {
-            OddItem.bktree = new BKTree<String>("c");
-            oddItemBase.log.info(oddItemBase.logPrefix + "Using Caverphone for suggestions.");
-        } else if (comparator.equalsIgnoreCase("k") || comparator.equalsIgnoreCase("cologne")) {
-            OddItem.bktree = new BKTree<String>("k");
-            oddItemBase.log.info(oddItemBase.logPrefix + "Using ColognePhonetic for suggestions.");
-        } else if (comparator.equalsIgnoreCase("m") || comparator.equalsIgnoreCase("metaphone")) {
-            OddItem.bktree = new BKTree<String>("m");
-            oddItemBase.log.info(oddItemBase.logPrefix + "Using Metaphone for suggestions.");
-        } else if (comparator.equalsIgnoreCase("s") || comparator.equalsIgnoreCase("soundex")) {
-            OddItem.bktree = new BKTree<String>("s");
-            oddItemBase.log.info(oddItemBase.logPrefix + "Using SoundEx for suggestions.");
-        } else if (comparator.equalsIgnoreCase("r") || comparator.equalsIgnoreCase("refinedsoundex")) {
-            OddItem.bktree = new BKTree<String>("r");
-            oddItemBase.log.info(oddItemBase.logPrefix + "Using RefinedSoundEx for suggestions.");
-        } else {
-            OddItem.bktree = new BKTree<String>("l");
 
-            oddItemBase.log.info(oddItemBase.logPrefix + "Using Levenshtein for suggestions.");
-        }
-
-        OddItem.items = Collections.synchronizedMap(new HashMap<String, ItemStack>());
-        OddItem.aliases = Collections.synchronizedMap(new HashMap<ItemStack, Set<String>>());
-        OddItem.oddItemAliases = (OddItemAliases) configuration.get("items");
     }
 
     public static String getComparator() {

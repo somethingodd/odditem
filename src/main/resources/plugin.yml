@@ -1,12 +1,13 @@
 name: OddItem
 main: info.somethingodd.bukkit.OddItem.OddItemBase
-version: 0.8.1
+version: 0.9
 website: http://bukkit.somethingodd.info
 author: petteyg359
 description: Item database stuff.
 commands:
     odditem:
         aliases: oi
+        permission: odditem
         usage:  |
                 /<command> [aliases item]|[info]|[list]|[reload]
                 aliases - Lists aliases for item

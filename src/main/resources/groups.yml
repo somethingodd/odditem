@@ -1,0 +1,7 @@
+groups:
+    oddtransport:
+        data:
+            type: [whitelist, kit]
+            priority: 1
+        items: ['lapisblock,2', greendye, reddye, air]
+        plugin: oddgive
