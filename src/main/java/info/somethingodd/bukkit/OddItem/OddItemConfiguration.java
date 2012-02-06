@@ -14,25 +14,20 @@
 package info.somethingodd.bukkit.OddItem;
 
 import info.somethingodd.bukkit.OddItem.bktree.BKTree;
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
+import info.somethingodd.bukkit.OddItem.configuration.OddItemAliases;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public class OddItemConfiguration {
-    private OddItemBase oddItemBase;
-    private static String comparator = "l";
+    private final OddItemBase oddItemBase;
 
     public OddItemConfiguration(OddItemBase oddItemBase) {
         this.oddItemBase = oddItemBase;
@@ -57,10 +52,6 @@ public class OddItemConfiguration {
             e.printStackTrace();
         }
 
-        OddItem.itemMap = Collections.synchronizedMap(new HashMap<String, ItemStack>());
-        OddItem.items = Collections.synchronizedMap(new HashMap<String, Set<String>>());
-        OddItem.groups = Collections.synchronizedMap(new HashMap<String, OddItemGroup>());
-
         String comparator = configuration.getString("comparator");
         if (comparator.equalsIgnoreCase("c") || comparator.equalsIgnoreCase("caverphone")) {
             OddItem.bktree = new BKTree<String>("c");
@@ -83,88 +74,13 @@ public class OddItemConfiguration {
             oddItemBase.log.info(oddItemBase.logPrefix + "Using Levenshtein for suggestions.");
         }
 
-        ConfigurationSection itemsSection = configuration.getConfigurationSection("items");
-        for (String i : itemsSection.getKeys(false)) {
-            int id;
-            short d = 0;
-            Material m;
-            if (i.contains(";")) {
-                try {
-                    d = Short.parseShort(i.substring(i.indexOf(";") + 1));
-                    id = Integer.parseInt(i.substring(0, i.indexOf(";")));
-                    m = Material.getMaterial(id);
-                } catch (NumberFormatException e) {
-                    m = Material.getMaterial(i.substring(0, i.indexOf(";")));
-                    id = m.getId();
-                }
-            } else {
-                try {
-                    id = Integer.decode(i);
-                    m = Material.getMaterial(id);
-                } catch (NumberFormatException e) {
-                    m = Material.getMaterial(i);
-                    id = m.getId();
-                }
-            }
-            if (OddItem.items.get(i) == null)
-                OddItem.items.put(i, Collections.synchronizedSet(new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)));
-            List<String> itemAliases = new ArrayList<String>();
-            itemAliases.addAll(itemsSection.getStringList(i));
-            itemAliases.add(id + ";" + d);
-            // Add all aliases
-            OddItem.items.get(i).addAll(itemAliases);
-            if (m != null) {
-                for (String itemAlias : itemAliases) {
-                    OddItem.itemMap.put(itemAlias, new ItemStack(m, 1, d));
-                    OddItem.bktree.add(itemAlias);
-                }
-            } else {
-                oddItemBase.log.warning(oddItemBase.logPrefix + "Invalid format: " + i);
-            }
-        }
-
-        ConfigurationSection groupsSection = configuration.getConfigurationSection("groups");
-        if (OddItem.groups != null) {
-            for (String g : groupsSection.getKeys(false)) {
-                List<String> i = new ArrayList<String>();
-                if (groupsSection.getConfigurationSection(g) == null) {
-                    i.addAll(groupsSection.getStringList(g));
-                    ConfigurationSection gS = groupsSection.createSection(g);
-                    gS.set("items", i);
-                    gS.set("data", null);
-                    groupsSection.set(g, gS);
-                } else {
-                    i.addAll(groupsSection.getConfigurationSection(g).getStringList("items"));
-                }
-                List<ItemStack> itemStackList = new ArrayList<ItemStack>();
-                for (String is : i) {
-                    ItemStack itemStack;
-                    Integer q = null;
-                    try {
-                        if (is.contains(",")) {
-                            q = Integer.valueOf(is.substring(is.indexOf(",") + 1));
-                            is = is.substring(0, is.indexOf(","));
-                            itemStack = OddItem.getItemStack(is, q);
-                        } else {
-                            itemStack = OddItem.getItemStack(is);
-                        }
-                        oddItemBase.log.info(oddItemBase.logPrefix + "Adding " + is + (q != null ? " x" + q : "") + " to group \"" + g + "\"");
-                        if (itemStack != null) itemStackList.add(itemStack);
-                    } catch (IllegalArgumentException e) {
-                        oddItemBase.log.warning(oddItemBase.logPrefix + "Invalid item \"" + is + "\" in group \"" + g + "\"");
-                        OddItem.groups.remove(g);
-                    } catch (NullPointerException e) {
-                        oddItemBase.log.warning(oddItemBase.logPrefix + "NPE adding ItemStack \"" + is + "\" to group " + g);
-                    }
-                    OddItem.groups.put(g, new OddItemGroup(itemStackList, groupsSection.getConfigurationSection("data")));
-                }
-                if (OddItem.groups.get(g) != null)
-                    oddItemBase.log.info(oddItemBase.logPrefix + "Group " + g + " added.");
-            }
-        }
+        OddItem.items = Collections.synchronizedMap(new HashMap<String, ItemStack>());
+        OddItem.aliases = Collections.synchronizedMap(new HashMap<ItemStack, Set<String>>());
+        OddItem.oddItemAliases = (OddItemAliases) configuration.get("items");
     }
 
     public static String getComparator() {
+        String comparator = "l";
         return new String(comparator);
     }
 }

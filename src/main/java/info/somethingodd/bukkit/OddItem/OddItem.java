@@ -14,14 +14,13 @@
 package info.somethingodd.bukkit.OddItem;
 
 import info.somethingodd.bukkit.OddItem.bktree.BKTree;
+import info.somethingodd.bukkit.OddItem.configuration.OddItemAliases;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,16 +29,16 @@ import java.util.Set;
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public final class OddItem {
-    protected static Map<String, Set<String>> items;
-    protected static Map<String, OddItemGroup> groups;
-    protected static Map<String, ItemStack> itemMap;
+    protected static Map<ItemStack, Set<String>> aliases;
     protected static BKTree<String> bktree;
+    protected static Map<String, ItemStack> items;
+    protected static OddItemAliases oddItemAliases;
 
     protected static void clear() {
-        items = null;
-        groups = null;
-        itemMap = null;
+        aliases = null;
         bktree = null;
+        items = null;
+        oddItemAliases = null;
     }
 
     /**
@@ -209,42 +208,13 @@ public final class OddItem {
     }
 
     /**
-     * Gets all aliases for an item, given the item ID and durability
-     *
-     * @param typeId the item ID
-     * @param durability the item's damage value
-     * @return list of aliases
-     */
-    public static List<String> getAliases(int typeId, short durability) {
-        List<String> result = new ArrayList<String>();
-        Collection<String> aliases;
-
-        // Durability can be omitted if it is zero
-        if (durability == 0) {
-            aliases = items.get(Integer.toString(typeId));
-            if (aliases != null) {
-                result.addAll(aliases);
-            }
-        }
-
-        // Try "typeId;durability" pair
-        aliases = items.get(typeId + ";" + durability);
-        if (aliases != null) {
-            result.addAll(aliases);
-        }
-
-        // Return the result
-        return result;
-    }
-
-    /**
      * Gets all aliases for the item represented by an ItemStack
      *
-     * @param item the ItemStack to use
-     * @return list of aliases
+     * @param itemStack the ItemStack to use
+     * @return List of aliases
      */
-    public static List<String> getAliases(ItemStack item) {
-        return getAliases(item.getTypeId(), item.getDurability());
+    public static Set<String> getAliases(ItemStack itemStack) {
+        return aliases.get(itemStack);
     }
 
     /**
@@ -254,47 +224,13 @@ public final class OddItem {
      * @return list of aliases
      * @throws IllegalArgumentException if no such item exists
      */
-    public static List<String> getAliases(String query) throws IllegalArgumentException {
-        ItemStack itemStack = itemMap.get(query);
+    public static Set<String> getAliases(String query) throws IllegalArgumentException {
+        ItemStack itemStack = items.get(query);
         if (itemStack != null) {
             return getAliases(itemStack);
         } else {
             throw new IllegalArgumentException("No such item: " + query);
         }
-    }
-
-    /**
-     * Returns all group names
-     *
-     * @return list of all groups
-     */
-    public static List<String> getGroups() {
-        return getGroups("");
-    }
-
-    /**
-     * Returns group names that start with string
-     *
-     * @param group name to look for
-     * @return list of matching groups
-     */
-    public static List<String> getGroups(String group) {
-        List<String> gs = new ArrayList<String>();
-        for (String g : groups.keySet()) {
-            if (group.equals("") || (g.length() >= group.length() && g.regionMatches(true, 0, group, 0, group.length())))
-                gs.add(g);
-        }
-        return gs;
-    }
-
-    /**
-     * @param query item group name
-     * @return OddItemGroup
-     * @throws IllegalArgumentException exception if no such group exists
-     */
-    public static OddItemGroup getItemGroup(String query) throws IllegalArgumentException {
-        if (groups.get(query) == null) throw new IllegalArgumentException("no such group");
-        return groups.get(query);
     }
 
     /**
@@ -330,7 +266,7 @@ public final class OddItem {
                 i = new ItemStack(Material.MAP, 1, (short) 0);
             }
         } else {
-            i = itemMap.get(query);
+            i = items.get(query);
         }
         if (i != null && !query.startsWith("map")) {
             i.setAmount(quantity);
@@ -343,7 +279,7 @@ public final class OddItem {
      * @return Set&lt;ItemStack&gt; all defined items
      */
     public static Set<ItemStack> getItemStacks() {
-        return new HashSet<ItemStack>(itemMap.values());
+        return aliases.keySet();
     }
 
     /**

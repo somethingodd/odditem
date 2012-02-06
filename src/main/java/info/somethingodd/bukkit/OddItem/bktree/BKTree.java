@@ -34,9 +34,8 @@ import java.util.HashMap;
 public class BKTree <E> {
 
 	private Node root = null;
-	private HashMap<E, Integer> matches;
-	private E bestTerm;
-    private Distance distance;
+    private E bestTerm;
+    private final Distance distance;
 
 	public BKTree(String comparator) {
 		this.distance = new Distance(comparator);
@@ -66,7 +65,7 @@ public class BKTree <E> {
 	 * @return matching objects
 	 */
 	public HashMap<E, Integer> query(E searchObject, int threshold) {
-		matches = new HashMap<E,Integer>();
+        HashMap<E, Integer> matches = new HashMap<E, Integer>();
 		root.query(searchObject, threshold, matches);
 		return matches;
 	}
@@ -105,7 +104,7 @@ public class BKTree <E> {
     private class Distance {
         private Caverphone2 c;
         private ColognePhonetic k;
-        private LevenshteinDistance l = new LevenshteinDistance();
+        private final LevenshteinDistance l = new LevenshteinDistance();
         private Metaphone m;
         private RefinedSoundex r;
         private Soundex s;
@@ -152,8 +151,8 @@ public class BKTree <E> {
 
 	private class Node {
 
-		E term;
-		HashMap<Integer, Node> children;
+		final E term;
+		final HashMap<Integer, Node> children;
 
 		public Node(E term) {
 			this.term = term;

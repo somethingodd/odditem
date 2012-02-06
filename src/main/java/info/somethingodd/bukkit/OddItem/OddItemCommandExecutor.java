@@ -49,7 +49,10 @@ public class OddItemCommandExecutor implements CommandExecutor {
                 break;
             case 1:
                 if (args[0].equals("info")) {
-                    sender.sendMessage(oddItemBase.logPrefix + OddItem.itemMap.size() + " aliases loaded");
+                    int size = 0;
+                    for (ItemStack key : OddItem.aliases.keySet())
+                        size += OddItem.aliases.get(key).size();
+                    sender.sendMessage(oddItemBase.logPrefix + OddItem.items.size() + " items with " + size + " aliases loaded");
                     return true;
                 } else if (args[0].equals("reload")) {
                     try {

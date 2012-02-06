@@ -15,6 +15,8 @@ package info.somethingodd.bukkit.OddItem.configuration;
 
 import info.somethingodd.bukkit.OddItem.OddItemConfiguration;
 import info.somethingodd.bukkit.OddItem.bktree.BKTree;
+import info.somethingodd.bukkit.OddItem.util.AlphanumComparator;
+import info.somethingodd.bukkit.OddItem.util.ItemStackComparator;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 
@@ -23,29 +25,27 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public class OddItemAliases implements ConfigurationSerializable {
-    private BKTree<String> suggestions;
-    private Map<String, ItemStack> items;
-    private Map<String, Set<String>> aliases;
+    private final BKTree<String> suggestions;
+    private final Map<String, ItemStack> items;
+    private final Map<ItemStack, List<String>> aliases;
 
     public OddItemAliases(Map<String, Object> serialized) {
         suggestions = new BKTree<String>(OddItemConfiguration.getComparator());
-        items = new TreeMap<String, ItemStack>(String.CASE_INSENSITIVE_ORDER);
-        aliases = new TreeMap<String, Set<String>>(String.CASE_INSENSITIVE_ORDER);
+        items = Collections.synchronizedMap(new TreeMap<String, ItemStack>(new AlphanumComparator()));
+        aliases = Collections.synchronizedMap(new TreeMap<ItemStack, List<String>>(new ItemStackComparator()));
         for (String key : serialized.keySet()) {
             ItemStack itemStack = stringToItemStack(key);
             Object value = serialized.get(key);
-            Set<String> names = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+            List<String> names = Collections.synchronizedList(new ArrayList<String>());
             names.addAll((Collection<String>) value);
+            aliases.put(itemStack, names);
             for (String alias : names) {
-                aliases.put(alias, names);
                 items.put(alias, itemStack);
                 suggestions.add(alias);
             }
@@ -58,17 +58,18 @@ public class OddItemAliases implements ConfigurationSerializable {
 
     private ItemStack stringToItemStack(String string) {
         int typeId;
-        short damage = 0;
+        short damage;
         if (string.contains(";")) {
             typeId = Integer.valueOf(string.substring(0, string.indexOf(";")));
             damage = Short.valueOf(string.substring(string.indexOf(";") + 1));
         } else {
             typeId = Integer.valueOf(string);
+            damage = 0;
         }
         return new ItemStack(typeId, 1, damage);
     }
 
-    public Map<String, Set<String>> getAliases() {
+    public Map<ItemStack, List<String>> getAliases() {
         return Collections.synchronizedMap(Collections.unmodifiableMap(aliases));
     }
 
@@ -82,14 +83,11 @@ public class OddItemAliases implements ConfigurationSerializable {
 
     @Override
     public Map<String, Object> serialize() {
-        Map<String, Object> reverseItems = new TreeMap<String,Object>(String.CASE_INSENSITIVE_ORDER);
-        for (String alias : aliases.keySet()) {
-            if (reverseItems.containsKey(itemStackToString(items.get(alias))))
-                continue;
-            List<String> names = new ArrayList<String>(aliases.get(alias));
-            reverseItems.put(itemStackToString(items.get(alias)), names);
+        Map<String, Object> serialized = new TreeMap<String, Object>(new AlphanumComparator());
+        for (ItemStack itemStack : aliases.keySet()) {
+            serialized.put(itemStackToString(itemStack), aliases.get(itemStack));
         }
-        return reverseItems;
+        return serialized;
     }
 
     public static OddItemAliases deserialize(Map<String, Object> serialized) {
@@ -102,7 +100,6 @@ public class OddItemAliases implements ConfigurationSerializable {
 
     public int hashCode() {
         int hash = 17;
-        hash += suggestions.hashCode();
         hash += items.hashCode();
         hash += aliases.hashCode();
         return hash;
@@ -112,7 +109,6 @@ public class OddItemAliases implements ConfigurationSerializable {
         if (!(other instanceof OddItemAliases)) return false;
         if (this == other) return true;
         if (!getItems().equals(((OddItemAliases) other).getItems())) return false;
-        if (!getAliases().equals(((OddItemAliases) other).getAliases())) return false;
-        return true;
+        return getAliases().equals(((OddItemAliases) other).getAliases());
     }
 }

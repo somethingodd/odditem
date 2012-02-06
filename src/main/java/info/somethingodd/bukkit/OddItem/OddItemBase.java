@@ -48,7 +48,7 @@ public class OddItemBase extends JavaPlugin {
             e.printStackTrace();
         }
         getCommand("odditem").setExecutor(new OddItemCommandExecutor(this));
-        log.info(logPrefix + OddItem.itemMap.size() + " aliases loaded.");
+        log.info(logPrefix + OddItem.aliases.size() + " aliases loaded.");
     }
 
     static {

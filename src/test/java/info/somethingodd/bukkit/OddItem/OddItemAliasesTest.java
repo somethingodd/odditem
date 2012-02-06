@@ -14,6 +14,8 @@
 package info.somethingodd.bukkit.OddItem;
 
 import info.somethingodd.bukkit.OddItem.configuration.OddItemAliases;
+import info.somethingodd.bukkit.OddItem.util.AlphanumComparator;
+import info.somethingodd.bukkit.OddItem.util.ItemStackComparator;
 import org.bukkit.inventory.ItemStack;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
@@ -30,7 +32,7 @@ import java.util.TreeSet;
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public class OddItemAliasesTest {
-    private Map<String, Set<String>> aliases;
+    private Map<ItemStack, Set<String>> aliases;
     private ItemStack dirt;
     private ItemStack stone;
     private Map<String, ItemStack> items;
@@ -43,26 +45,25 @@ public class OddItemAliasesTest {
     public void setup() {
         dirt = new ItemStack(3, 1, (short) 0);
         stone = new ItemStack(1, 1, (short) 0);
-        namesDirt = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        namesDirt = new TreeSet<String>(new AlphanumComparator());
         namesDirt.add("dirt");
-        namesStone = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        namesStone = new TreeSet<String>(new AlphanumComparator());
         namesStone.add("stone");
         namesStone.add("rock");
 
-        serialized = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
+        serialized = new TreeMap<String, Object>(new AlphanumComparator());
         serialized.put("3;0", namesDirt);
         serialized.put("1;0", namesStone);
         oddItemAliases = new OddItemAliases(serialized);
 
-        items = new TreeMap<String, ItemStack>(String.CASE_INSENSITIVE_ORDER);
+        items = new TreeMap<String, ItemStack>(new AlphanumComparator());
         items.put("dirt", dirt);
         items.put("rock", stone);
         items.put("stone", stone);
 
-        aliases = new TreeMap<String, Set<String>>(String.CASE_INSENSITIVE_ORDER);
-        aliases.put("dirt", namesDirt);
-        aliases.put("stone", namesStone);
-        aliases.put("rock", namesStone);
+        aliases = new TreeMap<ItemStack, Set<String>>(new ItemStackComparator());
+        aliases.put(dirt, namesDirt);
+        aliases.put(stone, namesStone);
     }
 
     @After
@@ -79,27 +80,24 @@ public class OddItemAliasesTest {
 
     @Test
     public void serialize() {
-        Object c = new Object();
         Map<String, Object> a = oddItemAliases.serialize();
-
-        Assert.assertThat("Serialization reproducibility", a, CoreMatchers.equalTo(oddItemAliases.serialize()));
-        Assert.assertTrue(a.equals(oddItemAliases.serialize()));
-        Assert.assertTrue(a.equals(OddItemAliases.valueOf(serialized).serialize()));
+        Assert.assertThat(a, CoreMatchers.equalTo(oddItemAliases.serialize()));
+        Assert.assertThat(a, CoreMatchers.equalTo(OddItemAliases.valueOf(serialized).serialize()));
     }
 
     @Test
     public void deserialize() {
         OddItemAliases a = OddItemAliases.deserialize(serialized);
-        Assert.assertTrue(a.equals(oddItemAliases));
+        Assert.assertThat(a, CoreMatchers.equalTo(oddItemAliases));
     }
 
     @Test
     public void checkAliases() {
-        Assert.assertTrue(oddItemAliases.getAliases().equals(aliases));
+        Assert.assertThat(oddItemAliases.getAliases().toString(), CoreMatchers.equalTo(aliases.toString()));
     }
 
     @Test
     public void checkItems() {
-        Assert.assertTrue(oddItemAliases.getItems().equals(items));
+        Assert.assertThat(oddItemAliases.getItems(), CoreMatchers.equalTo(items));
     }
 }
