@@ -13,7 +13,10 @@
  */
 package info.somethingodd.bukkit.OddItem;
 
+import info.somethingodd.bukkit.OddItem.configuration.OddItemAliases;
 import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
@@ -28,12 +31,8 @@ public class OddItemConfiguration {
     public void configure() {
         YamlConfiguration yamlConfiguration = (YamlConfiguration) oddItemBase.getConfig();
         yamlConfiguration.getString("comparator", "r");
-
-
-    }
-
-    public static String getComparator() {
-        String comparator = "l";
-        return new String(comparator);
+        YamlConfiguration itemConfiguration = YamlConfiguration.loadConfiguration(new File(oddItemBase.getDataFolder(), "items.yml"));
+        itemConfiguration.setDefaults(YamlConfiguration.loadConfiguration(oddItemBase.getResource("items.yml")));
+        OddItem.items = (OddItemAliases) itemConfiguration.get("items");
     }
 }

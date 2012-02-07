@@ -13,7 +13,6 @@
  */
 package info.somethingodd.bukkit.OddItem;
 
-import info.somethingodd.bukkit.OddItem.bktree.BKTree;
 import info.somethingodd.bukkit.OddItem.configuration.OddItemAliases;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -21,24 +20,17 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public final class OddItem {
-    protected static Map<ItemStack, Set<String>> aliases;
-    protected static BKTree<String> bktree;
-    protected static Map<String, ItemStack> items;
-    protected static OddItemAliases oddItemAliases;
+    protected static OddItemAliases items;
 
     protected static void clear() {
-        aliases = null;
-        bktree = null;
         items = null;
-        oddItemAliases = null;
     }
 
     /**
@@ -213,19 +205,19 @@ public final class OddItem {
      * @param itemStack the ItemStack to use
      * @return List of aliases
      */
-    public static Set<String> getAliases(ItemStack itemStack) {
-        return aliases.get(itemStack);
+    public static Collection<String> getAliases(ItemStack itemStack) {
+        return items.getAliases().get(itemStack);
     }
 
     /**
      * Gets all aliases for an item
      *
      * @param query name of item
-     * @return list of aliases
+     * @return <a href="http://download.oracle.com/javase/6/docs/api/java/util/Collection.html?is-external=true">Collection</a>&lt;<a href="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true">String</a>&gt; of aliases
      * @throws IllegalArgumentException if no such item exists
      */
-    public static Set<String> getAliases(String query) throws IllegalArgumentException {
-        ItemStack itemStack = items.get(query);
+    public static Collection<String> getAliases(String query) throws IllegalArgumentException {
+        ItemStack itemStack = items.getItems().get(query);
         if (itemStack != null) {
             return getAliases(itemStack);
         } else {
@@ -237,7 +229,7 @@ public final class OddItem {
      * Returns an ItemStack of quantity 1 of alias query
      *
      * @param query item name
-     * @return ItemStack
+     * @return <a href="http://jd.bukkit.org/apidocs/org/bukkit/inventory/ItemStack.html?is-external=true">ItemStack</a>
      * @throws IllegalArgumentException exception if item not found, message contains closest match
      */
     public static ItemStack getItemStack(String query) throws IllegalArgumentException {
@@ -254,7 +246,7 @@ public final class OddItem {
      *
      * @param query item name
      * @param quantity quantity
-     * @return ItemStack
+     * @return <a href="http://jd.bukkit.org/apidocs/org/bukkit/inventory/ItemStack.html?is-external=true">ItemStack</a>
      * @throws IllegalArgumentException exception if item not found, message contains closest match
      */
     public static ItemStack getItemStack(String query, int quantity) throws IllegalArgumentException {
@@ -266,20 +258,20 @@ public final class OddItem {
                 i = new ItemStack(Material.MAP, 1, (short) 0);
             }
         } else {
-            i = items.get(query);
+            i = items.getItems().get(query);
         }
         if (i != null && !query.startsWith("map")) {
             i.setAmount(quantity);
             return i;
         }
-        throw new IllegalArgumentException(bktree.findBestWordMatch(query));
+        throw new IllegalArgumentException(items.getSuggestions().findBestWordMatch(query));
     }
 
     /**
-     * @return Set&lt;ItemStack&gt; all defined items
+     * @return <a href="http://download.oracle.com/javase/6/docs/api/java/util/Collection.html?is-external=true">Collection</a>&lt;<a href="http://jd.bukkit.org/apidocs/org/bukkit/inventory/ItemStack.html?is-external=true">ItemStack</a>&gt; of all defined items
      */
-    public static Set<ItemStack> getItemStacks() {
-        return aliases.keySet();
+    public static Collection<ItemStack> getItemStacks() {
+        return items.getAliases().keySet();
     }
 
     /**

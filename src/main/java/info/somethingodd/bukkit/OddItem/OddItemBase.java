@@ -14,6 +14,8 @@
 package info.somethingodd.bukkit.OddItem;
 
 import info.somethingodd.bukkit.OddItem.configuration.OddItemAliases;
+import info.somethingodd.bukkit.OddItem.configuration.OddItemGroup;
+import info.somethingodd.bukkit.OddItem.configuration.OddItemGroups;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -48,10 +50,12 @@ public class OddItemBase extends JavaPlugin {
             e.printStackTrace();
         }
         getCommand("odditem").setExecutor(new OddItemCommandExecutor(this));
-        log.info(logPrefix + OddItem.aliases.size() + " aliases loaded.");
+        log.info(logPrefix + OddItem.items.getAliases().size() + " items with " + OddItem.items.getItems().size() + " aliases loaded.");
     }
 
     static {
         ConfigurationSerialization.registerClass(OddItemAliases.class);
+        ConfigurationSerialization.registerClass(OddItemGroup.class);
+        ConfigurationSerialization.registerClass(OddItemGroups.class);
     }
 }
