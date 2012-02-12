@@ -42,7 +42,7 @@ public class OddItemConfiguration {
         String[] filenames = {"config.yml", "items.yml", "groups.yml"};
         try {
             initialConfig(filenames);
-        } catch (IOException e) {
+        } catch (Exception e) {
             oddItemBase.log.warning("Exception writing initial configuration files: " + e.getMessage());
             e.printStackTrace();
         }
