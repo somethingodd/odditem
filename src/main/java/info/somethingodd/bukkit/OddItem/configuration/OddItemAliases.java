@@ -35,6 +35,12 @@ public class OddItemAliases implements ConfigurationSerializable {
     private final Map<String, ItemStack> items;
     private final Map<ItemStack, List<String>> aliases;
 
+    public OddItemAliases() {
+        suggestions = new BKTree<String>("r");
+        items = new TreeMap<String, ItemStack>(new AlphanumComparator());
+        aliases = new TreeMap<ItemStack, List<String>>(new ItemStackComparator());
+    }
+
     public OddItemAliases(Map<ItemStack, Collection<String>> itemlist, boolean UniqueSignature) {
         suggestions = new BKTree<String>(OddItemConfiguration.getComparator());
         items = Collections.synchronizedMap(new TreeMap<String, ItemStack>(new AlphanumComparator()));

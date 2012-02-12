@@ -60,7 +60,7 @@ public class OddItemConfiguration {
         YamlConfiguration itemConfiguration = YamlConfiguration.loadConfiguration(new File(oddItemBase.getDataFolder(), "items.yml"));
         itemConfiguration.setDefaults(YamlConfiguration.loadConfiguration(oddItemBase.getResource("items.yml")));
         ConfigurationSerialization.registerClass(OddItemAliases.class);
-        OddItem.items = (OddItemAliases) itemConfiguration.get("items");
+        OddItem.items = (OddItemAliases) itemConfiguration.get("items", new OddItemAliases());
 
         ConfigurationSerialization.registerClass(OddItemGroup.class);
         ConfigurationSerialization.registerClass(OddItemGroups.class);

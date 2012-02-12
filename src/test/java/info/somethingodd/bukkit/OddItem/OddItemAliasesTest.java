@@ -16,6 +16,9 @@ package info.somethingodd.bukkit.OddItem;
 import info.somethingodd.bukkit.OddItem.configuration.OddItemAliases;
 import info.somethingodd.bukkit.OddItem.util.ItemStackComparator;
 import org.bukkit.Material;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.inventory.ItemStack;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
@@ -26,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -56,5 +60,20 @@ public class OddItemAliasesTest {
         items.put(new ItemStack(Material.FISHING_ROD), Arrays.asList("pole", "fishingpole", "fishingrod"));
         OddItemAliases oddItemAliases = new OddItemAliases(items, false);
         Assert.assertThat(oddItemAliases.serialize(), CoreMatchers.equalTo(OddItemAliases.valueOf(oddItemAliases.serialize()).serialize()));
+    }
+
+    @Test
+    public void testLoadValue() throws InvalidConfigurationException, IOException {
+        YamlConfiguration yamlConfiguration = new YamlConfiguration();
+        yamlConfiguration.load(new File("src/main/resources/items.yml"));
+        OddItemAliases oddItemAliases = OddItemAliases.valueOf(yamlConfiguration.getConfigurationSection("items").getValues(true));
+    }
+
+    @Test
+    public void testLoadCast() throws InvalidConfigurationException, IOException {
+        ConfigurationSerialization.registerClass(OddItemAliases.class);
+        YamlConfiguration yamlConfiguration = new YamlConfiguration();
+        yamlConfiguration.load(new File("src/main/resources/items.yml"));
+        OddItemAliases oddItemAliases = (OddItemAliases) yamlConfiguration.get("items");
     }
 }
