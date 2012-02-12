@@ -31,7 +31,7 @@ import java.io.InputStreamReader;
  */
 public class OddItemConfiguration {
     private int version;
-    private static String comparator;
+    private static String comparator = "r";
     private final OddItemBase oddItemBase;
 
     public OddItemConfiguration(OddItemBase oddItemBase) {

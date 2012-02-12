@@ -54,7 +54,7 @@ public class OddItemAliasesTest {
         Map<ItemStack, Collection<String>> items = new TreeMap<ItemStack, Collection<String>>(new ItemStackComparator());
         items.put(new ItemStack(Material.GOLD_INGOT), Arrays.asList("gold", "goldbar"));
         items.put(new ItemStack(Material.FISHING_ROD), Arrays.asList("pole", "fishingpole", "fishingrod"));
-        OddItemAliases oddItemAliases = new OddItemAliases(items, "r");
+        OddItemAliases oddItemAliases = new OddItemAliases(items, false);
         Assert.assertThat(oddItemAliases.serialize(), CoreMatchers.equalTo(OddItemAliases.valueOf(oddItemAliases.serialize()).serialize()));
     }
 }
