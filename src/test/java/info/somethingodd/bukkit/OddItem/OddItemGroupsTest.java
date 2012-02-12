@@ -13,8 +13,7 @@
  */
 package info.somethingodd.bukkit.OddItem;
 
-import info.somethingodd.bukkit.OddItem.configuration.OddItemAliases;
-import info.somethingodd.bukkit.OddItem.util.ItemStackComparator;
+import info.somethingodd.bukkit.OddItem.configuration.OddItemGroup;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.hamcrest.CoreMatchers;
@@ -26,18 +25,13 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
-
 import static org.mockito.Mockito.when;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 @RunWith(MockitoJUnitRunner.class)
-public class OddItemAliasesTest {
+public class OddItemGroupsTest {
     @Mock
     private OddItemBase oddItemBase;
     @Mock
@@ -51,10 +45,8 @@ public class OddItemAliasesTest {
 
     @Test
     public void testReproducible() {
-        Map<ItemStack, Collection<String>> items = new TreeMap<ItemStack, Collection<String>>(new ItemStackComparator());
-        items.put(new ItemStack(Material.GOLD_INGOT), Arrays.asList("gold", "goldbar"));
-        items.put(new ItemStack(Material.FISHING_ROD), Arrays.asList("pole", "fishingpole", "fishingrod"));
-        OddItemAliases oddItemAliases = new OddItemAliases(items, "r");
-        Assert.assertThat(oddItemAliases.serialize(), CoreMatchers.equalTo(OddItemAliases.valueOf(oddItemAliases.serialize()).serialize()));
+        OddItemGroup oddItemGroup = new OddItemGroup(new ItemStack(Material.GOLD_INGOT, 32), new ItemStack(Material.DIAMOND_AXE, 1));
+        Assert.assertThat(oddItemGroup.serialize(), CoreMatchers.equalTo(OddItemGroup.valueOf(oddItemGroup.serialize()).serialize()));
     }
+
 }

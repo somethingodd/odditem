@@ -33,8 +33,27 @@ public class OddItemAliases implements ConfigurationSerializable {
     private final BKTree<String> suggestions;
     private final Map<String, ItemStack> items;
     private final Map<ItemStack, List<String>> aliases;
+    private static String comparator;
 
-    public OddItemAliases(Map<String, Object> serialized, String comparator) {
+    public void setComparator(String comp) {
+        comparator = comp;
+    }
+
+    public OddItemAliases(Map<ItemStack, Collection<String>> itemlist, String comp) {
+        comparator = comp;
+        suggestions = new BKTree<String>(comparator);
+        items = Collections.synchronizedMap(new TreeMap<String, ItemStack>(new AlphanumComparator()));
+        aliases = Collections.synchronizedMap(new TreeMap<ItemStack, List<String>>(new ItemStackComparator()));
+        for (ItemStack itemStack : itemlist.keySet()) {
+            aliases.put(itemStack, new ArrayList<String>(itemlist.get(itemStack)));
+            for (String alias : itemlist.get(itemStack)) {
+                items.put(alias, itemStack);
+                suggestions.add(alias);
+            }
+        }
+    }
+
+    public OddItemAliases(Map<String, Object> serialized) {
         suggestions = new BKTree<String>(comparator);
         items = Collections.synchronizedMap(new TreeMap<String, ItemStack>(new AlphanumComparator()));
         aliases = Collections.synchronizedMap(new TreeMap<ItemStack, List<String>>(new ItemStackComparator()));
@@ -49,10 +68,6 @@ public class OddItemAliases implements ConfigurationSerializable {
                 suggestions.add(alias);
             }
         }
-    }
-
-    public OddItemAliases(Map<String, Object> serialized) {
-        this(serialized, "r");
     }
 
     private String itemStackToString(ItemStack itemStack) {

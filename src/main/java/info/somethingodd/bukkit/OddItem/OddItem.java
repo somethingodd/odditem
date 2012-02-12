@@ -14,6 +14,7 @@
 package info.somethingodd.bukkit.OddItem;
 
 import info.somethingodd.bukkit.OddItem.configuration.OddItemAliases;
+import info.somethingodd.bukkit.OddItem.configuration.OddItemGroups;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -26,11 +27,13 @@ import java.util.List;
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
-public final class OddItem {
+public class OddItem {
     protected static OddItemAliases items;
+    protected static OddItemGroups groups;
 
     protected static void clear() {
         items = null;
+        groups = null;
     }
 
     /**
@@ -192,9 +195,28 @@ public final class OddItem {
      * @return itemStack is contained in inventory
      */
     public static boolean contains(Inventory inventory, ItemStack itemStack, boolean durability, boolean quantity) {
+        return contains(inventory, itemStack, durability, quantity, true);
+    }
+
+    /**
+     * Returns whether inventory contains itemStack, possibly ignoring durability and quantity
+     * @param inventory inventory to look in
+     * @param itemStack ItemStack to look for
+     * @param durability whether to check durability
+     * @param quantity whether to check quantity
+     * @param exact whether to check exact quantity, or only "at least"
+     * @return itemStack is contained in inventory
+     */
+    public static boolean contains(Inventory inventory, ItemStack itemStack, boolean durability, boolean quantity, boolean exact) {
         ItemStack[] contents = inventory.getContents();
-        for (int i = 0; i < contents.length; i++) {
-            if (compare(contents[i], itemStack, durability, quantity)) return true;
+        if (exact) {
+            for (int i = 0; i < contents.length; i++)
+                if (compare(contents[i], itemStack, durability, quantity)) return true;
+        } else {
+            int amount = itemStack.getAmount();
+            for (int i = 0; i < contents.length; i++)
+                if (compare(contents[i], itemStack, durability)) amount -= contents[i].getAmount();
+            return amount <= 0;
         }
         return false;
     }

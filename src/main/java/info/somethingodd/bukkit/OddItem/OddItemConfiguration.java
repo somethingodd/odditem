@@ -14,14 +14,24 @@
 package info.somethingodd.bukkit.OddItem;
 
 import info.somethingodd.bukkit.OddItem.configuration.OddItemAliases;
+import info.somethingodd.bukkit.OddItem.configuration.OddItemGroup;
+import info.somethingodd.bukkit.OddItem.configuration.OddItemGroups;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public class OddItemConfiguration {
+    private int version;
+    private String comparator;
     private final OddItemBase oddItemBase;
 
     public OddItemConfiguration(OddItemBase oddItemBase) {
@@ -29,10 +39,62 @@ public class OddItemConfiguration {
     }
 
     public void configure() {
+        String[] filenames = {"config.yml", "items.yml", "groups.yml"};
+        initialConfig(filenames);
+
         YamlConfiguration yamlConfiguration = (YamlConfiguration) oddItemBase.getConfig();
-        yamlConfiguration.getString("comparator", "r");
+        comparator = yamlConfiguration.getString("comparator", "r");
+        version = yamlConfiguration.getInt("version", 0);
+
+        ConfigurationSerialization.registerClass(OddItemAliases.class);
+
         YamlConfiguration itemConfiguration = YamlConfiguration.loadConfiguration(new File(oddItemBase.getDataFolder(), "items.yml"));
         itemConfiguration.setDefaults(YamlConfiguration.loadConfiguration(oddItemBase.getResource("items.yml")));
+        ConfigurationSerialization.registerClass(OddItemAliases.class);
+        OddItem.items.setComparator(comparator);
         OddItem.items = (OddItemAliases) itemConfiguration.get("items");
+
+        ConfigurationSerialization.registerClass(OddItemGroup.class);
+        ConfigurationSerialization.registerClass(OddItemGroups.class);
+
+        YamlConfiguration groupConfiguration = YamlConfiguration.loadConfiguration(new File(oddItemBase.getDataFolder(), "groups.yml"));
+        itemConfiguration.setDefaults(YamlConfiguration.loadConfiguration(oddItemBase.getResource("groups.yml")));
+        ConfigurationSerialization.registerClass(OddItemAliases.class);
+        OddItem.groups = (OddItemGroups) groupConfiguration.get("groups");
+    }
+
+    private void initialConfig(String[] filenames) {
+        for (String filename : filenames) {
+            File file = new File(oddItemBase.getDataFolder(), filename);
+            if (!file.exists()) {
+                BufferedReader src = new BufferedReader(null);
+                BufferedWriter dst = new BufferedWriter(null);
+                try {
+                    file.mkdirs();
+                    file.createNewFile();
+                    src = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/" + file)));
+                    dst = new BufferedWriter(new FileWriter(file));
+                    String line = src.readLine();
+                    while (line != null) {
+                        dst.write(line + "\n");
+                        line = src.readLine();
+                    }
+                    src.close();
+                    dst.close();
+                    oddItemBase.log.info(oddItemBase.logPrefix + "Wrote default " + filename);
+                } catch (IOException e) {
+                    oddItemBase.log.warning(oddItemBase.logPrefix + "Error writing default " + filename);
+                } finally {
+                    try {
+                        src.close();
+                        dst.close();
+                    } catch (IOException e) {}
+                }
+            }
+        }
+    }
+
+    private int getVersion() {
+        return version;
     }
 }
