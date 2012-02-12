@@ -31,11 +31,15 @@ import java.io.InputStreamReader;
  */
 public class OddItemConfiguration {
     private int version;
-    private String comparator;
+    private static String comparator;
     private final OddItemBase oddItemBase;
 
     public OddItemConfiguration(OddItemBase oddItemBase) {
         this.oddItemBase = oddItemBase;
+    }
+
+    public static String getComparator() {
+        return comparator;
     }
 
     public void configure() {
@@ -56,7 +60,6 @@ public class OddItemConfiguration {
         YamlConfiguration itemConfiguration = YamlConfiguration.loadConfiguration(new File(oddItemBase.getDataFolder(), "items.yml"));
         itemConfiguration.setDefaults(YamlConfiguration.loadConfiguration(oddItemBase.getResource("items.yml")));
         ConfigurationSerialization.registerClass(OddItemAliases.class);
-        OddItem.items.setComparator(comparator);
         OddItem.items = (OddItemAliases) itemConfiguration.get("items");
 
         ConfigurationSerialization.registerClass(OddItemGroup.class);
