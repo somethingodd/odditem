@@ -40,7 +40,12 @@ public class OddItemConfiguration {
 
     public void configure() {
         String[] filenames = {"config.yml", "items.yml", "groups.yml"};
-        initialConfig(filenames);
+        try {
+            initialConfig(filenames);
+        } catch (IOException e) {
+            oddItemBase.log.warning("Exception writing initial configuration files: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         YamlConfiguration yamlConfiguration = (YamlConfiguration) oddItemBase.getConfig();
         comparator = yamlConfiguration.getString("comparator", "r");
@@ -63,12 +68,12 @@ public class OddItemConfiguration {
         OddItem.groups = (OddItemGroups) groupConfiguration.get("groups");
     }
 
-    private void initialConfig(String[] filenames) {
+    private void initialConfig(String[] filenames) throws IOException {
         for (String filename : filenames) {
             File file = new File(oddItemBase.getDataFolder(), filename);
             if (!file.exists()) {
-                BufferedReader src = new BufferedReader(null);
-                BufferedWriter dst = new BufferedWriter(null);
+                BufferedReader src = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/" + file)));
+                BufferedWriter dst = new BufferedWriter(new FileWriter(file));
                 try {
                     file.mkdirs();
                     file.createNewFile();

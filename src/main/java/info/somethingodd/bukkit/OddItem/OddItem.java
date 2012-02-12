@@ -125,11 +125,29 @@ public class OddItem {
      * @return ItemStack are equal
      */
     public static boolean compare(ItemStack a, ItemStack b, boolean durability, boolean quantity) {
+        return compare(a, b, durability, quantity, false);
+    }
+
+    /**
+     * Compares two ItemStack
+     *
+     * @param a          ItemStack to compare
+     * @param b          ItemStack to compare
+     * @param quantity   whether to compare quantity
+     * @param durability whether to compare durability
+     * @param enchantment whether to compare enchantment
+     * @return ItemStack are equal
+     */
+    public static boolean compare(ItemStack a, ItemStack b, boolean durability, boolean quantity, boolean enchantment) {
         Boolean ret = a.getTypeId() == b.getTypeId();
         if (durability) ret &= (a.getDurability() == b.getDurability());
         if (ret && quantity) ret &= (a.getAmount() == b.getAmount());
+        if (ret && enchantment) ret &= (a.getEnchantments().equals(b.getEnchantments()));
         return ret;
     }
+
+
+
 
     /**
      * Returns whether player's inventory contains itemStack
@@ -188,10 +206,11 @@ public class OddItem {
 
     /**
      * Returns whether inventory contains itemStack, possibly ignoring durability and quantity
-     * @param inventory inventory to look in
-     * @param itemStack ItemStack to look for
+     *
+     * @param inventory  inventory to look in
+     * @param itemStack  ItemStack to look for
      * @param durability whether to check durability
-     * @param quantity whether to check quantity
+     * @param quantity   whether to check quantity
      * @return itemStack is contained in inventory
      */
     public static boolean contains(Inventory inventory, ItemStack itemStack, boolean durability, boolean quantity) {
@@ -199,23 +218,38 @@ public class OddItem {
     }
 
     /**
-     * Returns whether inventory contains itemStack, possibly ignoring durability and quantity
+     * Returns whether inventory contains itemStack, possibly ignoring durability, quantity, and enchantment
+     *
+     * @param inventory  inventory to look in
+     * @param itemStack  ItemStack to look for
+     * @param durability whether to check durability
+     * @param quantity   whether to check quantity
+     * @param enchantment whether to check enchantment
+     * @return itemStack is contained in inventory
+     */
+    public static boolean contains(Inventory inventory, ItemStack itemStack, boolean durability, boolean quantity, boolean enchantment) {
+        return contains(inventory, itemStack, durability, quantity, enchantment, true);
+    }
+
+    /**
+     * Returns whether inventory contains itemStack, possibly ignoring durability, quantity, and enchantment, and allows checking for "at least"
      * @param inventory inventory to look in
      * @param itemStack ItemStack to look for
      * @param durability whether to check durability
      * @param quantity whether to check quantity
+     * @param enchantment whether to check enchantment
      * @param exact whether to check exact quantity, or only "at least"
      * @return itemStack is contained in inventory
      */
-    public static boolean contains(Inventory inventory, ItemStack itemStack, boolean durability, boolean quantity, boolean exact) {
+    public static boolean contains(Inventory inventory, ItemStack itemStack, boolean durability, boolean quantity, boolean enchantment, boolean exact) {
         ItemStack[] contents = inventory.getContents();
         if (exact) {
             for (int i = 0; i < contents.length; i++)
-                if (compare(contents[i], itemStack, durability, quantity)) return true;
+                if (compare(contents[i], itemStack, durability, quantity, enchantment)) return true;
         } else {
             int amount = itemStack.getAmount();
             for (int i = 0; i < contents.length; i++)
-                if (compare(contents[i], itemStack, durability)) amount -= contents[i].getAmount();
+                if (compare(contents[i], itemStack, durability, quantity, enchantment)) amount -= contents[i].getAmount();
             return amount <= 0;
         }
         return false;
