@@ -77,7 +77,7 @@ public class OddItemConfiguration {
                 try {
                     file.mkdirs();
                     file.createNewFile();
-                    src = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/" + file)));
+                    src = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/" + filename)));
                     dst = new BufferedWriter(new FileWriter(file));
                     String line = src.readLine();
                     while (line != null) {
