@@ -72,7 +72,7 @@ public class OddItemConfiguration {
         for (String filename : filenames) {
             File file = new File(oddItemBase.getDataFolder(), filename);
             if (!file.exists()) {
-                BufferedReader src = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/" + file)));
+                BufferedReader src = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/" + filename)));
                 BufferedWriter dst = new BufferedWriter(new FileWriter(file));
                 try {
                     file.mkdirs();
