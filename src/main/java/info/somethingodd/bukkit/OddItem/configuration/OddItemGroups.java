@@ -13,13 +13,10 @@
  */
 package info.somethingodd.bukkit.OddItem.configuration;
 
+import info.somethingodd.bukkit.OddItem.OddItem;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -29,59 +26,25 @@ import java.util.TreeMap;
 public class OddItemGroups implements ConfigurationSerializable {
     private final Map<String, OddItemGroup> groups;
 
+
     public OddItemGroups(Map<String, Object> serialized) {
-        groups = new TreeMap<String, OddItemGroup>(String.CASE_INSENSITIVE_ORDER);
+        groups = new TreeMap<String, OddItemGroup>(OddItem.ALPHANUM_COMPARATOR);
         for (String key : serialized.keySet()) {
-            OddItemGroup oddItemGroup = (OddItemGroup) serialized.get(key);
+            groups.put(key, OddItemGroup.valueOf(((ConfigurationSection) serialized.get(key)).getValues(false)));
         }
-    }
-
-    public OddItemGroups(Map<String, OddItemGroup> groups, boolean b) {
-        this.groups = groups;
-    }
-
-    public Collection<String> getGroupNames() {
-        return Collections.unmodifiableCollection(groups.keySet());
-    }
-
-    public Collection<OddItemGroup> getGroups() {
-        return Collections.unmodifiableCollection(groups.values());
-    }
-
-    public Collection<OddItemGroup> getGroups(String key) {
-        List<OddItemGroup> groups = new LinkedList<OddItemGroup>();
-        for (OddItemGroup group : this.groups.values())
-            if (group.getData().containsKey(key))
-                groups.add(group);
-        return groups;
-    }
-
-    public OddItemGroup getGroup(String name) {
-        return groups.get(name);
-    }
-
-    public String toString() {
-        StringBuilder string = new StringBuilder("OddItemGroups");
-        string.append(groups.toString());
-        string.append("");
-        return string.toString();
     }
 
     @Override
     public Map<String, Object> serialize() {
-        Map<String, Object> serialized = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
-        List<OddItemGroup> groups = new ArrayList<OddItemGroup>();
-        for (String s : this.groups.keySet())
-            groups.add(this.groups.get(s));
-        serialized.put("groups", groups);
+        Map<String, Object> serialized = new TreeMap<String, Object>(OddItem.ALPHANUM_COMPARATOR);
         return serialized;
     }
 
-    public OddItemGroups deserialize(Map<String, Object> serialized) {
+    public static OddItemGroups deserialize(Map<String, Object> serialized) {
         return new OddItemGroups(serialized);
     }
 
-    public OddItemGroups valueOf(Map<String, Object> serialized) {
+    public static OddItemGroups valueOf(Map<String, Object> serialized) {
         return new OddItemGroups(serialized);
     }
 

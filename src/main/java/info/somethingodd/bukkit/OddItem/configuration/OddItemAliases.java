@@ -13,10 +13,9 @@
  */
 package info.somethingodd.bukkit.OddItem.configuration;
 
+import info.somethingodd.bukkit.OddItem.OddItem;
 import info.somethingodd.bukkit.OddItem.OddItemConfiguration;
 import info.somethingodd.bukkit.OddItem.bktree.BKTree;
-import info.somethingodd.bukkit.OddItem.util.AlphanumComparator;
-import info.somethingodd.bukkit.OddItem.util.ItemStackComparator;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 
@@ -37,14 +36,14 @@ public class OddItemAliases implements ConfigurationSerializable {
 
     public OddItemAliases() {
         suggestions = new BKTree<String>("r");
-        items = new TreeMap<String, ItemStack>(new AlphanumComparator());
-        aliases = new TreeMap<ItemStack, List<String>>(new ItemStackComparator());
+        items = new TreeMap<String, ItemStack>(OddItem.ALPHANUM_COMPARATOR);
+        aliases = new TreeMap<ItemStack, List<String>>(OddItem.ITEM_STACK_COMPARATOR);
     }
 
     public OddItemAliases(Map<ItemStack, Collection<String>> itemlist, boolean UniqueSignature) {
         suggestions = new BKTree<String>(OddItemConfiguration.getComparator());
-        items = Collections.synchronizedMap(new TreeMap<String, ItemStack>(new AlphanumComparator()));
-        aliases = Collections.synchronizedMap(new TreeMap<ItemStack, List<String>>(new ItemStackComparator()));
+        items = Collections.synchronizedMap(new TreeMap<String, ItemStack>(OddItem.ALPHANUM_COMPARATOR));
+        aliases = Collections.synchronizedMap(new TreeMap<ItemStack, List<String>>(OddItem.ITEM_STACK_COMPARATOR));
         for (ItemStack itemStack : itemlist.keySet()) {
             aliases.put(itemStack, new ArrayList<String>(itemlist.get(itemStack)));
             for (String alias : itemlist.get(itemStack)) {
@@ -56,8 +55,8 @@ public class OddItemAliases implements ConfigurationSerializable {
 
     public OddItemAliases(Map<String, Object> serialized) {
         suggestions = new BKTree<String>(OddItemConfiguration.getComparator());
-        items = Collections.synchronizedMap(new TreeMap<String, ItemStack>(new AlphanumComparator()));
-        aliases = Collections.synchronizedMap(new TreeMap<ItemStack, List<String>>(new ItemStackComparator()));
+        items = Collections.synchronizedMap(new TreeMap<String, ItemStack>(OddItem.ALPHANUM_COMPARATOR));
+        aliases = Collections.synchronizedMap(new TreeMap<ItemStack, List<String>>(OddItem.ITEM_STACK_COMPARATOR));
         for (String key : serialized.keySet()) {
             ItemStack itemStack = stringToItemStack(key);
             Object value = serialized.get(key);
@@ -100,9 +99,19 @@ public class OddItemAliases implements ConfigurationSerializable {
         return suggestions;
     }
 
+    public String toString() {
+        StringBuilder str = new StringBuilder("OddItemAliases");
+        str.append("{");
+        str.append("aliases=").append(aliases.toString());
+        str.append(",");
+        str.append("items=").append(items.toString());
+        str.append("}\n");
+        return str.toString();
+    }
+
     @Override
     public Map<String, Object> serialize() {
-        Map<String, Object> serialized = new TreeMap<String, Object>(new AlphanumComparator());
+        Map<String, Object> serialized = new TreeMap<String, Object>(OddItem.ALPHANUM_COMPARATOR);
         for (ItemStack itemStack : aliases.keySet()) {
             serialized.put(itemStackToString(itemStack), aliases.get(itemStack));
         }

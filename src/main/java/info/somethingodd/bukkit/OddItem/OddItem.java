@@ -15,6 +15,8 @@ package info.somethingodd.bukkit.OddItem;
 
 import info.somethingodd.bukkit.OddItem.configuration.OddItemAliases;
 import info.somethingodd.bukkit.OddItem.configuration.OddItemGroups;
+import info.somethingodd.bukkit.OddItem.util.AlphanumComparator;
+import info.somethingodd.bukkit.OddItem.util.ItemStackComparator;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -30,6 +32,13 @@ import java.util.List;
 public class OddItem {
     protected static OddItemAliases items;
     protected static OddItemGroups groups;
+    public static final AlphanumComparator ALPHANUM_COMPARATOR;
+    public static final ItemStackComparator ITEM_STACK_COMPARATOR;
+
+    static {
+        ALPHANUM_COMPARATOR = new AlphanumComparator();
+        ITEM_STACK_COMPARATOR = new ItemStackComparator();
+    }
 
     protected static void clear() {
         items = null;
