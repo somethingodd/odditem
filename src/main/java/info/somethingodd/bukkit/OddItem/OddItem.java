@@ -14,6 +14,7 @@
 package info.somethingodd.bukkit.OddItem;
 
 import info.somethingodd.bukkit.OddItem.configuration.OddItemAliases;
+import info.somethingodd.bukkit.OddItem.configuration.OddItemGroup;
 import info.somethingodd.bukkit.OddItem.configuration.OddItemGroups;
 import info.somethingodd.bukkit.OddItem.util.AlphanumComparator;
 import info.somethingodd.bukkit.OddItem.util.ItemStackComparator;
@@ -288,6 +289,37 @@ public class OddItem {
         } else {
             throw new IllegalArgumentException("No such item: " + query);
         }
+    }
+
+    /**
+     * Get an OddItemGroup by name
+     *
+     * @param name name of group
+     * @return group with name
+     */
+    public static OddItemGroup getItemGroup(String name) {
+        return groups.getGroup(name);
+    }
+
+    /**
+     * Get an OddItemGroup by data key
+     *
+     * @param key top-level key
+     * @return matching groups
+     */
+    public static Collection<OddItemGroup> getItemGroups(String key) {
+        return groups.getGroups(key);
+    }
+
+    /**
+     * Get an OddItemGroup by second-level data key
+     *
+     * @param key top-level key
+     * @param key2 second-level key
+     * @return matching groups
+     */
+    public static Collection<OddItemGroup> getItemGroups(String key, String key2) {
+        return groups.getGroups(key, key2);
     }
 
     /**

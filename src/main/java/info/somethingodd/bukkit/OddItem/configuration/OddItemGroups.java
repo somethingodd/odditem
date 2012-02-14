@@ -17,6 +17,8 @@ import info.somethingodd.bukkit.OddItem.OddItem;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -26,12 +28,31 @@ import java.util.TreeMap;
 public class OddItemGroups implements ConfigurationSerializable {
     private final Map<String, OddItemGroup> groups;
 
-
     public OddItemGroups(Map<String, Object> serialized) {
         groups = new TreeMap<String, OddItemGroup>(OddItem.ALPHANUM_COMPARATOR);
         for (String key : serialized.keySet()) {
             groups.put(key, OddItemGroup.valueOf(((ConfigurationSection) serialized.get(key)).getValues(false)));
         }
+    }
+
+    public OddItemGroup getGroup(String name) {
+        return groups.get(name);
+    }
+
+    public Collection<OddItemGroup> getGroups(String key) {
+        Collection<OddItemGroup> groups = new HashSet<OddItemGroup>();
+        for (OddItemGroup group : this.groups.values())
+            if (group.match(key))
+                groups.add(group);
+        return groups;
+    }
+
+    public Collection<OddItemGroup> getGroups(String key, String key2) {
+        Collection<OddItemGroup> groups = new HashSet<OddItemGroup>();
+        for (OddItemGroup group : this.groups.values())
+            if (group.match(key, key2))
+                groups.add(group);
+        return groups;
     }
 
     @Override

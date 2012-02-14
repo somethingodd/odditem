@@ -16,6 +16,7 @@ package info.somethingodd.bukkit.OddItem.configuration;
 import info.somethingodd.bukkit.OddItem.OddItem;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 
@@ -33,7 +34,7 @@ public class OddItemGroup implements ConfigurationSerializable {
     private Map<String, Object> data;
 
     public OddItemGroup(Map<String, Object> serialized) {
-        data = ((ConfigurationSection) serialized.get("data")).getValues(true);
+        data = ((ConfigurationSection) serialized.get("data")).getValues(false);
         items = (List<String>) serialized.get("items");
         itemStacks = new ArrayList<ItemStack>();
         for (String item : items) {
@@ -51,6 +52,33 @@ public class OddItemGroup implements ConfigurationSerializable {
                 Bukkit.getLogger().warning("Invalid item \"" + item + "\" in groups.yml (" + items.toString() + ")");
             }
         }
+    }
+
+    public Map<String, Object> getData() {
+        return data;
+    }
+
+    public Object getData(String key) {
+        return data.get(key);
+    }
+
+    public boolean match(String key) {
+        for (String k : data.keySet())
+            if (k.equals(key))
+                return true;
+        return false;
+    }
+
+    public boolean match(String key, String key2) {
+        for (Object x : data.values()) {
+            if (x instanceof MemorySection)
+                return ((MemorySection) x).getValues(false).containsKey("key2");
+            if (x instanceof Map)
+                return ((Map) x).containsKey(key2);
+            if (x instanceof List)
+                return ((List) x).contains(key2);
+        }
+        return false;
     }
 
     public String toString() {
