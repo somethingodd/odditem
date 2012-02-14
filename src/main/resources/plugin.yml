@@ -7,22 +7,32 @@ description: Item database stuff.
 commands:
     odditem:
         aliases: oi
-        permission: odditem
+        permission: odditem.alias
         usage:  |
-                /<command> [aliases item]|[info]|[list]|[reload]
-                aliases - Lists aliases for item
-                info - Shows number of items loaded.
+                /<command> [alias]
+                Shows aliases of held item or <alias>
+    odditeminfo:
+        aliases: oii
+        permission: odditem.info
+        usage:  |
+                /<command>
+                Shows information about loaded items/aliases
+    odditemreload:
+        aliases: oir
+        permission: odditem.reload
+        usage:  |
+                /<command>
+                Reload configuration from disk
 permissions:
     odditem:
         children:
             odditem.alias: true
             odditem.info: true
-            odditem.reload: true
-        default: op
+            odditem.reload: false
+        default: true
     odditem.alias:
         default: true
     odditem.info:
         default: true
     odditem.reload:
         default: op
-

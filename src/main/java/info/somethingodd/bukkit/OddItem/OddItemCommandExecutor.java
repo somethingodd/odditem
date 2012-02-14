@@ -17,7 +17,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
@@ -31,52 +30,37 @@ public class OddItemCommandExecutor implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        try {
-            if (sender instanceof Player && !sender.hasPermission("odditem." + args[0])) {
-                sender.sendMessage("Not allowed.");
-                return true;
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            sender.sendMessage("Invalid.");
-            return true;
-        }
-        switch (args.length) {
-            case 0:
-                if (sender instanceof Player) {
-                    ItemStack itemStack = ((Player) sender).getItemInHand();
-                    return true;
-                }
-                break;
-            case 1:
-                if (args[0].equals("info")) {
-                    int size = 0;
-                    sender.sendMessage(oddItemBase.logPrefix + OddItem.items.getAliases().size() + " items with " + OddItem.items.getItems().size() + " aliases loaded");
-                    return true;
-                } else if (args[0].equals("reload")) {
-                    try {
-                        OddItem.clear();
-                        new OddItemConfiguration(oddItemBase).configure();
+        if (command.getName().equals("odditem")) {
+            if (sender.hasPermission("odditem.alias")) {
+                switch (args.length) {
+                    case 0:
+                        if (sender instanceof Player) {
+                            sender.sendMessage(OddItem.getAliases(((Player) sender).getItemInHand()).toString());
+                            return true;
+                        }
+                        break;
+                    case 1:
+                        sender.sendMessage(OddItem.getAliases(args[0]).toString());
                         return true;
-                    } catch (Exception e) {
-                        sender.sendMessage(oddItemBase.logPrefix + "Error!");
-                        oddItemBase.log.severe(oddItemBase.logPrefix + "Error on /reload! - " + e.getMessage());
-                        e.printStackTrace();
-                        oddItemBase.getServer().getPluginManager().disablePlugin(oddItemBase);
-                    }
                 }
-                break;
-            case 2:
-                if (args[0].equals("alias")) {
-                    String message;
-                    try {
-                        message = OddItem.getAliases(args[1]).toString();
-                    } catch (IllegalArgumentException e) {
-                        message = "no such item";
-                    }
-                    sender.sendMessage(oddItemBase.logPrefix + message);
-                    return true;
-                }
-                break;
+            } else {
+                sender.sendMessage("DENIED");
+            }
+        } else if (command.getName().equals("odditeminfo")) {
+            if (sender.hasPermission("odditem.info")) {
+                sender.sendMessage("[OddItem] " + OddItem.items.getAliases().size() + " items with " + OddItem.items.getItems().size() + " aliases");
+            } else {
+                sender.sendMessage("DENIED");
+            }
+            return true;
+        } else if (command.getName().equals("odditemreload")) {
+            if (sender.hasPermission("odditem.reload")) {
+                sender.sendMessage("[OddItem] Reloading...");
+                new OddItemConfiguration(oddItemBase).configure();
+            } else {
+                sender.sendMessage("DENIED");
+            }
+            return true;
         }
         return false;
     }
