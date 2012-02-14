@@ -21,6 +21,8 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -28,7 +30,7 @@ import java.util.TreeMap;
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
-public class OddItemGroup implements ConfigurationSerializable {
+public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemStack> {
     private List<ItemStack> itemStacks;
     private List<String> items;
     private Map<String, Object> data;
@@ -105,5 +107,14 @@ public class OddItemGroup implements ConfigurationSerializable {
 
     public static OddItemGroup valueOf(Map<String, Object> serialized) {
         return new OddItemGroup(serialized);
+    }
+
+    public ItemStack get(int index) {
+        return itemStacks.get(index);
+    }
+
+    @Override
+    public Iterator<ItemStack> iterator() {
+        return Collections.unmodifiableList(itemStacks).iterator();
     }
 }
