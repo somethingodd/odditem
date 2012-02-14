@@ -284,11 +284,9 @@ public class OddItem {
      */
     public static Collection<String> getAliases(String query) throws IllegalArgumentException {
         ItemStack itemStack = items.getItems().get(query);
-        if (itemStack != null) {
-            return getAliases(itemStack);
-        } else {
-            throw new IllegalArgumentException("No such item: " + query);
-        }
+        if (itemStack == null)
+            throw new IllegalArgumentException(items.getSuggestions().findBestWordMatch(query));
+        return getAliases(itemStack);
     }
 
     /**

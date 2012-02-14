@@ -40,7 +40,11 @@ public class OddItemCommandExecutor implements CommandExecutor {
                         }
                         break;
                     case 1:
-                        sender.sendMessage(OddItem.getAliases(args[0]).toString());
+                        try {
+                            sender.sendMessage(OddItem.getAliases(args[0]).toString());
+                        } catch (IllegalArgumentException e) {
+                            sender.sendMessage("[OddItem] No such alias. Similar: " + e.getMessage());
+                        }
                         return true;
                 }
             } else {
