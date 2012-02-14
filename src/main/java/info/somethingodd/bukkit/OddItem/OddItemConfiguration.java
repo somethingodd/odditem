@@ -60,7 +60,7 @@ public class OddItemConfiguration {
         YamlConfiguration itemConfiguration = YamlConfiguration.loadConfiguration(new File(oddItemBase.getDataFolder(), "items.yml"));
         itemConfiguration.setDefaults(YamlConfiguration.loadConfiguration(oddItemBase.getResource("items.yml")));
         ConfigurationSerialization.registerClass(OddItemAliases.class);
-        OddItem.items = (OddItemAliases) itemConfiguration.get("items", new OddItemAliases());
+        OddItem.items = OddItemAliases.valueOf(itemConfiguration.getConfigurationSection("items").getValues(false));
 
         ConfigurationSerialization.registerClass(OddItemGroup.class);
         ConfigurationSerialization.registerClass(OddItemGroups.class);
@@ -68,7 +68,7 @@ public class OddItemConfiguration {
         YamlConfiguration groupConfiguration = YamlConfiguration.loadConfiguration(new File(oddItemBase.getDataFolder(), "groups.yml"));
         itemConfiguration.setDefaults(YamlConfiguration.loadConfiguration(oddItemBase.getResource("groups.yml")));
         ConfigurationSerialization.registerClass(OddItemAliases.class);
-        OddItem.groups = (OddItemGroups) groupConfiguration.get("groups");
+        OddItem.groups = OddItemGroups.valueOf(groupConfiguration.getConfigurationSection("groups").getValues(false));
     }
 
     private void initialConfig(String[] filenames) throws IOException {
