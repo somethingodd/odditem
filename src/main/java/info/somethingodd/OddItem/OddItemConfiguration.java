@@ -11,11 +11,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, "see" <http://www.gnu.org/licenses/>.
  */
-package info.somethingodd.bukkit.OddItem;
+package info.somethingodd.OddItem;
 
-import info.somethingodd.bukkit.OddItem.configuration.OddItemAliases;
-import info.somethingodd.bukkit.OddItem.configuration.OddItemGroup;
-import info.somethingodd.bukkit.OddItem.configuration.OddItemGroups;
+import info.somethingodd.OddItem.configuration.OddItemAliases;
+import info.somethingodd.OddItem.configuration.OddItemGroup;
+import info.somethingodd.OddItem.configuration.OddItemGroups;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 

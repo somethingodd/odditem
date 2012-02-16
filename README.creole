@@ -1,8 +1,6 @@
 = OddItem
 == Unified custom items list and parser
-Donate: [[https://flattr.com/thing/146398/OddItem-Unified-custom-items-list-and-parser|Flattr]] or [[https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7FGM7BUA5X9TE|PayPal]]
-
-Download [[http://bukkit.somethingodd.info/files/OddItem.jar|jar]]
+Donate: [[https://flattr.com/thing/146398/OddItem-Unified-custom-items-list-and-parser|Flattr]]
 
 This plugin allows creation of a single text file for custom item names (cstairs for cobblestone stairs, wbucket for water bucket, dpick for diamond pickaxe, etc.). If an item is not found, it will throw an exception with the closest matching alias (in case of typos; e.g. if user enters /i woof 1, and wood is in item.txt, this will return an exception with wood, and the interfacing plugin could suggest that to the user)
 
@@ -30,5 +28,3 @@ Only one node for now, if you want finer control, tell me and I'll add it.
 * odditem
 all commands
 
-==== API:
-[[http://javadoc.somethingodd.info/OddItem/info/somethingodd/bukkit/OddItem/OddItem.html|JavaDoc]]

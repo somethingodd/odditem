@@ -11,13 +11,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package info.somethingodd.bukkit.OddItem;
+package info.somethingodd.OddItem;
 
-import info.somethingodd.bukkit.OddItem.configuration.OddItemAliases;
-import info.somethingodd.bukkit.OddItem.configuration.OddItemGroup;
-import info.somethingodd.bukkit.OddItem.configuration.OddItemGroups;
-import info.somethingodd.bukkit.OddItem.util.AlphanumComparator;
-import info.somethingodd.bukkit.OddItem.util.ItemStackComparator;
+import info.somethingodd.OddItem.configuration.OddItemAliases;
+import info.somethingodd.OddItem.configuration.OddItemGroup;
+import info.somethingodd.OddItem.configuration.OddItemGroups;
+import info.somethingodd.OddItem.util.AlphanumComparator;
+import info.somethingodd.OddItem.util.ItemStackComparator;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
