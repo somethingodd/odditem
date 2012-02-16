@@ -11,49 +11,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package info.somethingodd.OddItem;
+package info.somethingodd.bukkit.OddItem;
 
 import info.somethingodd.OddItem.configuration.OddItemAliases;
 import info.somethingodd.OddItem.configuration.OddItemGroup;
 import info.somethingodd.OddItem.configuration.OddItemGroups;
 import info.somethingodd.OddItem.util.AlphanumComparator;
 import info.somethingodd.OddItem.util.ItemStackComparator;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
+
+@Deprecated
 public class OddItem {
-    protected static OddItemAliases items;
-    protected static OddItemGroups groups;
+    protected static OddItemAliases items = info.somethingodd.OddItem.OddItem.getItems();
+    protected static OddItemGroups groups = info.somethingodd.OddItem.OddItem.getGroups();
     public static final AlphanumComparator ALPHANUM_COMPARATOR;
     public static final ItemStackComparator ITEM_STACK_COMPARATOR;
 
     static {
-        ALPHANUM_COMPARATOR = new AlphanumComparator();
-        ITEM_STACK_COMPARATOR = new ItemStackComparator();
-    }
-
-    @Deprecated
-    public static OddItemAliases getItems() {
-        return items;
-    }
-
-    @Deprecated
-    public static OddItemGroups getGroups() {
-        return groups;
-    }
-
-    protected static void clear() {
-        items = null;
-        groups = null;
+        ALPHANUM_COMPARATOR = info.somethingodd.OddItem.OddItem.ALPHANUM_COMPARATOR;
+        ITEM_STACK_COMPARATOR = info.somethingodd.OddItem.OddItem.ITEM_STACK_COMPARATOR;
     }
 
     /**
@@ -64,7 +48,7 @@ public class OddItem {
      * @return Inventories are identical
      */
     public static boolean compare(Inventory a, Inventory b) {
-        return compare(a, b, true);
+        return info.somethingodd.OddItem.OddItem.compare(a, b, true);
     }
 
     /**
@@ -76,7 +60,7 @@ public class OddItem {
      * @return Inventories are identical
      */
     public static boolean compare(Inventory a, Inventory b, boolean quantity) {
-        return compare(a, b, true, quantity);
+        return info.somethingodd.OddItem.OddItem.compare(a, b, true, quantity);
     }
 
     /**
@@ -89,27 +73,7 @@ public class OddItem {
      * @return Inventories are identical
      */
     public static boolean compare(Inventory a, Inventory b, boolean durability, boolean quantity) {
-        List<ItemStack> ia = new ArrayList<ItemStack>();
-        List<ItemStack> ib = new ArrayList<ItemStack>();
-        for (int i = 0; i < a.getSize(); i++) {
-            ia.add(a.getItem(i));
-        }
-        for (int i = 0; i < b.getSize(); i++) {
-            ib.add(b.getItem(i));
-        }
-        for (int i = 0; i < ia.size(); i++) {
-            boolean inequal = true;
-            for (int j = 0; j < ib.size(); j++) {
-                if (compare(ia.get(i), ib.get(j), durability, quantity)) {
-                    inequal = false;
-                    ia.remove(i);
-                    ib.remove(j);
-                    break;
-                }
-            }
-            if (inequal) return false;
-        }
-        return true;
+        return info.somethingodd.OddItem.OddItem.compare(a, b, durability, quantity);
     }
 
     /**
@@ -120,7 +84,7 @@ public class OddItem {
      * @return ItemStack are equal
      */
     public static boolean compare(ItemStack a, ItemStack b) {
-        return compare(a, b, false);
+        return info.somethingodd.OddItem.OddItem.compare(a, b, false);
     }
 
     /**
@@ -132,7 +96,7 @@ public class OddItem {
      * @return ItemStack are equal
      */
     public static boolean compare(ItemStack a, ItemStack b, boolean quantity) {
-        return compare(a, b, true, quantity);
+        return info.somethingodd.OddItem.OddItem.compare(a, b, true, quantity);
     }
 
     /**
@@ -145,7 +109,7 @@ public class OddItem {
      * @return ItemStack are equal
      */
     public static boolean compare(ItemStack a, ItemStack b, boolean durability, boolean quantity) {
-        return compare(a, b, durability, quantity, false);
+        return info.somethingodd.OddItem.OddItem.compare(a, b, durability, quantity, false);
     }
 
     /**
@@ -159,11 +123,7 @@ public class OddItem {
      * @return ItemStack are equal
      */
     public static boolean compare(ItemStack a, ItemStack b, boolean durability, boolean quantity, boolean enchantment) {
-        Boolean ret = a.getTypeId() == b.getTypeId();
-        if (durability) ret &= (a.getDurability() == b.getDurability());
-        if (ret && quantity) ret &= (a.getAmount() == b.getAmount());
-        if (ret && enchantment) ret &= (a.getEnchantments().equals(b.getEnchantments()));
-        return ret;
+        return info.somethingodd.OddItem.OddItem.compare(a, b, durability, quantity, enchantment);
     }
 
 
@@ -176,7 +136,7 @@ public class OddItem {
      * @return itemStack is contained in inventory
      */
     public static boolean contains(Player player, ItemStack itemStack) {
-        return contains(player, itemStack, true);
+        return info.somethingodd.OddItem.OddItem.contains(player, itemStack, true);
     }
 
     /**
@@ -187,7 +147,7 @@ public class OddItem {
      * @return itemStack is contained in inventory
      */
     public static boolean contains(Inventory inventory, ItemStack itemStack) {
-        return contains(inventory, itemStack, true);
+        return info.somethingodd.OddItem.OddItem.contains(inventory, itemStack, true);
     }
 
     /**
@@ -198,7 +158,7 @@ public class OddItem {
      * @return itemStack is contained in inventory
      */
     public static boolean contains(Player player, ItemStack itemStack, boolean quantity) {
-        return contains(player, itemStack, true, quantity);
+        return info.somethingodd.OddItem.OddItem.contains(player, itemStack, true, quantity);
     }
 
     /**
@@ -209,7 +169,7 @@ public class OddItem {
      * @return itemStack is contained in inventory
      */
     public static boolean contains(Inventory inventory, ItemStack itemStack, boolean quantity) {
-        return contains(inventory, itemStack, true, quantity);
+        return info.somethingodd.OddItem.OddItem.contains(inventory, itemStack, true, quantity);
     }
 
     /**
@@ -221,7 +181,7 @@ public class OddItem {
      * @return itemStack is contained in inventory
      */
     public static boolean contains(Player player, ItemStack itemStack, boolean durability, boolean quantity) {
-        return contains(player.getInventory(), itemStack, durability, quantity);
+        return info.somethingodd.OddItem.OddItem.contains(player.getInventory(), itemStack, durability, quantity);
     }
 
     /**
@@ -234,7 +194,7 @@ public class OddItem {
      * @return itemStack is contained in inventory
      */
     public static boolean contains(Inventory inventory, ItemStack itemStack, boolean durability, boolean quantity) {
-        return contains(inventory, itemStack, durability, quantity, true);
+        return info.somethingodd.OddItem.OddItem.contains(inventory, itemStack, durability, quantity, true);
     }
 
     /**
@@ -248,7 +208,7 @@ public class OddItem {
      * @return itemStack is contained in inventory
      */
     public static boolean contains(Inventory inventory, ItemStack itemStack, boolean durability, boolean quantity, boolean enchantment) {
-        return contains(inventory, itemStack, durability, quantity, enchantment, true);
+        return info.somethingodd.OddItem.OddItem.contains(inventory, itemStack, durability, quantity, enchantment, true);
     }
 
     /**
@@ -262,17 +222,7 @@ public class OddItem {
      * @return itemStack is contained in inventory
      */
     public static boolean contains(Inventory inventory, ItemStack itemStack, boolean durability, boolean quantity, boolean enchantment, boolean exact) {
-        ItemStack[] contents = inventory.getContents();
-        if (exact) {
-            for (int i = 0; i < contents.length; i++)
-                if (compare(contents[i], itemStack, durability, quantity, enchantment)) return true;
-        } else {
-            int amount = itemStack.getAmount();
-            for (int i = 0; i < contents.length; i++)
-                if (compare(contents[i], itemStack, durability, quantity, enchantment)) amount -= contents[i].getAmount();
-            return amount <= 0;
-        }
-        return false;
+        return info.somethingodd.OddItem.OddItem.contains(inventory, itemStack, durability, quantity, enchantment, exact);
     }
 
     /**
@@ -282,7 +232,7 @@ public class OddItem {
      * @return List of aliases
      */
     public static Collection<String> getAliases(ItemStack itemStack) {
-        return items.getAliases().get(itemStack);
+        return info.somethingodd.OddItem.OddItem.getAliases(itemStack);
     }
 
     /**
@@ -293,10 +243,7 @@ public class OddItem {
      * @throws IllegalArgumentException if no such item exists
      */
     public static Collection<String> getAliases(String query) throws IllegalArgumentException {
-        ItemStack itemStack = items.getItems().get(query);
-        if (itemStack == null)
-            throw new IllegalArgumentException(items.getSuggestions().findBestWordMatch(query));
-        return getAliases(itemStack);
+        return info.somethingodd.OddItem.OddItem.getAliases(query);
     }
 
     /**
@@ -306,7 +253,7 @@ public class OddItem {
      * @return group with name
      */
     public static OddItemGroup getItemGroup(String name) {
-        return groups.getGroup(name);
+        return info.somethingodd.OddItem.OddItem.getItemGroup(name);
     }
 
     /**
@@ -316,7 +263,7 @@ public class OddItem {
      * @return matching groups
      */
     public static Collection<OddItemGroup> getItemGroups(String key) {
-        return groups.getGroups(key);
+        return info.somethingodd.OddItem.OddItem.getItemGroups(key);
     }
 
     /**
@@ -327,7 +274,7 @@ public class OddItem {
      * @return matching groups
      */
     public static Collection<OddItemGroup> getItemGroups(String key, String key2) {
-        return groups.getGroups(key, key2);
+        return info.somethingodd.OddItem.OddItem.getItemGroups(key, key2);
     }
 
     /**
@@ -338,12 +285,12 @@ public class OddItem {
      * @throws IllegalArgumentException exception if item not found, message contains closest match
      */
     public static ItemStack getItemStack(String query) throws IllegalArgumentException {
-        return getItemStack(query, 1);
+        return info.somethingodd.OddItem.OddItem.getItemStack(query, 1);
     }
 
     @Deprecated
     public static ItemStack getItemStack(String query, Integer quantity) throws IllegalArgumentException {
-        return getItemStack(query, quantity.intValue());
+        return info.somethingodd.OddItem.OddItem.getItemStack(query, quantity.intValue());
     }
 
     /**
@@ -355,21 +302,7 @@ public class OddItem {
      * @throws IllegalArgumentException exception if item not found, message contains closest match
      */
     public static ItemStack getItemStack(String query, int quantity) throws IllegalArgumentException {
-        ItemStack i;
-        if (query.startsWith("map")) {
-            try {
-                i = new ItemStack(Material.MAP, 1, (query.contains(";") ? Short.valueOf(query.substring(query.indexOf(";") + 1)) : 0));
-            } catch (NumberFormatException e) {
-                i = new ItemStack(Material.MAP, 1, (short) 0);
-            }
-        } else {
-            i = items.getItems().get(query);
-        }
-        if (i != null && !query.startsWith("map")) {
-            i.setAmount(quantity);
-            return i;
-        }
-        throw new IllegalArgumentException(items.getSuggestions().findBestWordMatch(query));
+        return info.somethingodd.OddItem.OddItem.getItemStack(query, quantity);
     }
 
     /**
@@ -387,23 +320,7 @@ public class OddItem {
      * @return amount left over (i.e. player had less than itemStack.getAmount() available)
      */
     public static int removeItem(Player player, ItemStack itemStack) {
-        ItemStack[] inventory = player.getInventory().getContents();
-        int amount = itemStack.getAmount();
-        for (int i = 0; i < inventory.length; i++) {
-            if (compare(inventory[i], itemStack)) {
-                if (amount > inventory[i].getAmount()) {
-                    amount -= inventory[i].getAmount();
-                    inventory[i].setAmount(0);
-                } else if (amount > 0) {
-                    inventory[i].setAmount(inventory[i].getAmount() - amount);
-                    amount = 0;
-                } else {
-                    inventory[i].setAmount(0);
-                }
-            }
-            if (amount == 0) break;
-        }
-        return amount;
+        return info.somethingodd.OddItem.OddItem.removeItem(player, itemStack);
     }
 
     /**
@@ -414,10 +331,6 @@ public class OddItem {
      * @return amounts left over (i.e. player had less than itemStack.getAmount() available)
      */
     public static int[] removeItem(Player player, ItemStack... itemStacks) {
-        int[] amount = new int[itemStacks.length];
-        for (int i = 0; i < itemStacks.length; i++) {
-            amount[i] = removeItem(player, itemStacks[i]);
-        }
-        return amount;
+        return info.somethingodd.OddItem.OddItem.removeItem(player, itemStacks);
     }
 }
