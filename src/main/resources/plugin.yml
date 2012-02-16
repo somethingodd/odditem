@@ -1,5 +1,5 @@
 name: OddItem
-main: info.somethingodd.bukkit.OddItem.OddItemBase
+main: info.somethingodd.OddItem.OddItemBase
 version: 0.9
 website: http://bukkit.somethingodd.info
 author: petteyg359
