@@ -89,9 +89,9 @@ public class OddItemConfiguration {
                     }
                     src.close();
                     dst.close();
-                    oddItemBase.log.info(oddItemBase.logPrefix + "Wrote default " + filename);
+                    oddItemBase.log.info("Wrote default " + filename);
                 } catch (IOException e) {
-                    oddItemBase.log.warning(oddItemBase.logPrefix + "Error writing default " + filename);
+                    oddItemBase.log.warning("Error writing default " + filename);
                 } finally {
                     try {
                         src.close();

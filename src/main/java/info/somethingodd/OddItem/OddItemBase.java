@@ -13,7 +13,6 @@
  */
 package info.somethingodd.OddItem;
 
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Logger;
@@ -23,29 +22,26 @@ import java.util.logging.Logger;
  */
 public class OddItemBase extends JavaPlugin {
     protected Logger log;
-    protected String logPrefix;
 
     @Override
     public void onDisable() {
-        log.info(logPrefix + "disabled");
+        log.info("disabled");
         OddItem.clear();
-        logPrefix = null;
         log = null;
     }
 
     @Override
     public void onEnable() {
-        log = Bukkit.getServer().getLogger();
-        logPrefix = "[" + getDescription().getName() + "] ";
-        log.info(logPrefix + getDescription().getVersion() + " enabled");
+        log = getLogger();
+        log.info(getDescription().getVersion() + " enabled");
         try {
             OddItemConfiguration configuration = new OddItemConfiguration(this);
             configuration.configure();
         } catch (Exception e) {
-            log.severe(logPrefix + "Configuration error!");
+            log.severe("Configuration error!");
             e.printStackTrace();
         }
         getCommand("odditem").setExecutor(new OddItemCommandExecutor(this));
-        log.info(logPrefix + OddItem.items.getAliases().size() + " items with " + OddItem.items.getItems().size() + " aliases loaded.");
+        log.info(OddItem.items.getAliases().size() + " items with " + OddItem.items.getItems().size() + " aliases loaded.");
     }
 }
