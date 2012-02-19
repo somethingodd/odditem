@@ -42,10 +42,16 @@ public class OddItem {
     }
 
     @Deprecated
+    /**
+     * This method is only for backwards compatibility - allowing info.somethingodd.bukkit.OddItem.OddItem to use same aliases
+     */
     public static OddItemAliases getItems() {
         return items;
     }
 
+    /**
+     * This method is only for backwards compatibility - allowing info.somethingodd.bukkit.OddItem.OddItem to use same groups
+     */
     @Deprecated
     public static OddItemGroups getGroups() {
         return groups;
