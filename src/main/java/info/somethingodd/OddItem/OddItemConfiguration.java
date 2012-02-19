@@ -30,8 +30,8 @@ import java.io.InputStreamReader;
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public class OddItemConfiguration {
-    private int version;
     private static String comparator = "r";
+    private static int maxBlockId;
     private final OddItemBase oddItemBase;
 
     public OddItemConfiguration(OddItemBase oddItemBase) {
@@ -40,6 +40,10 @@ public class OddItemConfiguration {
 
     public static String getComparator() {
         return comparator;
+    }
+
+    public static int getMaxBlockId() {
+        return maxBlockId;
     }
 
     public void configure() {
@@ -53,7 +57,7 @@ public class OddItemConfiguration {
 
         YamlConfiguration yamlConfiguration = (YamlConfiguration) oddItemBase.getConfig();
         comparator = yamlConfiguration.getString("comparator", "r");
-        version = yamlConfiguration.getInt("version", 0);
+        maxBlockId = yamlConfiguration.getInt("maxBlockId", 256);
 
         ConfigurationSerialization.registerClass(OddItemAliases.class);
 
@@ -100,9 +104,5 @@ public class OddItemConfiguration {
                 }
             }
         }
-    }
-
-    private int getVersion() {
-        return version;
     }
 }

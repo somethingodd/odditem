@@ -387,10 +387,21 @@ public class OddItem {
      * @return amount left over (i.e. player had less than itemStack.getAmount() available)
      */
     public static int removeItem(Player player, ItemStack itemStack) {
+        return removeItem(player, itemStack, true);
+    }
+
+    /**
+     * Removes itemStack from player's inventory, possibly ignoring durability
+     *
+     * @param player Player to remove itemStack from
+     * @param itemStack ItemStack to remove
+     * @return amount left over (i.e. player had less than itemStack.getAmount() available)
+     */
+    public static int removeItem(Player player, ItemStack itemStack, boolean durability) {
         ItemStack[] inventory = player.getInventory().getContents();
         int amount = itemStack.getAmount();
         for (int i = 0; i < inventory.length; i++) {
-            if (compare(inventory[i], itemStack)) {
+            if (compare(inventory[i], itemStack, true, durability)) {
                 if (amount > inventory[i].getAmount()) {
                     amount -= inventory[i].getAmount();
                     inventory[i].setAmount(0);
@@ -407,16 +418,28 @@ public class OddItem {
     }
 
     /**
-     * Removes itemStacks from players's inventory
+     * Removes itemStacks from player's inventory
      *
      * @param player     Player to remove itemStacks from
      * @param itemStacks ItemStacks to remove
      * @return amounts left over (i.e. player had less than itemStack.getAmount() available)
      */
     public static int[] removeItem(Player player, ItemStack... itemStacks) {
+        return removeItem(player, true, itemStacks);
+    }
+
+    /**
+     * Removes itemStacks from player's inventory, possibly ignoring durability
+     *
+     * @param player Player to remove itemStacks from
+     * @param durability whether to check durability
+     * @param itemStacks ItemStacks to remove
+     * @return amounts left over (i.e. player had less than itemStack.getAmount() available)
+     */
+    public static int[] removeItem(Player player, boolean durability, ItemStack... itemStacks) {
         int[] amount = new int[itemStacks.length];
         for (int i = 0; i < itemStacks.length; i++) {
-            amount[i] = removeItem(player, itemStacks[i]);
+            amount[i] = removeItem(player, itemStacks[i], durability);
         }
         return amount;
     }
