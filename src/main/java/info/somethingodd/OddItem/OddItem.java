@@ -41,10 +41,10 @@ public class OddItem {
         ITEM_STACK_COMPARATOR = new ItemStackComparator();
     }
 
-    @Deprecated
     /**
      * This method is only for backwards compatibility - allowing info.somethingodd.bukkit.OddItem.OddItem to use same aliases
      */
+    @Deprecated
     public static OddItemAliases getItems() {
         return items;
     }
