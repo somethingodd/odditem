@@ -404,12 +404,12 @@ public class OddItem {
             if (inventory[i] != null && compare(inventory[i], itemStack, durability, false)) {
                 if (amount > inventory[i].getAmount()) {
                     amount -= inventory[i].getAmount();
-                    inventory[i].setAmount(0);
+                    player.getInventory().clear(i);
                 } else if (amount > 0) {
                     inventory[i].setAmount(inventory[i].getAmount() - amount);
                     amount = 0;
                 } else {
-                    inventory[i].setAmount(0);
+                    player.getInventory().clear(i);
                 }
             }
             if (amount == 0) break;
