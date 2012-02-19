@@ -401,7 +401,7 @@ public class OddItem {
         ItemStack[] inventory = player.getInventory().getContents();
         int amount = itemStack.getAmount();
         for (int i = 0; i < inventory.length; i++) {
-            if (inventory[i] != null && compare(inventory[i], itemStack, true, durability)) {
+            if (inventory[i] != null && compare(inventory[i], itemStack, durability, false)) {
                 if (amount > inventory[i].getAmount()) {
                     amount -= inventory[i].getAmount();
                     inventory[i].setAmount(0);
