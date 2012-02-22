@@ -71,7 +71,7 @@ public class OddItemConfiguration {
         }
         YamlConfiguration itemConfigurationDefault = new YamlConfiguration();
         try {
-            itemConfigurationDefault.load(oddItemBase.getResource("/items.yml"));
+            itemConfigurationDefault.load(oddItemBase.getResource("items.yml"));
             itemConfiguration.setDefaults(itemConfigurationDefault);
         } catch (Exception e) {
             oddItemBase.log.warning("Error opening default resource for items.yml!");
