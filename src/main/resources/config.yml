@@ -4,3 +4,4 @@
 # best for your server's most-used aliases.
 comparator: r
 maxBlockId: 255
+mergeDefaultItems: false

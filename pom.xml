@@ -3,10 +3,36 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>info.somethingodd</groupId>
     <artifactId>OddItem</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>0.9-SNAPSHOT</version>
     <name>OddItem</name>
     <url>http://somethingodd.info/OddItem</url>
     <build>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>plugin.yml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>config.yml</include>
+                    <include>groups.yml</include>
+                    <include>items.yml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${basedir}</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>COPYING</include>
+                    <include>LICENSE</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -119,7 +145,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.1-R4</version>
+            <version>1.1-R5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -142,13 +168,24 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>1.9.0</version>
-            <type>jar</type>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
     <distributionManagement>
-        <downloadUrl>http://repo.somethingodd.info/content/repositories/releases/</downloadUrl>
+        <downloadUrl>http://repo.somethingodd.info/content/groups/somethingodd/</downloadUrl>
         <repository>
             <id>somethingodd</id>
             <url>http://repo.somethingodd.info/content/repositories/releases/</url>
@@ -199,6 +236,8 @@
         <url>https://github.com/somethingodd/OddItem/issues</url>
     </issueManagement>
     <properties>
+        <mockito.version>1.9.0</mockito.version>
+        <powermock.version>1.4.11</powermock.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 </project>

@@ -18,27 +18,63 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public class OddItemGroups implements ConfigurationSerializable {
     private final Map<String, OddItemGroup> groups;
+    private final Map<OddItemGroup, Set<String>> aliases;
 
     public OddItemGroups(Map<String, Object> serialized) {
+        aliases = new HashMap<OddItemGroup, Set<String>>();
         groups = new TreeMap<String, OddItemGroup>(OddItem.ALPHANUM_COMPARATOR);
         for (String key : serialized.keySet()) {
-            groups.put(key, OddItemGroup.valueOf(((ConfigurationSection) serialized.get(key)).getValues(false)));
+            OddItemGroup group = OddItemGroup.valueOf(((ConfigurationSection) serialized.get(key)).getValues(false));
+            if (aliases.get(group) == null)
+                aliases.put(group, new TreeSet<String>(OddItem.ALPHANUM_COMPARATOR));
+            aliases.get(group).addAll(((ConfigurationSection) serialized.get(key)).getStringList("aliases"));
+            aliases.get(group).add(key);
+            for (String alias : aliases.get(group)) {
+                groups.put(alias, group);
+            }
         }
     }
 
-    public OddItemGroup getGroup(String name) {
-        return groups.get(name);
+    /**
+     * @return number of groups loaded
+     */
+    public int groupCount() {
+        return aliases.size();
     }
 
+    /**
+     * @return number of aliases loaded
+     */
+    public int aliasCount() {
+        return groups.size();
+    }
+
+    /**
+     * Gets an OddItemGroup by alias
+     * @param alias group alias to retrieve
+     * @return OddItemGroup
+     */
+    public OddItemGroup getGroup(String alias) {
+        return groups.get(alias);
+    }
+
+    /**
+     * Checks for groups containing data key
+     * @param key data key to check
+     * @return Collection of groups containing key
+     */
     public Collection<OddItemGroup> getGroups(String key) {
         Collection<OddItemGroup> groups = new HashSet<OddItemGroup>();
         for (OddItemGroup group : this.groups.values())
@@ -47,6 +83,12 @@ public class OddItemGroups implements ConfigurationSerializable {
         return groups;
     }
 
+    /**
+     * Checks for groups containing second-level data key
+     * @param key top-level key to check
+     * @param key2 second-level key to check
+     * @return Collection of groups containing keys
+     */
     public Collection<OddItemGroup> getGroups(String key, String key2) {
         Collection<OddItemGroup> groups = new HashSet<OddItemGroup>();
         for (OddItemGroup group : this.groups.values())

@@ -1,5 +1,6 @@
 groups:
     oddtransport:
+        aliases: [OddTransport]
         data:
             oddgive:
                 type: [whitelist, kit]

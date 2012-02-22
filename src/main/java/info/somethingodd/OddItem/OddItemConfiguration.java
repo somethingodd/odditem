@@ -30,7 +30,7 @@ import java.io.InputStreamReader;
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public class OddItemConfiguration {
-    private static String comparator = "r";
+    private static String comparator;
     private static int maxBlockId;
     private final OddItemBase oddItemBase;
 
@@ -61,17 +61,33 @@ public class OddItemConfiguration {
 
         ConfigurationSerialization.registerClass(OddItemAliases.class);
 
-        YamlConfiguration itemConfiguration = YamlConfiguration.loadConfiguration(new File(oddItemBase.getDataFolder(), "items.yml"));
-        itemConfiguration.setDefaults(YamlConfiguration.loadConfiguration(oddItemBase.getResource("items.yml")));
         ConfigurationSerialization.registerClass(OddItemAliases.class);
+        YamlConfiguration itemConfiguration = new YamlConfiguration();
+        try {
+            itemConfiguration.load(new File(oddItemBase.getDataFolder(), "items.yml"));
+        } catch (Exception e) {
+            oddItemBase.log.warning("Error opening items.yml!");
+            e.printStackTrace();
+        }
+        YamlConfiguration itemConfigurationDefault = new YamlConfiguration();
+        try {
+            itemConfigurationDefault.load(oddItemBase.getResource("/items.yml"));
+            itemConfiguration.setDefaults(itemConfigurationDefault);
+        } catch (Exception e) {
+            oddItemBase.log.warning("Error opening default resource for items.yml!");
+            e.printStackTrace();
+        }
         OddItem.items = OddItemAliases.valueOf(itemConfiguration.getConfigurationSection("items").getValues(false));
 
         ConfigurationSerialization.registerClass(OddItemGroup.class);
         ConfigurationSerialization.registerClass(OddItemGroups.class);
-
-        YamlConfiguration groupConfiguration = YamlConfiguration.loadConfiguration(new File(oddItemBase.getDataFolder(), "groups.yml"));
-        itemConfiguration.setDefaults(YamlConfiguration.loadConfiguration(oddItemBase.getResource("groups.yml")));
-        ConfigurationSerialization.registerClass(OddItemAliases.class);
+        YamlConfiguration groupConfiguration = new YamlConfiguration();
+        try {
+            groupConfiguration.load(new File(oddItemBase.getDataFolder(), "groups.yml"));
+        } catch (Exception e) {
+            oddItemBase.log.warning("Error opening groups.yml!");
+            e.printStackTrace();
+        }
         OddItem.groups = OddItemGroups.valueOf(groupConfiguration.getConfigurationSection("groups").getValues(false));
     }
 

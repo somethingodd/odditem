@@ -1,6 +1,6 @@
 name: OddItem
 main: info.somethingodd.OddItem.OddItemBase
-version: 0.9
+version: ${pom.version}
 website: http://bukkit.somethingodd.info
 author: petteyg359
 description: Item database stuff.

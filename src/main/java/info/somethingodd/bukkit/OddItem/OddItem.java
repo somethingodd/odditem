@@ -306,13 +306,6 @@ public class OddItem {
     }
 
     /**
-     * @return <a href="http://download.oracle.com/javase/6/docs/api/java/util/Collection.html?is-external=true">Collection</a>&lt;<a href="http://jd.bukkit.org/apidocs/org/bukkit/inventory/ItemStack.html?is-external=true">ItemStack</a>&gt; of all defined items
-     */
-    public static Collection<ItemStack> getItemStacks() {
-        return items.getAliases().keySet();
-    }
-
-    /**
      * Removes itemStack from player's inventory
      *
      * @param player Player to remove itemStack from

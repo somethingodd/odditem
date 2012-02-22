@@ -17,7 +17,7 @@ package info.somethingodd.OddItem;
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public class OddItemUpdater implements Runnable {
-    private OddItemBase oddItemBase = null;
+    private OddItemBase oddItemBase;
 
     public OddItemUpdater(OddItemBase oddItemBase) {
         this.oddItemBase = oddItemBase;

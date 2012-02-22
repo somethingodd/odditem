@@ -22,7 +22,7 @@ import org.bukkit.entity.Player;
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public class OddItemCommandExecutor implements CommandExecutor {
-    private OddItemBase oddItemBase = null;
+    private OddItemBase oddItemBase;
 
     public OddItemCommandExecutor(OddItemBase oddItemBase) {
         this.oddItemBase = oddItemBase;
@@ -52,7 +52,8 @@ public class OddItemCommandExecutor implements CommandExecutor {
             }
         } else if (command.getName().equals("odditeminfo")) {
             if (sender.hasPermission("odditem.info")) {
-                sender.sendMessage("[OddItem] " + OddItem.items.getAliases().size() + " items with " + OddItem.items.getItems().size() + " aliases");
+                sender.sendMessage("[OddItem] " + OddItem.items.itemCount() + " items with " + OddItem.items.aliasCount() + " aliases");
+                sender.sendMessage("[OddItem] " + OddItem.groups.groupCount() + " groups with " + OddItem.groups.aliasCount() + " aliases");
             } else {
                 sender.sendMessage("DENIED");
             }

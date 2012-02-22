@@ -288,7 +288,7 @@ public class OddItem {
      * @return List of aliases
      */
     public static Collection<String> getAliases(ItemStack itemStack) {
-        return items.getAliases().get(itemStack);
+        return items.getAliases(itemStack);
     }
 
     /**
@@ -299,9 +299,7 @@ public class OddItem {
      * @throws IllegalArgumentException if no such item exists
      */
     public static Collection<String> getAliases(String query) throws IllegalArgumentException {
-        ItemStack itemStack = items.getItems().get(query);
-        if (itemStack == null)
-            throw new IllegalArgumentException(items.getSuggestions().findBestWordMatch(query));
+        ItemStack itemStack = getItemStack(query);
         return getAliases(itemStack);
     }
 
@@ -369,20 +367,12 @@ public class OddItem {
                 i = new ItemStack(Material.MAP, 1, (short) 0);
             }
         } else {
-            i = items.getItems().get(query);
+            i = items.getItemStack(query);
         }
-        if (i != null && !query.startsWith("map")) {
-            i.setAmount(quantity);
-            return i;
-        }
-        throw new IllegalArgumentException(items.getSuggestions().findBestWordMatch(query));
-    }
-
-    /**
-     * @return <a href="http://download.oracle.com/javase/6/docs/api/java/util/Collection.html?is-external=true">Collection</a>&lt;<a href="http://jd.bukkit.org/apidocs/org/bukkit/inventory/ItemStack.html?is-external=true">ItemStack</a>&gt; of all defined items
-     */
-    public static Collection<ItemStack> getItemStacks() {
-        return items.getAliases().keySet();
+        if (i == null)
+            throw new IllegalArgumentException(items.getSuggestions().findBestWordMatch(query));
+        i.setAmount(quantity);
+        return i;
     }
 
     /**
