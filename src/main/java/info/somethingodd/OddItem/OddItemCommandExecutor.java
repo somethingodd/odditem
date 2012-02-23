@@ -17,6 +17,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
@@ -35,7 +36,10 @@ public class OddItemCommandExecutor implements CommandExecutor {
                 switch (args.length) {
                     case 0:
                         if (sender instanceof Player) {
-                            sender.sendMessage(OddItem.getAliases(((Player) sender).getItemInHand()).toString());
+                            ItemStack itemStack = ((Player) sender).getItemInHand();
+                            if (itemStack.getTypeId() > 255)
+                                itemStack.setDurability((short) 0);
+                            sender.sendMessage(OddItem.getAliases(itemStack).toString());
                             return true;
                         }
                         break;
