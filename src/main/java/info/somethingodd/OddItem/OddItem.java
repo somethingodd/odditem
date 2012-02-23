@@ -18,7 +18,6 @@ import info.somethingodd.OddItem.configuration.OddItemGroup;
 import info.somethingodd.OddItem.configuration.OddItemGroups;
 import info.somethingodd.OddItem.util.AlphanumComparator;
 import info.somethingodd.OddItem.util.ItemStackComparator;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -360,15 +359,9 @@ public class OddItem {
      */
     public static ItemStack getItemStack(String query, int quantity) throws IllegalArgumentException {
         ItemStack i;
-        if (query.startsWith("map")) {
-            try {
-                i = new ItemStack(Material.MAP, 1, (query.contains(";") ? Short.valueOf(query.substring(query.indexOf(";") + 1)) : 0));
-            } catch (NumberFormatException e) {
-                i = new ItemStack(Material.MAP, 1, (short) 0);
-            }
-        } else {
-            i = items.getItemStack(query);
-        }
+        i = items.getItemStack(query);
+        if (i == null)
+            i = items.getItemStack(query.toLowerCase());
         if (i == null)
             throw new IllegalArgumentException(items.getSuggestions().findBestWordMatch(query));
         i.setAmount(quantity);
