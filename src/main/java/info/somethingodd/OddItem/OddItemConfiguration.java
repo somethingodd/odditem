@@ -47,14 +47,14 @@ public class OddItemConfiguration {
     }
 
     public void configure() {
-        String[] filenames = {"config.yml", "items.yml", "groups.yml"};
         try {
-            initialConfig(filenames);
+            initialConfig("config.yml");
+            initialConfig("groups.yml");
+            initialConfig("items.yml");
         } catch (Exception e) {
             oddItemBase.log.warning("Exception writing initial configuration files: " + e.getMessage());
             e.printStackTrace();
         }
-
         YamlConfiguration yamlConfiguration = (YamlConfiguration) oddItemBase.getConfig();
         comparator = yamlConfiguration.getString("comparator", "r");
         maxBlockId = yamlConfiguration.getInt("maxBlockId", 256);
@@ -91,32 +91,31 @@ public class OddItemConfiguration {
         OddItem.groups = OddItemGroups.valueOf(groupConfiguration.getConfigurationSection("groups").getValues(false));
     }
 
-    private void initialConfig(String[] filenames) throws IOException {
-        for (String filename : filenames) {
-            File file = new File(oddItemBase.getDataFolder(), filename);
-            if (!file.exists()) {
-                BufferedReader src = null;
-                BufferedWriter dst = null;
+    private void initialConfig(String filename) throws IOException {
+        File file = new File(oddItemBase.getDataFolder(), filename);
+        if (!file.exists()) {
+            BufferedReader src = null;
+            BufferedWriter dst = null;
+            try {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+                src = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/" + filename)));
+                dst = new BufferedWriter(new FileWriter(file));
+                String line = src.readLine();
+                while (line != null) {
+                    dst.write(line + "\n");
+                    line = src.readLine();
+                }
+                src.close();
+                dst.close();
+                oddItemBase.log.info("Wrote default " + filename);
+            } catch (IOException e) {
+                oddItemBase.log.warning("Error writing default " + filename);
+            } finally {
                 try {
-                    file.getParentFile().mkdirs();
-                    file.createNewFile();
-                    src = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/" + filename)));
-                    dst = new BufferedWriter(new FileWriter(file));
-                    String line = src.readLine();
-                    while (line != null) {
-                        dst.write(line + "\n");
-                        line = src.readLine();
-                    }
                     src.close();
                     dst.close();
-                    oddItemBase.log.info("Wrote default " + filename);
-                } catch (IOException e) {
-                    oddItemBase.log.warning("Error writing default " + filename);
-                } finally {
-                    try {
-                        src.close();
-                        dst.close();
-                    } catch (Exception e) {}
+                } catch (Exception e) {
                 }
             }
         }
