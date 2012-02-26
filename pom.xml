@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>info.somethingodd</groupId>
     <artifactId>OddItem</artifactId>
-    <version>0.9-SNAPSHOT</version>
+    <version>0.9.0-alpha</version>
     <name>OddItem</name>
     <url>http://somethingodd.info/OddItem</url>
     <build>
