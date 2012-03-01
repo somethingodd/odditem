@@ -116,6 +116,7 @@ public class OddItemConfiguration {
                     src.close();
                     dst.close();
                 } catch (Exception e) {
+                    oddItemBase.log.severe("Your system is whack.");
                 }
             }
         }

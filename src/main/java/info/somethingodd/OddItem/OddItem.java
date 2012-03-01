@@ -41,7 +41,8 @@ public class OddItem {
     }
 
     /**
-     * This method is only for backwards compatibility - allowing info.somethingodd.bukkit.OddItem.OddItem to use same aliases
+     * This method is only for backwards compatibility with old package layout, for internal use only.
+     * @return OddItemAliases
      */
     @Deprecated
     public static OddItemAliases getItems() {
@@ -49,7 +50,8 @@ public class OddItem {
     }
 
     /**
-     * This method is only for backwards compatibility - allowing info.somethingodd.bukkit.OddItem.OddItem to use same groups
+     * This method is only for backwards compatibility with old package layout, for internal use only.
+     * @return OddItemGroups
      */
     @Deprecated
     public static OddItemGroups getGroups() {
