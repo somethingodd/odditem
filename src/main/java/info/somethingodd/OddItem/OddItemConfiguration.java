@@ -67,7 +67,6 @@ public class OddItemConfiguration {
             itemConfiguration.load(new File(oddItemBase.getDataFolder(), "items.yml"));
         } catch (Exception e) {
             oddItemBase.log.warning("Error opening items.yml!");
-            e.printStackTrace();
         }
         YamlConfiguration itemConfigurationDefault = new YamlConfiguration();
         try {
@@ -75,7 +74,6 @@ public class OddItemConfiguration {
             itemConfiguration.setDefaults(itemConfigurationDefault);
         } catch (Exception e) {
             oddItemBase.log.warning("Error opening default resource for items.yml!");
-            e.printStackTrace();
         }
         OddItem.items = OddItemAliases.valueOf(itemConfiguration.getConfigurationSection("items").getValues(false));
 
@@ -86,7 +84,6 @@ public class OddItemConfiguration {
             groupConfiguration.load(new File(oddItemBase.getDataFolder(), "groups.yml"));
         } catch (Exception e) {
             oddItemBase.log.warning("Error opening groups.yml!");
-            e.printStackTrace();
         }
         OddItem.groups = OddItemGroups.valueOf(groupConfiguration.getConfigurationSection("groups").getValues(false));
     }

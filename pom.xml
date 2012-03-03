@@ -212,7 +212,7 @@
         </snapshotRepository>
         <site>
             <id>somethingodd.info</id>
-            <url>file:///var/www/somethingodd.info/OddItem</url>
+            <url>file:///var/www/somethingodd.info/${project.name}</url>
         </site>
     </distributionManagement>
     <ciManagement>
@@ -220,8 +220,8 @@
         <url>http://ci.somethingodd.info</url>
     </ciManagement>
     <scm>
-        <developerConnection>scm:git:git@github.com:somethingodd/OddItem.git</developerConnection>
-        <connection>scm:git:git://github.com/somethingodd/OddItem.git</connection>
+        <developerConnection>scm:git:git@github.com:somethingodd/${project.name}.git</developerConnection>
+        <connection>scm:git:git://github.com/somethingodd/${project.name}.git</connection>
         <url>https://github.com/somethingodd/OddItem/tree/master/</url>
     </scm>
     <licenses>
@@ -249,7 +249,7 @@
     </developers>
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/somethingodd/OddItem/issues</url>
+        <url>https://github.com/somethingodd/${project.name}/issues</url>
     </issueManagement>
     <properties>
         <mockito.version>1.9.0</mockito.version>
