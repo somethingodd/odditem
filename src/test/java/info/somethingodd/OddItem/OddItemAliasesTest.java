@@ -91,16 +91,6 @@ public class OddItemAliasesTest {
     }
 
     @Test
-    public void testGroupCount() {
-        assertTrue(OddItem.groups.groupCount() == 1);
-    }
-
-    @Test
-    public void testGroupAliasCount() {
-        assertTrue(OddItem.groups.aliasCount() == 2);
-    }
-
-    @Test
     public void testAliases() {
         assertThat(OddItem.getAliases(new ItemStack(Material.STONE, 1)), equalTo(OddItem.getAliases("rock")));
         assertThat(OddItem.getAliases("rock"), equalTo(OddItem.getAliases("stone")));

@@ -25,7 +25,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -69,12 +70,11 @@ public class OddItemGroupsTest {
 
     @Test
     public void testGroupCount() {
-        assertTrue(OddItem.groups.groupCount() == 1);
+        assertThat(OddItem.groups.groupCount(), equalTo(1));
     }
 
     @Test
     public void testGroupAliasCount() {
-        assertTrue(OddItem.groups.aliasCount() == 2);
+        assertThat(OddItem.groups.aliasCount(), equalTo(2));
     }
-
 }
