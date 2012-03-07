@@ -44,7 +44,9 @@ public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemSta
         items = (List<String>) serialized.get("items");
         itemStacks = new ArrayList<ItemStack>();
         aliases = new TreeSet<String>(OddItem.ALPHANUM_COMPARATOR);
-        aliases.addAll((Collection<String>) serialized.get("aliases"));
+        if (serialized.containsKey("aliases")) {
+            aliases.addAll((Collection<String>) serialized.get("aliases"));
+        }
         for (String item : items) {
             ItemStack itemStack;
             try {
