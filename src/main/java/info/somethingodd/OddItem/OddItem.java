@@ -58,6 +58,9 @@ public class OddItem {
         return groups;
     }
 
+    /**
+     * Clears alias and group lists.
+     */
     protected static void clear() {
         items = null;
         groups = null;
