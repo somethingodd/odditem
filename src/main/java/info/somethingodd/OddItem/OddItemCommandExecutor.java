@@ -25,10 +25,17 @@ import org.bukkit.inventory.ItemStack;
 public class OddItemCommandExecutor implements CommandExecutor {
     private OddItemBase oddItemBase;
 
+    /**
+     * Constructor
+     * @param oddItemBase Base plugin
+     */
     public OddItemCommandExecutor(OddItemBase oddItemBase) {
         this.oddItemBase = oddItemBase;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equals("odditem")) {
@@ -65,6 +72,7 @@ public class OddItemCommandExecutor implements CommandExecutor {
         } else if (command.getName().equals("odditemreload")) {
             if (sender.hasPermission("odditem.reload")) {
                 sender.sendMessage("[OddItem] Reloading...");
+                OddItem.clear();
                 new OddItemConfiguration(oddItemBase).configure();
             } else {
                 sender.sendMessage("DENIED");
