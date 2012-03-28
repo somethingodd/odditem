@@ -21,7 +21,7 @@ import java.util.HashMap;
  * Searching the tree yields O(logn), which is a huge upgrade over brute force
  *
  * @author Josh Clemm
- *
+ * @see https://code.google.com/p/java-bk-tree/
  */
 
 /**
