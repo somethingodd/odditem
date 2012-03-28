@@ -13,16 +13,21 @@
  */
 package info.somethingodd.OddItem;
 
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -34,6 +39,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
+@RunWith(MockitoJUnitRunner.class)
 public class OddItemGroupsTest {
     private static OddItemBase oddItemBase;
     private static OddItemConfiguration oddItemConfiguration;
@@ -41,23 +47,52 @@ public class OddItemGroupsTest {
     @BeforeClass
     public static void setup() {
         oddItemBase = mock(OddItemBase.class);
-        when(oddItemBase.getDataFolder()).thenReturn(new File("src/main/resources"));
-        FileConfiguration fc = YamlConfiguration.loadConfiguration(new File(oddItemBase.getDataFolder(), "config.yml"));
-        when(oddItemBase.getConfig()).thenReturn(fc);
+        when(oddItemBase.getDataFolder()).thenReturn(new File("src/test/resources"));
         when(oddItemBase.getResource(anyString())).then(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                OddItemBase oddItemBase1 = ((OddItemBase) invocationOnMock.getMock());
                 String arg0 = (String) invocationOnMock.getArguments()[0];
-                InputStream res = getClass().getResourceAsStream(arg0);
-                if (res == null) {
+                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(arg0);
+                if (inputStream == null) {
                     throw new NullPointerException("Error from getResourceAsStream(" + arg0 + "): ");
                 }
-                return res;
+                return inputStream;
             }
         });
-        oddItemBase.log = Logger.getLogger("OddItemAliasesTest");
-        oddItemConfiguration = mock(OddItemConfiguration.class);
+        when(oddItemBase.getConfig()).then(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return YamlConfiguration.loadConfiguration(oddItemBase.getResource("config.yml"));
+            }
+        });
+        when(oddItemBase.getDescription()).then(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                InputStream inputStream = ((OddItemBase) invocationOnMock.getMock()).getResource("plugin.yml");
+                return new PluginDescriptionFile(inputStream);
+            }
+        });
+        when(oddItemBase.getLogger()).then(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                class PluginLogger extends Logger {
+                    private final StringBuilder prefix;
+
+                    public PluginLogger(Plugin plugin) {
+                        super(plugin.getClass().getCanonicalName(), null);
+                        prefix = new StringBuilder("[").append((plugin.getDescription().getPrefix() != null ? plugin.getDescription().getPrefix() : plugin.getDescription().getName())).append("]");
+                        setUseParentHandlers(false);
+                        setLevel(Level.ALL);
+                    }
+
+                    @Override
+                    public void log(LogRecord logRecord) {
+                        logRecord.setMessage(prefix.append(" ").append(logRecord.getMessage()).toString());
+                    }
+                }
+                return new PluginLogger(oddItemBase);
+            }
+        });
         oddItemConfiguration = new OddItemConfiguration(oddItemBase);
         oddItemConfiguration.configure();
     }
