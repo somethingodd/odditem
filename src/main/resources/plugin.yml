@@ -28,7 +28,6 @@ permissions:
         children:
             odditem.alias: true
             odditem.info: true
-            odditem.reload: false
         default: true
     odditem.alias:
         default: true
