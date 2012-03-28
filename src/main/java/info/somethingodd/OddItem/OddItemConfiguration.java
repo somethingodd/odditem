@@ -34,25 +34,40 @@ public class OddItemConfiguration {
     private static int maxBlockId;
     private final OddItemBase oddItemBase;
 
+    /**
+     * Constructor
+     * @param oddItemBase Base plugin
+     */
     public OddItemConfiguration(OddItemBase oddItemBase) {
         this.oddItemBase = oddItemBase;
     }
 
+    /**
+     * Gets comparator type
+     * @return comparator string
+     */
     public static String getComparator() {
         return comparator;
     }
 
+    /**
+     * Gets maximum block ID, which might differ between servers in future
+     * @return maximum block ID
+     */
     public static int getMaxBlockId() {
         return maxBlockId;
     }
 
+    /**
+     * Configures OddItem
+     */
     public void configure() {
         try {
             initialConfig("config.yml");
             initialConfig("groups.yml");
             initialConfig("items.yml");
         } catch (Exception e) {
-            oddItemBase.log.warning("Exception writing initial configuration files: " + e.getMessage());
+            oddItemBase.getLogger().warning("Exception writing initial configuration files: " + e.getMessage());
             e.printStackTrace();
         }
         YamlConfiguration yamlConfiguration = (YamlConfiguration) oddItemBase.getConfig();
@@ -66,14 +81,14 @@ public class OddItemConfiguration {
         try {
             itemConfiguration.load(new File(oddItemBase.getDataFolder(), "items.yml"));
         } catch (Exception e) {
-            oddItemBase.log.warning("Error opening items.yml!");
+            oddItemBase.getLogger().warning("Error opening items.yml!");
         }
         YamlConfiguration itemConfigurationDefault = new YamlConfiguration();
         try {
             itemConfigurationDefault.load(oddItemBase.getResource("items.yml"));
             itemConfiguration.setDefaults(itemConfigurationDefault);
         } catch (Exception e) {
-            oddItemBase.log.warning("Error opening default resource for items.yml!");
+            oddItemBase.getLogger().warning("Error opening default resource for items.yml!");
         }
         OddItem.items = OddItemAliases.valueOf(itemConfiguration.getConfigurationSection("items").getValues(false));
 
@@ -83,11 +98,16 @@ public class OddItemConfiguration {
         try {
             groupConfiguration.load(new File(oddItemBase.getDataFolder(), "groups.yml"));
         } catch (Exception e) {
-            oddItemBase.log.warning("Error opening groups.yml!");
+            oddItemBase.getLogger().warning("Error opening groups.yml!");
         }
         OddItem.groups = OddItemGroups.valueOf(groupConfiguration.getConfigurationSection("groups").getValues(false));
     }
 
+    /**
+     * Copies file from internal JAR resource to disk
+     * @param filename filename to get from resources
+     * @throws IOException Exception thrown upon error copying file
+     */
     private void initialConfig(String filename) throws IOException {
         File file = new File(oddItemBase.getDataFolder(), filename);
         if (!file.exists()) {
@@ -105,15 +125,15 @@ public class OddItemConfiguration {
                 }
                 src.close();
                 dst.close();
-                oddItemBase.log.info("Wrote default " + filename);
+                oddItemBase.getLogger().info("Wrote default " + filename);
             } catch (IOException e) {
-                oddItemBase.log.warning("Error writing default " + filename);
+                oddItemBase.getLogger().warning("Error writing default " + filename);
             } finally {
                 try {
                     src.close();
                     dst.close();
                 } catch (Exception e) {
-                    oddItemBase.log.severe("Your system is whack.");
+                    oddItemBase.getLogger().severe("Your system is whack.");
                 }
             }
         }
