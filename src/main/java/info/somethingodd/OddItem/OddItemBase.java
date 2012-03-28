@@ -15,33 +15,31 @@ package info.somethingodd.OddItem;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.logging.Logger;
-
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public class OddItemBase extends JavaPlugin {
-    protected Logger log;
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onDisable() {
-        log.info("disabled");
         OddItem.clear();
-        log = null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onEnable() {
-        log = getLogger();
-        log.info(getDescription().getVersion() + " enabled");
         try {
             OddItemConfiguration configuration = new OddItemConfiguration(this);
             configuration.configure();
         } catch (Exception e) {
-            log.severe("Configuration error!");
+            getLogger().severe("Configuration error!");
             e.printStackTrace();
         }
         getCommand("odditem").setExecutor(new OddItemCommandExecutor(this));
-        log.info(OddItem.items.itemCount() + " items with " + OddItem.items.aliasCount() + " aliases loaded.");
+        getLogger().info(OddItem.items.itemCount() + " items with " + OddItem.items.aliasCount() + " aliases loaded.");
     }
 }
