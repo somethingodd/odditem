@@ -74,7 +74,7 @@ public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemSta
 
     /**
      * Gets group data
-     * @return Map of data
+     * @return @{code Map} of data
      */
     public Map<String, Object> getData() {
         return data;
@@ -105,7 +105,7 @@ public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemSta
     }
 
     /**
-     * Get int by key
+     * Get {@code int} by key
      * @param key top-level key
      * @return data
      */
@@ -114,7 +114,7 @@ public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemSta
     }
 
     /**
-     * Get int by second-level key
+     * Get {@code int} by second-level key
      * @param key top-level key
      * @param key2 second-level key
      * @return data
@@ -124,7 +124,7 @@ public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemSta
     }
 
     /**
-     * Get String by key
+     * Get {@code String} by key
      * @param key top-level key
      * @return data
      */
@@ -133,7 +133,7 @@ public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemSta
     }
 
     /**
-     * Get String by second-level key
+     * Get {@code String} by second-level key
      * @param key top-level key
      * @param key2 second-level key
      * @return data
@@ -143,7 +143,7 @@ public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemSta
     }
 
     /**
-     * Get List\<String\> by key
+     * Get {@code List&lt;String&gt;} by key
      * @param key top-level key
      * @return data
      */
@@ -152,7 +152,7 @@ public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemSta
     }
 
     /**
-     * Get List\<String\></String\> by second-level key
+     * Get {@code List&lt;String&gt;} by second-level key
      * @param key top-level key
      * @param key2 second-level key
      * @return data
@@ -162,7 +162,7 @@ public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemSta
     }
 
     /**
-     * Get double by key
+     * Get {@code double} by key
      * @param key top-level key
      * @return data
      */
@@ -171,7 +171,7 @@ public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemSta
     }
 
     /**
-     * Get double by second-level key
+     * Get {@code double} by second-level key
      * @param key top-level key
      * @param key2 second-level key
      * @return data
@@ -181,7 +181,7 @@ public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemSta
     }
 
     /**
-     * Get ConfigurationSection by second-level key
+     * Get {@code ConfigurationSection} by second-level key
      * @param key top-level key
      * @return data
      */
@@ -219,6 +219,10 @@ public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemSta
         return false;
     }
 
+    /**
+     * OddItemGroup as String
+     * @return OddItemGroup{items=[items],data=[data]}
+     */
     public String toString() {
         StringBuilder str = new StringBuilder("OddItemGroup");
         str.append("{");
@@ -229,6 +233,10 @@ public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemSta
         return str.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     * @return {@inheritDoc}
+     */
     @Override
     public Map<String, Object> serialize() {
         Map<String, Object> serialized = new TreeMap<String, Object>(OddItem.ALPHANUM_COMPARATOR);
@@ -253,6 +261,10 @@ public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemSta
         return itemStacks.get(index);
     }
 
+    /**
+     * {@inheritDoc}
+     * @return {@inheritDoc}
+     */
     @Override
     public Iterator<ItemStack> iterator() {
         return Collections.unmodifiableList(itemStacks).iterator();
