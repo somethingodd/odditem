@@ -4,7 +4,7 @@
     <inceptionYear>2011</inceptionYear>
     <groupId>info.somethingodd</groupId>
     <artifactId>odditem</artifactId>
-    <version>0.9.2-SNAPSHOT</version>
+    <version>0.9.2</version>
     <name>odditem</name>
     <url>http://somethingodd.info/${project.name}</url>
     <build>
