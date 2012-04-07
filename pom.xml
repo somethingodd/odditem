@@ -7,11 +7,11 @@
     <version>0.9.5-SNAPSHOT</version>
     <name>odditem</name>
     <url>http://somethingodd.info/${project.name}</url>
-    <parent>
+    <!--<parent>
         <groupId>info.somethingodd</groupId>
         <artifactId>somethingodd-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-    </parent>
+    </parent>-->
     <build>
         <resources>
             <resource>
@@ -39,24 +39,6 @@
                 </includes>
             </resource>
         </resources>
- <!--       <testResources>
-            <testResource>
-                <directory>${basedir}/src/main/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>plugin.yml</include>
-                </includes>
-            </testResource>
-            <testResource>
-                <directory>${basedir}/src/main/resources</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>config.yml</include>
-                    <include>groups.yml</include>
-                    <include>items.yml</include>
-                </includes>
-            </testResource>
-        </testResources>-->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
