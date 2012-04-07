@@ -7,11 +7,11 @@
     <version>0.9.5-SNAPSHOT</version>
     <name>odditem</name>
     <url>http://somethingodd.info/${project.name}</url>
-    <!--<parent>
+    <parent>
         <groupId>info.somethingodd</groupId>
         <artifactId>somethingodd-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-    </parent>-->
+    </parent>
     <build>
         <resources>
             <resource>
