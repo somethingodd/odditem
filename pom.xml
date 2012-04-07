@@ -224,7 +224,7 @@
         </snapshotRepository>
         <site>
             <id>somethingodd.info</id>
-            <url>file:///var/www/somethingodd.info/${project.name}</url>
+            <url>file:///var/www/somethingodd.info/${project.name}-${project.version}</url>
         </site>
     </distributionManagement>
     <ciManagement>
