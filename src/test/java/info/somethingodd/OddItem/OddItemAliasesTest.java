@@ -40,7 +40,6 @@ import java.util.logging.Logger;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -114,12 +113,12 @@ public class OddItemAliasesTest {
 
     @Test
     public void testItemCount() {
-        assertTrue(OddItem.items.itemCount() == 364);
+        assertThat(OddItem.items.itemCount(), equalTo(373));
     }
 
     @Test
     public void testItemAliasCount() {
-        assertTrue(OddItem.items.aliasCount() == 801);
+        assertThat(OddItem.items.aliasCount(), equalTo(831));
     }
 
     @Test
