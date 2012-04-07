@@ -9,9 +9,8 @@
     <url>http://somethingodd.info/${project.name}</url>
     <parent>
         <groupId>info.somethingodd</groupId>
-        <artifactId>somethingodd</artifactId>
+        <artifactId>somethingodd-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
     <build>
         <resources>
@@ -40,7 +39,7 @@
                 </includes>
             </resource>
         </resources>
-        <testResources>
+ <!--       <testResources>
             <testResource>
                 <directory>${basedir}/src/main/resources</directory>
                 <filtering>true</filtering>
@@ -57,7 +56,7 @@
                     <include>items.yml</include>
                 </includes>
             </testResource>
-        </testResources>
+        </testResources>-->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -199,7 +198,7 @@
         <dependencies>
             <dependency>
                 <groupId>info.somethingodd</groupId>
-                <artifactId>somethingodd</artifactId>
+                <artifactId>somethingodd-parent</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
