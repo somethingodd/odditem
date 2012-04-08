@@ -93,7 +93,7 @@
         </snapshotRepository>
         <site>
             <id>somethingodd.info</id>
-            <url>${url.dav}</url>
+            <url>${url.site}</url>
         </site>
     </distributionManagement>
     <ciManagement>
