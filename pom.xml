@@ -11,6 +11,7 @@
         <groupId>info.somethingodd</groupId>
         <artifactId>somethingodd-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>somethingodd-parent</relativePath>
     </parent>
     <build>
         <resources>
