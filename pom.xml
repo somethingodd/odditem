@@ -93,7 +93,7 @@
         </snapshotRepository>
         <site>
             <id>somethingodd.info</id>
-            <url>file:///var/www/somethingodd.info/${project.name}-${project.version}/</url>
+            <url>file:///var/www/somethingodd.info/${project.name}/</url>
         </site>
     </distributionManagement>
     <ciManagement>
