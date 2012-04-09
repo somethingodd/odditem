@@ -93,12 +93,12 @@
         </snapshotRepository>
         <site>
             <id>somethingodd.info</id>
-            <url>${url.site}</url>
+            <url>file:///var/www/somethingodd.info/${project.name}-${project.version}/</url>
         </site>
     </distributionManagement>
     <ciManagement>
         <system>jenkins</system>
-        <url>${url.ci}</url>
+        <url>http://somethingodd.info/jenkins/</url>
     </ciManagement>
     <scm>
         <developerConnection>scm:git:git@github.com:somethingodd/${project.name}.git</developerConnection>
@@ -114,7 +114,7 @@
     </licenses>
     <organization>
         <name>SomethingOdd</name>
-        <url>http://somethingodd.info</url>
+        <url>${url.root}</url>
     </organization>
     <developers>
         <developer>
@@ -124,7 +124,7 @@
                 <role>developer</role>
             </roles>
             <organization>SomethingOdd</organization>
-            <organizationUrl>http://somethingodd.info</organizationUrl>
+            <organizationUrl>${url.root}</organizationUrl>
             <timezone>-6</timezone>
         </developer>
     </developers>
