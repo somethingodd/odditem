@@ -19,6 +19,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Collection;
+
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
@@ -44,10 +46,13 @@ public class OddItemCommandExecutor implements CommandExecutor {
                     case 0:
                         if (sender instanceof Player) {
                             ItemStack itemStack = ((Player) sender).getItemInHand();
-                            ItemStack temp = new ItemStack(itemStack.getTypeId(), itemStack.getDurability());
-                            if (temp.getTypeId() > 255)
+                            Collection<String> aliases = OddItem.getAliases(itemStack);
+                            if (aliases == null) {
+                                ItemStack temp = itemStack.clone();
                                 temp.setDurability((short) 0);
-                            sender.sendMessage(OddItem.getAliases(temp).toString());
+                                aliases = OddItem.getAliases(temp);
+                            }
+                            sender.sendMessage(aliases.toString());
                             return true;
                         }
                         break;
