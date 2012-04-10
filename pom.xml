@@ -6,12 +6,11 @@
     <artifactId>odditem</artifactId>
     <version>0.9.5-SNAPSHOT</version>
     <name>odditem</name>
-    <url>${url.root}/${project.name}</url>
+    <url>http://somethingodd.info/odditem</url>
     <parent>
         <groupId>info.somethingodd</groupId>
         <artifactId>somethingodd-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-        <relativePath>somethingodd-parent</relativePath>
+        <version>1.0.0</version>
     </parent>
     <build>
         <resources>
@@ -63,17 +62,6 @@
             </plugin>
         </plugins>
     </build>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>info.somethingodd</groupId>
-                <artifactId>somethingodd-parent</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>commons-codec</groupId>
