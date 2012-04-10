@@ -3,7 +3,7 @@
     <inceptionYear>2011</inceptionYear>
     <groupId>info.somethingodd</groupId>
     <artifactId>odditem</artifactId>
-    <version>0.9.5</version>
+    <version>0.9.6-SNAPSHOT</version>
     <name>odditem</name>
     <url>http://somethingodd.info/odditem</url>
     <parent>
