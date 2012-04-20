@@ -67,6 +67,11 @@
             <artifactId>commons-codec</artifactId>
             <version>1.6</version>
         </dependency>
+        <dependency>
+            <groupId>org.getspout</groupId>
+            <artifactId>spoutpluginapi</artifactId>
+            <version>dev-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     <distributionManagement>
         <downloadUrl>${url.repo.download}</downloadUrl>

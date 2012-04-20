@@ -1,5 +1,6 @@
 name: OddItem
 main: info.somethingodd.OddItem.OddItemBase
+load: STARTUP
 version: ${pom.version}
 website: ${pom.url}
 author: petteyg359
