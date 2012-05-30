@@ -13,20 +13,11 @@
  */
 package info.somethingodd.OddItem;
 
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-import org.getspout.spoutapi.block.design.Texture;
-import org.getspout.spoutapi.material.block.GenericCubeCustomBlock;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
-public class SpoutItem extends GenericCubeCustomBlock {
-    private static final Map<ItemStack, GenericCubeCustomBlock> customBlocks;
+public class SpoutItem /*extends GenericCubeCustomBlock*/ {
+    /*private static final Map<ItemStack, GenericCubeCustomBlock> customBlocks;
     private ItemStack itemStack;
     private String name;
     private OddItemBase oddItemBase;
@@ -51,5 +42,5 @@ public class SpoutItem extends GenericCubeCustomBlock {
 
     public static Map<ItemStack, GenericCubeCustomBlock> getCustomBlocks() {
         return Collections.unmodifiableMap(customBlocks);
-    }
+    }*/
 }

@@ -13,13 +13,6 @@
  */
 package info.somethingodd.OddItem;
 
-import org.bukkit.Chunk;
-import org.bukkit.block.Block;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.inventory.ItemStack;
-import org.getspout.spoutapi.SpoutManager;
-
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
@@ -29,7 +22,7 @@ public class Listener implements org.bukkit.event.Listener {
     public Listener(OddItemBase oddItemBase) {
         this.oddItemBase = oddItemBase;
     }
-
+    /*
     @EventHandler
     public void onChunkLoad(ChunkLoadEvent event) {
         Chunk chunk = event.getChunk();
@@ -45,5 +38,5 @@ public class Listener implements org.bukkit.event.Listener {
                 }
             }
         }
-    }
+    }*/
 }
