@@ -5,3 +5,4 @@
 comparator: r
 maxBlockId: 255
 mergeDefaultItems: false
+metrics: true

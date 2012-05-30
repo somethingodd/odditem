@@ -13,6 +13,7 @@
  */
 package info.somethingodd.OddItem;
 
+import info.somethingodd.goddamnithidendraputitinitsownplugin.Metrics;
 import info.somethingodd.OddItem.configuration.OddItemAliases;
 import info.somethingodd.OddItem.configuration.OddItemGroup;
 import info.somethingodd.OddItem.configuration.OddItemGroups;
@@ -73,6 +74,14 @@ public class OddItemConfiguration {
         YamlConfiguration yamlConfiguration = (YamlConfiguration) oddItemBase.getConfig();
         comparator = yamlConfiguration.getString("comparator", "r");
         maxBlockId = yamlConfiguration.getInt("maxBlockId", 256);
+
+        if (yamlConfiguration.getBoolean("metrics", true)) {
+            try {
+                new Metrics(oddItemBase).start();
+            } catch (IOException e) {
+                oddItemBase.getLogger().warning("Failed to run Metrics. This is not an error.");
+            }
+        }
 
         ConfigurationSerialization.registerClass(OddItemAliases.class);
 
