@@ -11,7 +11,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package info.somethingodd.OddItem;
+package info.somethingodd.odditem;
 
 import org.bukkit.plugin.java.JavaPlugin;
 

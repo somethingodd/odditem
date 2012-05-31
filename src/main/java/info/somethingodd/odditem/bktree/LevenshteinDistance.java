@@ -1,4 +1,4 @@
-package info.somethingodd.OddItem.bktree;
+package info.somethingodd.odditem.bktree;
 
 /**
  * http://en.wikipedia.org/wiki/Levenshtein_distance

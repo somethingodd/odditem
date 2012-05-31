@@ -11,9 +11,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package info.somethingodd.OddItem.configuration;
+package info.somethingodd.odditem.configuration;
 
-import info.somethingodd.OddItem.OddItem;
+import info.somethingodd.odditem.OddItem;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemorySection;

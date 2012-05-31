@@ -11,27 +11,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package info.somethingodd.OddItem.util;
-
-import org.bukkit.inventory.ItemStack;
-
-import java.util.Comparator;
+package info.somethingodd.odditem;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
-public class ItemStackComparator implements Comparator<ItemStack> {
+public class OddItemUpdater implements Runnable {
+    private OddItemBase oddItemBase;
+
+    public OddItemUpdater(OddItemBase oddItemBase) {
+        this.oddItemBase = oddItemBase;
+    }
 
     @Override
-    public int compare(ItemStack o1, ItemStack o2) {
-        if (o1.getTypeId() != o2.getTypeId()) {
-            if (o1.getTypeId() < o2.getTypeId()) return -1;
-            if (o1.getTypeId() > o2.getTypeId()) return 1;
-        }
-        if (o1.getDurability() != o2.getDurability()) {
-            if (o1.getDurability() < o2.getDurability()) return -1;
-            if (o1.getDurability() > o2.getDurability()) return 1;
-        }
-        return 0;
+    public void run() {
+
     }
 }

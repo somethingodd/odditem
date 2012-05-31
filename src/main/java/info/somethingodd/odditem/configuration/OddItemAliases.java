@@ -11,11 +11,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package info.somethingodd.OddItem.configuration;
+package info.somethingodd.odditem.configuration;
 
-import info.somethingodd.OddItem.OddItem;
-import info.somethingodd.OddItem.OddItemConfiguration;
-import info.somethingodd.OddItem.bktree.BKTree;
+import info.somethingodd.odditem.OddItem;
+import info.somethingodd.odditem.OddItemConfiguration;
+import info.somethingodd.odditem.bktree.BKTree;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 

@@ -1,4 +1,4 @@
-package info.somethingodd.goddamnithidendraputitinitsownplugin;/*
+package info.somethingodd.odditem.goddamnithidendraputitinitsownplugin;/*
  * Copyright 2011 Tyler Blair. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are

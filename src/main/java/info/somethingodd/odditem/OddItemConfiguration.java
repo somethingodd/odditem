@@ -11,12 +11,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, "see" <http://www.gnu.org/licenses/>.
  */
-package info.somethingodd.OddItem;
+package info.somethingodd.odditem;
 
-import info.somethingodd.goddamnithidendraputitinitsownplugin.Metrics;
-import info.somethingodd.OddItem.configuration.OddItemAliases;
-import info.somethingodd.OddItem.configuration.OddItemGroup;
-import info.somethingodd.OddItem.configuration.OddItemGroups;
+import info.somethingodd.odditem.goddamnithidendraputitinitsownplugin.Metrics;
+import info.somethingodd.odditem.configuration.OddItemAliases;
+import info.somethingodd.odditem.configuration.OddItemGroup;
+import info.somethingodd.odditem.configuration.OddItemGroups;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 

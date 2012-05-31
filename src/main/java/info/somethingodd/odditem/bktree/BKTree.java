@@ -1,4 +1,4 @@
-package info.somethingodd.OddItem.bktree;
+package info.somethingodd.odditem.bktree;
 
 
 import org.apache.commons.codec.EncoderException;
