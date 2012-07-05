@@ -1,9 +1,10 @@
 name: OddItem
-main: info.somethingodd.OddItem.OddItemBase
+main: info.somethingodd.odditem.OddItemBase
 load: STARTUP
 version: ${pom.version}
 website: ${pom.url}
 author: petteyg359
+softdepend: [Spout]
 description: Item database stuff.
 commands:
     odditem:

@@ -33,13 +33,13 @@ import java.util.TreeSet;
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
-public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemStack> {
+public class Group implements ConfigurationSerializable, Iterable<ItemStack> {
     private List<ItemStack> itemStacks;
     private List<String> items;
     private Map<String, Object> data;
     private Set<String> aliases;
 
-    public OddItemGroup(Map<String, Object> serialized) {
+    public Group(Map<String, Object> serialized) {
         data = ((ConfigurationSection) serialized.get("data")).getValues(false);
         items = (List<String>) serialized.get("items");
         itemStacks = new ArrayList<ItemStack>();
@@ -220,16 +220,16 @@ public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemSta
     }
 
     /**
-     * OddItemGroup as String
-     * @return OddItemGroup{items=[items],data=[data]}
+     * Group as String
+     * @return Group{items=[items],data=[data]}
      */
     public String toString() {
-        StringBuilder str = new StringBuilder("OddItemGroup");
+        StringBuilder str = new StringBuilder("Group");
         str.append("{");
         str.append("items=").append(items.toString());
         str.append(",");
         str.append("data=").append(data.toString());
-        str.append("}\n");
+        str.append("}");
         return str.toString();
     }
 
@@ -245,12 +245,12 @@ public class OddItemGroup implements ConfigurationSerializable, Iterable<ItemSta
         return serialized;
     }
 
-    public static OddItemGroup deserialize(Map<String, Object> serialized) {
-        return new OddItemGroup(serialized);
+    public static Group deserialize(Map<String, Object> serialized) {
+        return new Group(serialized);
     }
 
-    public static OddItemGroup valueOf(Map<String, Object> serialized) {
-        return new OddItemGroup(serialized);
+    public static Group valueOf(Map<String, Object> serialized) {
+        return new Group(serialized);
     }
 
     public Collection<ItemStack> getItems() {

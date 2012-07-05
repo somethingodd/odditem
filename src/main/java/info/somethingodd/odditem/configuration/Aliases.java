@@ -13,8 +13,8 @@
  */
 package info.somethingodd.odditem.configuration;
 
+import info.somethingodd.odditem.Configuration;
 import info.somethingodd.odditem.OddItem;
-import info.somethingodd.odditem.OddItemConfiguration;
 import info.somethingodd.odditem.bktree.BKTree;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
@@ -29,13 +29,13 @@ import java.util.TreeSet;
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
-public class OddItemAliases implements ConfigurationSerializable {
+public class Aliases implements ConfigurationSerializable {
     private final BKTree<String> suggestions;
     private final Map<String, ItemStack> items;
     private final Map<ItemStack, Set<String>> aliases;
 
-    public OddItemAliases(Map<String, Object> serialized) {
-        suggestions = new BKTree<String>(OddItemConfiguration.getComparator());
+    public Aliases(Map<String, Object> serialized) {
+        suggestions = new BKTree<String>(Configuration.getComparator());
         items = Collections.synchronizedMap(new TreeMap<String, ItemStack>(OddItem.ALPHANUM_COMPARATOR));
         aliases = Collections.synchronizedMap(new TreeMap<ItemStack, Set<String>>(OddItem.ITEM_STACK_COMPARATOR));
         for (String key : serialized.keySet()) {
@@ -51,27 +51,46 @@ public class OddItemAliases implements ConfigurationSerializable {
         }
     }
 
+    /**
+     * Returns a {@link String} representation of an {@link ItemStack}
+     * @param itemStack source
+     * @return {@link String} in form "id;durability"
+     */
     private String itemStackToString(ItemStack itemStack) {
         return new StringBuilder().append(itemStack.getTypeId() + ";" + itemStack.getDurability()).toString();
     }
 
+    /**
+     * Returns an {@link ItemStack} given a {@link String} representation
+     * @param string in form "id;durability"
+     * @return {@link ItemStack} or {@code null} if no matching item
+     */
     private ItemStack stringToItemStack(String string) {
         int typeId;
         short damage;
-        if (string.contains(";")) {
-            typeId = Integer.valueOf(string.substring(0, string.indexOf(";")));
-            damage = Short.valueOf(string.substring(string.indexOf(";") + 1));
-        } else {
-            typeId = Integer.valueOf(string);
-            damage = 0;
+        try {
+            if (string.contains(";")) {
+                typeId = Integer.valueOf(string.substring(0, string.indexOf(";")));
+                damage = Short.valueOf(string.substring(string.indexOf(";") + 1));
+            } else {
+                typeId = Integer.valueOf(string);
+                damage = 0;
+            }
+            return new ItemStack(typeId, 1, damage);
+        } catch (NumberFormatException e) {
+            return null;
         }
-        return new ItemStack(typeId, 1, damage);
     }
 
     public Collection<String> getAliases(ItemStack itemStack) {
         return aliases.get(itemStack);
     }
 
+    /**
+     * Returns an {@link ItemStack} matching query
+     * @param query alias
+     * @return {@link ItemStack} matching query or {@code null}
+     */
     public ItemStack getItemStack(String query) {
         return items.get(query);
     }
@@ -103,7 +122,7 @@ public class OddItemAliases implements ConfigurationSerializable {
     }
 
     public String toString() {
-        StringBuilder str = new StringBuilder("OddItemAliases");
+        StringBuilder str = new StringBuilder("Aliases");
         str.append("{");
         str.append("aliases=").append(aliases.toString());
         str.append(",");
@@ -121,12 +140,12 @@ public class OddItemAliases implements ConfigurationSerializable {
         return serialized;
     }
 
-    public static OddItemAliases deserialize(Map<String, Object> serialized) {
-        return new OddItemAliases(serialized);
+    public static Aliases deserialize(Map<String, Object> serialized) {
+        return new Aliases(serialized);
     }
 
-    public static OddItemAliases valueOf(Map<String, Object> serialized) {
-        return new OddItemAliases(serialized);
+    public static Aliases valueOf(Map<String, Object> serialized) {
+        return new Aliases(serialized);
     }
 
     public int hashCode() {
@@ -137,9 +156,9 @@ public class OddItemAliases implements ConfigurationSerializable {
     }
 
     public boolean equals(Object other) {
-        if (!(other instanceof OddItemAliases)) return false;
+        if (!(other instanceof Aliases)) return false;
         if (this == other) return true;
-        if (!getItems().equals(((OddItemAliases) other).getItems())) return false;
-        return getAliases().equals(((OddItemAliases) other).getAliases());
+        if (!getItems().equals(((Aliases) other).getItems())) return false;
+        return getAliases().equals(((Aliases) other).getAliases());
     }
 }

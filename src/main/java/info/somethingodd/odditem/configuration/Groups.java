@@ -20,6 +20,8 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -28,15 +30,15 @@ import java.util.TreeSet;
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
-public class OddItemGroups implements ConfigurationSerializable {
-    private final Map<String, OddItemGroup> groups;
-    private final Map<OddItemGroup, Set<String>> aliases;
+public class Groups implements ConfigurationSerializable {
+    private final Map<String, Group> groups;
+    private final Map<Group, Set<String>> aliases;
 
-    public OddItemGroups(Map<String, Object> serialized) {
-        aliases = new HashMap<OddItemGroup, Set<String>>();
-        groups = new TreeMap<String, OddItemGroup>(OddItem.ALPHANUM_COMPARATOR);
+    public Groups(Map<String, Object> serialized) {
+        aliases = new HashMap<Group, Set<String>>();
+        groups = new TreeMap<String, Group>(OddItem.ALPHANUM_COMPARATOR);
         for (String key : serialized.keySet()) {
-            OddItemGroup group = OddItemGroup.valueOf(((ConfigurationSection) serialized.get(key)).getValues(false));
+            Group group = Group.valueOf(((ConfigurationSection) serialized.get(key)).getValues(false));
             if (aliases.get(group) == null)
                 aliases.put(group, new TreeSet<String>(OddItem.ALPHANUM_COMPARATOR));
             aliases.get(group).addAll(((ConfigurationSection) serialized.get(key)).getStringList("aliases"));
@@ -62,11 +64,11 @@ public class OddItemGroups implements ConfigurationSerializable {
     }
 
     /**
-     * Gets an OddItemGroup by alias
+     * Gets an Group by alias
      * @param alias group alias to retrieve
-     * @return OddItemGroup
+     * @return Group
      */
-    public OddItemGroup getGroup(String alias) {
+    public Group getGroup(String alias) {
         return groups.get(alias);
     }
 
@@ -75,9 +77,9 @@ public class OddItemGroups implements ConfigurationSerializable {
      * @param key data key to check
      * @return Collection of groups containing key
      */
-    public Collection<OddItemGroup> getGroups(String key) {
-        Collection<OddItemGroup> groups = new HashSet<OddItemGroup>();
-        for (OddItemGroup group : this.groups.values())
+    public Collection<Group> getGroups(String key) {
+        Collection<Group> groups = new HashSet<Group>();
+        for (Group group : this.groups.values())
             if (group.match(key))
                 groups.add(group);
         return groups;
@@ -89,9 +91,9 @@ public class OddItemGroups implements ConfigurationSerializable {
      * @param key2 second-level key to check
      * @return Collection of groups containing keys
      */
-    public Collection<OddItemGroup> getGroups(String key, String key2) {
-        Collection<OddItemGroup> groups = new HashSet<OddItemGroup>();
-        for (OddItemGroup group : this.groups.values())
+    public Collection<Group> getGroups(String key, String key2) {
+        Collection<Group> groups = new HashSet<Group>();
+        for (Group group : this.groups.values())
             if (group.match(key, key2))
                 groups.add(group);
         return groups;
@@ -103,12 +105,12 @@ public class OddItemGroups implements ConfigurationSerializable {
         return serialized;
     }
 
-    public static OddItemGroups deserialize(Map<String, Object> serialized) {
-        return new OddItemGroups(serialized);
+    public static Groups deserialize(Map<String, Object> serialized) {
+        return new Groups(serialized);
     }
 
-    public static OddItemGroups valueOf(Map<String, Object> serialized) {
-        return new OddItemGroups(serialized);
+    public static Groups valueOf(Map<String, Object> serialized) {
+        return new Groups(serialized);
     }
 
     public int hashCode() {
@@ -116,9 +118,23 @@ public class OddItemGroups implements ConfigurationSerializable {
     }
 
     public boolean equals(Object other) {
-        if (!(other instanceof OddItemGroups)) return false;
+        if (!(other instanceof Groups)) return false;
         if (this == other) return true;
-        if (groups.equals(((OddItemGroups) other).groups)) return true;
+        if (groups.equals(((Groups) other).groups)) return true;
         return false;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder("Groups");
+        List<Group> groups = new LinkedList<Group>(this.groups.values());
+        for (int i = 0; i < groups.size(); i++) {
+            str.append(groups.get(i).toString());
+            if (i < groups.size() - 1) {
+                str.append(", ");
+            }
+        }
+        str.append("}");
+        return str.toString();
     }
 }

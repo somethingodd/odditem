@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
+import java.util.Scanner;
 
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
@@ -79,7 +80,7 @@ public class OddItemCommandExecutor implements CommandExecutor {
             if (sender.hasPermission("odditem.reload")) {
                 sender.sendMessage("[OddItem] Reloading...");
                 OddItem.clear();
-                new OddItemConfiguration(oddItemBase).configure();
+                new Configuration(oddItemBase).configure();
             } else {
                 sender.sendMessage("DENIED");
             }

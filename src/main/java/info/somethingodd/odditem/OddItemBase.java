@@ -33,7 +33,7 @@ public class OddItemBase extends JavaPlugin {
     @Override
     public void onEnable() {
         try {
-            OddItemConfiguration configuration = new OddItemConfiguration(this);
+            Configuration configuration = new Configuration(this);
             configuration.configure();
         } catch (Exception e) {
             getLogger().severe("Configuration error!");

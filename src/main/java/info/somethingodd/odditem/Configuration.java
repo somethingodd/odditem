@@ -13,10 +13,10 @@
  */
 package info.somethingodd.odditem;
 
+import info.somethingodd.odditem.configuration.Aliases;
+import info.somethingodd.odditem.configuration.Groups;
 import info.somethingodd.odditem.goddamnithidendraputitinitsownplugin.Metrics;
-import info.somethingodd.odditem.configuration.OddItemAliases;
-import info.somethingodd.odditem.configuration.OddItemGroup;
-import info.somethingodd.odditem.configuration.OddItemGroups;
+import info.somethingodd.odditem.configuration.Group;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
@@ -30,7 +30,7 @@ import java.io.InputStreamReader;
 /**
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
-public class OddItemConfiguration {
+public class Configuration {
     private static String comparator;
     private static int maxBlockId;
     private final OddItemBase oddItemBase;
@@ -39,7 +39,7 @@ public class OddItemConfiguration {
      * Constructor
      * @param oddItemBase Base plugin
      */
-    public OddItemConfiguration(OddItemBase oddItemBase) {
+    public Configuration(OddItemBase oddItemBase) {
         this.oddItemBase = oddItemBase;
     }
 
@@ -67,6 +67,7 @@ public class OddItemConfiguration {
             initialConfig("config.yml");
             initialConfig("groups.yml");
             initialConfig("items.yml");
+            initialConfig("spout.yml");
         } catch (Exception e) {
             oddItemBase.getLogger().warning("Exception writing initial configuration files: " + e.getMessage());
             e.printStackTrace();
@@ -83,9 +84,9 @@ public class OddItemConfiguration {
             }
         }
 
-        ConfigurationSerialization.registerClass(OddItemAliases.class);
+        ConfigurationSerialization.registerClass(Aliases.class);
 
-        ConfigurationSerialization.registerClass(OddItemAliases.class);
+        ConfigurationSerialization.registerClass(Aliases.class);
         YamlConfiguration itemConfiguration = new YamlConfiguration();
         try {
             itemConfiguration.load(new File(oddItemBase.getDataFolder(), "items.yml"));
@@ -99,17 +100,17 @@ public class OddItemConfiguration {
         } catch (Exception e) {
             oddItemBase.getLogger().warning("Error opening default resource for items.yml!");
         }
-        OddItem.items = OddItemAliases.valueOf(itemConfiguration.getConfigurationSection("items").getValues(false));
+        OddItem.items = Aliases.valueOf(itemConfiguration.getConfigurationSection("items").getValues(false));
 
-        ConfigurationSerialization.registerClass(OddItemGroup.class);
-        ConfigurationSerialization.registerClass(OddItemGroups.class);
+        ConfigurationSerialization.registerClass(Group.class);
+        ConfigurationSerialization.registerClass(Groups.class);
         YamlConfiguration groupConfiguration = new YamlConfiguration();
         try {
             groupConfiguration.load(new File(oddItemBase.getDataFolder(), "groups.yml"));
         } catch (Exception e) {
             oddItemBase.getLogger().warning("Error opening groups.yml!");
         }
-        OddItem.groups = OddItemGroups.valueOf(groupConfiguration.getConfigurationSection("groups").getValues(false));
+        OddItem.groups = Groups.valueOf(groupConfiguration.getConfigurationSection("groups").getValues(false));
     }
 
     /**

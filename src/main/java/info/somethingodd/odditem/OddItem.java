@@ -13,14 +13,15 @@
  */
 package info.somethingodd.odditem;
 
-import info.somethingodd.odditem.configuration.OddItemAliases;
-import info.somethingodd.odditem.configuration.OddItemGroup;
-import info.somethingodd.odditem.configuration.OddItemGroups;
+import info.somethingodd.odditem.configuration.Aliases;
+import info.somethingodd.odditem.configuration.Group;
+import info.somethingodd.odditem.configuration.Groups;
 import info.somethingodd.odditem.util.AlphanumComparator;
 import info.somethingodd.odditem.util.ItemStackComparator;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.getspout.spoutapi.inventory.SpoutItemStack;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,8 +31,8 @@ import java.util.List;
  * @author Gordon Pettey (petteyg359@gmail.com)
  */
 public class OddItem {
-    protected static OddItemAliases items;
-    protected static OddItemGroups groups;
+    protected static Aliases items;
+    protected static Groups groups;
     public static final AlphanumComparator ALPHANUM_COMPARATOR;
     public static final ItemStackComparator ITEM_STACK_COMPARATOR;
 
@@ -290,33 +291,33 @@ public class OddItem {
     }
 
     /**
-     * Get an OddItemGroup by name
+     * Get an Group by name
      *
      * @param name name of group
      * @return group with name
      */
-    public static OddItemGroup getItemGroup(String name) {
+    public static Group getItemGroup(String name) {
         return groups.getGroup(name);
     }
 
     /**
-     * Get an OddItemGroup by data key
+     * Get an Group by data key
      *
      * @param key top-level key
      * @return matching groups
      */
-    public static Collection<OddItemGroup> getItemGroups(String key) {
+    public static Collection<Group> getItemGroups(String key) {
         return groups.getGroups(key);
     }
 
     /**
-     * Get an OddItemGroup by second-level data key
+     * Get an Group by second-level data key
      *
      * @param key top-level key
      * @param key2 second-level key
      * @return matching groups
      */
-    public static Collection<OddItemGroup> getItemGroups(String key, String key2) {
+    public static Collection<Group> getItemGroups(String key, String key2) {
         return groups.getGroups(key, key2);
     }
 
